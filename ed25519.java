@@ -37,17 +37,27 @@ public class ed25519 {
 	}
 	
 	static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
-		//System.out.println("expmod open with b=" + b + " e=" + e + " m=" + m);
-		if (e.equals(BigInteger.ZERO)) {
-			//System.out.println("expmod close with 1z");
-			return BigInteger.ONE;
+		BigInteger[] n = new BigInteger[9999];
+		BigInteger t;
+		
+		n[0] = e;
+		int i=1;
+		
+		while(true) {			
+			n[i] = n[i-1].divide(BigInteger.valueOf(2));			
+			if (n[i].equals(BigInteger.ZERO)) {				
+				break;
+			}			
+			i++;
 		}
-		BigInteger t = expmod(b, e.divide(BigInteger.valueOf(2)), m).pow(2).mod(m);
-		//System.out.println("expmod 1/2 t="+t+" e="+e+" testbit="+(e.testBit(0)?1:0));
-		if (e.testBit(0)) {
-			t = t.multiply(b).mod(m);
-		}
-		//System.out.println("expmod close with " + t);
+		
+		t = BigInteger.ONE;
+		for (int j = i; j >= 0; j--) {
+			t = t.pow(2).mod(m);
+			if (n[j].testBit(0)) {
+				t = t.multiply(b).mod(m);
+			}
+		}	
 		return t;
 	}
 	
@@ -82,17 +92,24 @@ public class ed25519 {
 	}
 	
 	static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
-		//System.out.println("scalarmult open with e = " + e);
-		if (e.equals(BigInteger.ZERO)) {
-			//System.out.println("scalarmult close with Q = 0,1");
-			return new BigInteger[]{BigInteger.ZERO, BigInteger.ONE};
+		BigInteger[] t = new BigInteger[9999];
+		BigInteger[] Q;		
+		t[0] = e;
+		int i=1;
+		
+		while(true) {			
+			t[i] = t[i-1].divide(BigInteger.valueOf(2));;			
+			if (t[i].equals(BigInteger.ZERO)) {				
+				break;			
+			}			
+			i++;
 		}
-		BigInteger[] Q = scalarmult(P, e.divide(BigInteger.valueOf(2)));
-		//System.out.println("scalarmult asQ = " + Q[0] + "," + Q[1]);
-		Q = edwards(Q, Q);
-		//System.out.println("scalarmult aeQ = " + Q[0] + "," + Q[1] + " e="+e+" testbit="+(e.testBit(0)?1:0));
-		if (e.testBit(0)) Q = edwards(Q, P);
-		//System.out.println("scalarmult close with Q = " + Q[0] + "," + Q[1]);
+		
+		Q = new BigInteger[]{BigInteger.ZERO, BigInteger.ONE};		
+		for (int j = i; j >= 0; j--) {
+			Q = edwards(Q, Q);
+			if (t[j].testBit(0)) Q = edwards(Q, P);		
+		}		
 		return Q;
 	}
 	
