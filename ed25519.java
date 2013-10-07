@@ -23,7 +23,7 @@ public class ed25519 {
 	static final BigInteger[] B = {Bx.mod(q),By.mod(q)};
 	static final BigInteger un = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819967");
 	
-	static byte[] H(byte[] m) {
+	private static byte[] H(byte[] m) {
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-512");
@@ -36,7 +36,7 @@ public class ed25519 {
 		return null;
 	}
 	
-	static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
+	private static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
 		BigInteger[] n = new BigInteger[9999];
 		BigInteger t;
 		
@@ -61,13 +61,13 @@ public class ed25519 {
 		return t;
 	}
 	
-	static BigInteger inv(BigInteger x) {
+	private static BigInteger inv(BigInteger x) {
 		//System.out.println("inv open with " + x);
 		//System.out.println("inv close with " + expmod(x, qm2, q));
 		return expmod(x, qm2, q);
 	}
 	
-	static BigInteger xrecover(BigInteger y) {
+	private static BigInteger xrecover(BigInteger y) {
 		BigInteger y2 = y.multiply(y);
 		BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(d.multiply(y2).add(BigInteger.ONE)));
 		BigInteger x = expmod(xx, qp3.divide(BigInteger.valueOf(8)), q);
@@ -76,7 +76,7 @@ public class ed25519 {
 		return x;
 	}
 	
-	static BigInteger[] edwards(BigInteger[] P, BigInteger[] Q) {
+	private static BigInteger[] edwards(BigInteger[] P, BigInteger[] Q) {
 		BigInteger x1 = P[0];
 		BigInteger y1 = P[1];
 		BigInteger x2 = Q[0];
@@ -91,7 +91,7 @@ public class ed25519 {
 		return new BigInteger[]{x3.mod(q), y3.mod(q)};
 	}
 	
-	static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
+	private static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
 		BigInteger[] t = new BigInteger[9999];
 		BigInteger[] Q;		
 		t[0] = e;
@@ -113,7 +113,7 @@ public class ed25519 {
 		return Q;
 	}
 	
-	static byte[] encodeint(BigInteger y) {
+	private static byte[] encodeint(BigInteger y) {
 		byte[] in = y.toByteArray();
 		byte[] out = new byte[in.length];
 		for (int i=0;i<in.length;i++) {
@@ -122,7 +122,7 @@ public class ed25519 {
 		return out;
 	}
 	
-	static byte[] encodepoint(BigInteger[] P) {
+	private static byte[] encodepoint(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
 		byte[] out = encodeint(y);
@@ -131,7 +131,7 @@ public class ed25519 {
 		return out;
 	}
 	
-	static int bit(byte[] h, int i) {
+	private static int bit(byte[] h, int i) {
 		//System.out.println("bit open with i="+i);
 		//System.out.println("bit close with "+(h[i/8] >> (i%8) & 1));
 		return h[i/8] >> (i%8) & 1;
@@ -151,7 +151,7 @@ public class ed25519 {
 		return encodepoint(A);
 	}
 	
-	static BigInteger Hint(byte[] m) {
+	private static BigInteger Hint(byte[] m) {
 		byte[] h = H(m);
 		BigInteger hsum = BigInteger.ZERO;
 		for (int i=0;i<2*b;i++) {
@@ -160,7 +160,7 @@ public class ed25519 {
 		return hsum;
 	}
 	
-	static byte[] signature(byte[] m, byte[] sk, byte[] pk) {
+	public static byte[] signature(byte[] m, byte[] sk, byte[] pk) { // msg, privKey, pubKey
 		byte[] h = H(sk);
 		//System.out.println("signature open with m="+test.getHex(m)+" h="+test.getHex(h)+" pk="+test.getHex(pk));
 		BigInteger a = BigInteger.valueOf(2).pow(b-2);
@@ -182,7 +182,7 @@ public class ed25519 {
 		return out.array();
 	}
 	
-	static boolean isoncurve(BigInteger[] P) {
+	private static boolean isoncurve(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
 		//System.out.println("isoncurve open with P="+x+","+y);
@@ -193,7 +193,7 @@ public class ed25519 {
 		return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(q).equals(BigInteger.ZERO);
 	}
 	
-	static BigInteger decodeint(byte[] s) {
+	private static BigInteger decodeint(byte[] s) {
 		byte[] out = new byte[s.length];
 		for (int i=0;i<s.length;i++) {
 			out[i] = s[s.length-1-i];
@@ -201,7 +201,7 @@ public class ed25519 {
 		return new BigInteger(out).and(un);
 	}
 	
-	static BigInteger[] decodepoint(byte[] s) throws Exception {
+	private static BigInteger[] decodepoint(byte[] s) throws Exception {
 		byte[] ybyte = new byte[s.length];
 		for (int i=0;i<s.length;i++) {
 			ybyte[i] = s[s.length-1-i];
@@ -219,7 +219,7 @@ public class ed25519 {
 		return P;
 	}
 	
-	static boolean checkvalid(byte[] s, byte[] m, byte[] pk) throws Exception {
+	public static boolean checkvalid(byte[] s, byte[] m, byte[] pk) throws Exception {
 		if (s.length != b/4) throw new Exception("signature length is wrong");
 		if (pk.length != b/8) throw new Exception("public-key length is wrong");
 		//System.out.println("checkvalid open with s="+test.getHex(s)+" m="+test.getHex(m)+" pk="+test.getHex(pk));
