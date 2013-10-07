@@ -1,3 +1,5 @@
+package com.sqrl.crypto;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -118,7 +120,7 @@ public class ed25519 {
 		return h[i/8] >> (i%8) & 1;
 	}
 	
-	static byte[] publickey(byte[] sk) {
+	public static byte[] publickey(byte[] sk) {
 		byte[] h = H(sk);
 		//System.out.println("publickey open with h=" + test.getHex(h));
 		BigInteger a = BigInteger.valueOf(2).pow(b-2);
