@@ -1,5 +1,3 @@
-package com.sqrl.crypto;
-
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -92,7 +90,7 @@ public class Ed25519 {
 		return Q;
 	}
 	
-	private static byte[] encodeint(BigInteger y) {
+	public static byte[] encodeint(BigInteger y) {
 		byte[] in = y.toByteArray();
 		byte[] out = new byte[in.length];
 		for (int i=0;i<in.length;i++) {
@@ -101,7 +99,7 @@ public class Ed25519 {
 		return out;
 	}
 	
-	private static byte[] encodepoint(BigInteger[] P) {
+	public static byte[] encodepoint(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
 		byte[] out = encodeint(y);
