@@ -37,28 +37,7 @@ public class ed25519 {
 	}
 	
 	private static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
-		BigInteger[] n = new BigInteger[9999];
-		BigInteger t;
-		
-		n[0] = e;
-		int i=1;
-		
-		while(true) {			
-			n[i] = n[i-1].divide(BigInteger.valueOf(2));			
-			if (n[i].equals(BigInteger.ZERO)) {				
-				break;
-			}			
-			i++;
-		}
-		
-		t = BigInteger.ONE;
-		for (int j = i; j >= 0; j--) {
-			t = t.pow(2).mod(m);
-			if (n[j].testBit(0)) {
-				t = t.multiply(b).mod(m);
-			}
-		}	
-		return t;
+		return b.modPow(e, m);
 	}
 	
 	private static BigInteger inv(BigInteger x) {
