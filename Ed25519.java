@@ -10,7 +10,7 @@ import java.util.Arrays;
  * Released to the public domain
  */
 
-public class ed25519 {
+public class Ed25519 {
 	static final int b = 256;
 	static final BigInteger q = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819949");
 	static final BigInteger qm2 = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819947");
