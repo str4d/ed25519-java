@@ -20,7 +20,10 @@ public class Ed25519 {
 	static final BigInteger Bx = new BigInteger("15112221349535400772501151409588531511454012693041857206046113283949847762202");
 	static final BigInteger[] B = {Bx.mod(q),By.mod(q)};
 	static final BigInteger un = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819967");
-	
+
+	/**
+	 * Calculate the hash of a message.
+	 */
 	private static byte[] H(byte[] m) {
 		MessageDigest md;
 		try {
@@ -43,7 +46,11 @@ public class Ed25519 {
 		//System.out.println("inv close with " + expmod(x, qm2, q));
 		return expmod(x, qm2, q);
 	}
-	
+
+	/**
+	 * Recover x from element (x,y) given y. The caller must correct the
+	 * sign of x based on the stored sign.
+	 */
 	private static BigInteger xrecover(BigInteger y) {
 		BigInteger y2 = y.multiply(y);
 		BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(d.multiply(y2).add(BigInteger.ONE)));
@@ -52,7 +59,10 @@ public class Ed25519 {
 		if (!x.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) x = q.subtract(x);
 		return x;
 	}
-	
+
+	/**
+	 * The twisted Edwards addition law.
+	 */
 	private static BigInteger[] edwards(BigInteger[] P, BigInteger[] Q) {
 		BigInteger x1 = P[0];
 		BigInteger y1 = P[1];
@@ -113,7 +123,12 @@ public class Ed25519 {
 		//System.out.println("bit close with "+(h[i/8] >> (i%8) & 1));
 		return h[i/8] >> (i%8) & 1;
 	}
-	
+
+	/**
+	 * Calculate the public key from the given seed.
+	 * @param sk The private seed.
+	 * @return The 32-byte public key.
+	 */
 	public static byte[] publickey(byte[] sk) {
 		byte[] h = H(sk);
 		//System.out.println("publickey open with h=" + test.getHex(h));
@@ -136,7 +151,14 @@ public class Ed25519 {
 		}
 		return hsum;
 	}
-	
+
+	/**
+	 * Sign a message.
+	 * @param m The message to be signed.
+	 * @param sk The private seed.
+	 * @param pk The public key.
+	 * @return The 64-byte signature (R+S).
+	 */
 	public static byte[] signature(byte[] m, byte[] sk, byte[] pk) { // msg, privKey, pubKey
 		byte[] h = H(sk);
 		//System.out.println("signature open with m="+test.getHex(m)+" h="+test.getHex(h)+" pk="+test.getHex(pk));
@@ -158,7 +180,12 @@ public class Ed25519 {
 		out.put(encodepoint(R)).put(encodeint(S));
 		return out.array();
 	}
-	
+
+	/**
+	 * Verify that a point is on the curve.
+	 * @param P The point to check.
+	 * @return true if the point lies on the curve.
+	 */
 	private static boolean isoncurve(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
@@ -195,7 +222,14 @@ public class Ed25519 {
 		if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
 		return P;
 	}
-	
+
+	/**
+	 * Check the validity of a signature.
+	 * @param s The signature to validate.
+	 * @param m The message.
+	 * @param pk The 32-byte public key.
+	 * @return true if the signature is valid.
+	 */
 	public static boolean checkvalid(byte[] s, byte[] m, byte[] pk) throws Exception {
 		if (s.length != b/4) throw new Exception("signature length is wrong");
 		if (pk.length != b/8) throw new Exception("public-key length is wrong");
