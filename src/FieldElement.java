@@ -4,6 +4,7 @@ import java.math.BigInteger;
 public class FieldElement {
 	public static final FieldElement ZERO = new FieldElement(BigInteger.ZERO);
 	public static final FieldElement ONE = new FieldElement(BigInteger.ONE);
+	public static final FieldElement TWO = new FieldElement(BigInteger.valueOf(2));
 
 	final BigInteger x;
 
@@ -16,7 +17,7 @@ public class FieldElement {
 	}
 
 	public boolean isNegative() {
-		return !x.equals(x.abs());
+		return x.testBit(0);
 	}
 
 	public FieldElement add(FieldElement val) {
@@ -28,22 +29,26 @@ public class FieldElement {
 	}
 
 	public FieldElement negate() {
-		return new FieldElement(x.negate());
+		return new FieldElement(Constants.q.subtract(x));
 	}
 
 	public FieldElement multiply(FieldElement val) {
-		return new FieldElement(x.multiply(val.x));
+		return new FieldElement(x.multiply(val.x).mod(Constants.q));
 	}
 
 	public FieldElement square() {
-		return new FieldElement(x.pow(2));
+		return new FieldElement(x.modPow(BigInteger.valueOf(2), Constants.q));
 	}
 
 	public FieldElement squareAndDouble() {
-		return new FieldElement(x.pow(2).multiply(BigInteger.valueOf(2)));
+		return square().multiply(TWO);
 	}
 
 	public FieldElement invert() {
-		return this;
+		return modPow(Constants.qm2, Constants.q);
+	}
+
+	public FieldElement modPow(BigInteger e, BigInteger m) {
+		return new FieldElement(x.modPow(e, m));
 	}
 }
