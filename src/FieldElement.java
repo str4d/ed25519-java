@@ -7,8 +7,8 @@ public class FieldElement {
 	public static final FieldElement ONE = new FieldElement(
 			BigInteger.ONE, BigInteger.ZERO);
 
-	BigInteger x;
-	BigInteger y;
+	final BigInteger x;
+	final BigInteger y;
 
 	public FieldElement(BigInteger x, BigInteger y) {
 		this.x = x;
