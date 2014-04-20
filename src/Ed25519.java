@@ -48,9 +48,9 @@ public class Ed25519 {
 	 */
 	private static BigInteger xrecover(BigInteger y) {
 		BigInteger y2 = y.multiply(y);
-		BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(Constants.d.multiply(y2).add(BigInteger.ONE)));
+		BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(Constants.d.bi.multiply(y2).add(BigInteger.ONE)));
 		BigInteger x = expmod(xx, Constants.qp3.divide(BigInteger.valueOf(8)), Constants.q);
-		if (!x.multiply(x).subtract(xx).mod(Constants.q).equals(BigInteger.ZERO)) x = (x.multiply(Constants.I).mod(Constants.q));
+		if (!x.multiply(x).subtract(xx).mod(Constants.q).equals(BigInteger.ZERO)) x = (x.multiply(Constants.I.bi).mod(Constants.q));
 		if (!x.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) x = Constants.q.subtract(x);
 		return x;
 	}
@@ -63,15 +63,15 @@ public class Ed25519 {
 		BigInteger y1 = P[1];
 		BigInteger x2 = Q[0];
 		BigInteger y2 = Q[1];
-		BigInteger dtemp = Constants.d.multiply(x1).multiply(x2).multiply(y1).multiply(y2);
+		BigInteger dtemp = Constants.d.bi.multiply(x1).multiply(x2).multiply(y1).multiply(y2);
 		BigInteger x3 = ((x1.multiply(y2)).add((x2.multiply(y1)))).multiply(inv(BigInteger.ONE.add(dtemp)));
 		BigInteger y3 = ((y1.multiply(y2)).add((x1.multiply(x2)))).multiply(inv(BigInteger.ONE.subtract(dtemp)));
 		return new BigInteger[]{x3.mod(Constants.q), y3.mod(Constants.q)};
 	}
 
-	private static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
+	private static GroupElement scalarmult(GroupElement P, BigInteger e) {
 		BigInteger[] t = new BigInteger[9999];
-		BigInteger[] Q;		
+		GroupElement Q;		
 		t[0] = e;
 		int i=1;
 
@@ -83,10 +83,11 @@ public class Ed25519 {
 			i++;
 		}
 
-		Q = new BigInteger[]{BigInteger.ZERO, BigInteger.ONE};		
+		GroupElement Pcached = GroupElement.cached(P);
+		Q = GroupElement.P2_ZERO;
 		for (int j = i; j >= 0; j--) {
-			Q = edwards(Q, Q);
-			if (t[j].testBit(0)) Q = edwards(Q, P);		
+			Q = Q.add(GroupElement.cached(Q));
+			if (t[j].testBit(0)) Q = Q.add(Pcached);		
 		}		
 		return Q;
 	}
@@ -102,7 +103,7 @@ public class Ed25519 {
 
 		BigInteger xx = x.multiply(x);
 		BigInteger yy = y.multiply(y);
-		BigInteger dxxyy = Constants.d.multiply(yy).multiply(xx);
+		BigInteger dxxyy = Constants.d.bi.multiply(yy).multiply(xx);
 
 		return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(Constants.q).equals(BigInteger.ZERO);
 	}
@@ -164,9 +165,9 @@ public class Ed25519 {
 			BigInteger apart = BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i)));
 			a = a.add(apart);
 		}
-		BigInteger[] A = scalarmult(Constants.B,a);
+		GroupElement A = scalarmult(Constants.B,a);
 
-		return encodepoint(A);
+		return A.toByteArray();
 	}
 
 	/**
@@ -193,17 +194,18 @@ public class Ed25519 {
 		BigInteger r = Hint(rsub.array());
 
 		// R = rB
-		BigInteger[] R = scalarmult(Constants.B,r);
+		GroupElement R = scalarmult(Constants.B,r);
 
 		// Rbar,Abar,M 
 		ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
-		Stemp.put(encodepoint(R)).put(pk).put(m);
+		Stemp.put(R.toByteArray()).put(pk).put(m);
 		// S = (r + H(Rbar,Abar,M)*a) mod l
-		BigInteger S = r.add(Hint(Stemp.array()).multiply(a)).mod(Constants.l);
+		FieldElement S = new FieldElement(Hint(Stemp.array()).multiply(a).add(r).mod(Constants.l));
 
 		// R+S
 		ByteBuffer out = ByteBuffer.allocate(64);
-		out.put(encodepoint(R)).put(encodeint(S));
+		// TODO: Calculate Rbyte once, use twice
+		out.put(R.toByteArray()).put(S.toByteArray());
 		return out.array();
 	}
 
@@ -219,25 +221,26 @@ public class Ed25519 {
 		if (pk.length != Constants.b/8) throw new Exception("public-key length is wrong");
 
 		byte[] Rbyte = Arrays.copyOfRange(s, 0, Constants.b/8);
-		BigInteger[] R = decodepoint(Rbyte);
+		GroupElement R = new GroupElement(Rbyte);
 
-		BigInteger[] A = decodepoint(pk);
+		GroupElement A = new GroupElement(pk);
 
 		byte[] Sbyte = Arrays.copyOfRange(s, Constants.b/8, Constants.b/4);
-		BigInteger S = decodeint(Sbyte);
+		FieldElement S = new FieldElement(Sbyte);
 
 		// Rbar,Abar,M
 		ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
-		Stemp.put(encodepoint(R)).put(pk).put(m);
+		// XXX: Why re-encode? Just use Rbyte?
+		Stemp.put(R.toByteArray()).put(pk).put(m);
 		// h = H(Rbar,Abar,M)
 		BigInteger h = Hint(Stemp.array());
 		// SB
-		BigInteger[] ra = scalarmult(Constants.B,S);
+		GroupElement ra = scalarmult(Constants.B,S.bi);
 		// R + H(Rbar,Abar,M)A
-		BigInteger[] rb = edwards(R,scalarmult(A,h));
+		GroupElement rb = R.add(scalarmult(A,h));
 
 		// SB = R + H(Rbar,Abar,M)A
-		if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
+		if (!ra.equals(rb)) // Constant time comparison
 			return false;
 		return true;
 	}

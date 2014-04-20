@@ -45,11 +45,11 @@ public class FieldElement {
 	}
 
 	public FieldElement add(FieldElement val) {
-		return new FieldElement(bi.add(val.bi));
+		return new FieldElement(bi.add(val.bi).mod(Constants.q));
 	}
 
 	public FieldElement subtract(FieldElement val) {
-		return new FieldElement(bi.subtract(val.bi));
+		return new FieldElement(bi.subtract(val.bi).mod(Constants.q));
 	}
 
 	public FieldElement negate() {
@@ -61,7 +61,7 @@ public class FieldElement {
 	}
 
 	public FieldElement square() {
-		return new FieldElement(bi.modPow(BigInteger.valueOf(2), Constants.q));
+		return modPow(BigInteger.valueOf(2), Constants.q);
 	}
 
 	public FieldElement squareAndDouble() {

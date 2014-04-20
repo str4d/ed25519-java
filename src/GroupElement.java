@@ -20,8 +20,8 @@ public class GroupElement {
 	public static final GroupElement P3_ZERO = p3(
 			FieldElement.ZERO, FieldElement.ONE,
 			FieldElement.ONE, FieldElement.ZERO);
-
-	public static final FieldElement D2 = null;
+	public static final GroupElement PRECOMP_ZERO = p2(
+			FieldElement.ONE, FieldElement.ONE, FieldElement.ZERO);
 
 	public static GroupElement p2(FieldElement X, FieldElement Y,
 			FieldElement Z) {
@@ -78,7 +78,7 @@ public class GroupElement {
 		FieldElement x, y, u, v, v3, vxx, check;
 		y = new FieldElement(s);
 		u = y.square();
-		v = u.multiply(new FieldElement(Constants.d));
+		v = u.multiply(Constants.d);
 		u = u.subtract(FieldElement.ONE);	// u = y^2-1
 		v = v.add(FieldElement.ONE);		// v = dy^2+1
 
@@ -94,7 +94,7 @@ public class GroupElement {
 			check = vxx.add(u);				// vx^2+u
 			if (check.isNonZero())
 				throw new IllegalArgumentException();
-			x = x.multiply(new FieldElement(Constants.I));
+			x = x.multiply(Constants.I);
 		}
 
 		if ((x.isNegative() ? 1 : 0) == (s[s.length-1] >> 7))
@@ -138,7 +138,7 @@ public class GroupElement {
 			case P2:
 				return p2(X, Y, Z);
 			case CACHED:
-				return cached(Y.add(X), Y.subtract(X), Z, T.multiply(D2));
+				return cached(Y.add(X), Y.subtract(X), Z, T.multiply(Constants.d2));
 			default:
 				throw new IllegalArgumentException();
 			}
