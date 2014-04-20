@@ -2,49 +2,45 @@ import java.math.BigInteger;
 
 
 public class FieldElement {
-	public static final FieldElement ZERO = new FieldElement(
-			BigInteger.ZERO, BigInteger.ZERO);
-	public static final FieldElement ONE = new FieldElement(
-			BigInteger.ONE, BigInteger.ZERO);
+	public static final FieldElement ZERO = new FieldElement(BigInteger.ZERO);
+	public static final FieldElement ONE = new FieldElement(BigInteger.ONE);
 
 	final BigInteger x;
-	final BigInteger y;
 
-	public FieldElement(BigInteger x, BigInteger y) {
+	public FieldElement(BigInteger x) {
 		this.x = x;
-		this.y = y;
 	} 
 
 	public boolean isNonZero() {
-		return true;
+		return !x.equals(BigInteger.ZERO);
 	}
 
 	public boolean isNegative() {
-		return false;
+		return !x.equals(x.abs());
 	}
 
 	public FieldElement add(FieldElement val) {
-		return new FieldElement(x.add(val.x), y.add(val.y));
+		return new FieldElement(x.add(val.x));
 	}
 
 	public FieldElement subtract(FieldElement val) {
-		return new FieldElement(x.subtract(val.x), y.subtract(val.y));
+		return new FieldElement(x.subtract(val.x));
 	}
 
 	public FieldElement negate() {
-		return new FieldElement(x.negate(), y.negate());
+		return new FieldElement(x.negate());
 	}
 
 	public FieldElement multiply(FieldElement val) {
-		return val;
+		return new FieldElement(x.multiply(val.x));
 	}
 
 	public FieldElement square() {
-		return this;
+		return new FieldElement(x.pow(2));
 	}
 
 	public FieldElement squareAndDouble() {
-		return this;
+		return new FieldElement(x.pow(2).multiply(BigInteger.valueOf(2)));
 	}
 
 	public FieldElement invert() {
