@@ -10,7 +10,31 @@ public class FieldElement {
 
 	public FieldElement(BigInteger x) {
 		this.x = x;
-	} 
+	}
+
+	/**
+	 * Translates a byte array containing the two's-complement binary
+	 * representation of a FieldElement into a FieldElement. The input array is
+	 * assumed to be in little-endian byte-order: the least significant byte is
+	 * in the zeroth element.
+	 * @param val
+	 */
+	public FieldElement(byte[] val) {
+		byte[] out = new byte[val.length];
+		for (int i = 0; i < val.length; i++) {
+			out[i] = val[val.length-1-i];
+		}
+		this.x = new BigInteger(out).and(Constants.un);
+	}
+
+	public byte[] toByteArray() {
+		byte[] in = x.toByteArray();
+		byte[] out = new byte[in.length];
+		for (int i = 0; i < in.length; i++) {
+			out[i] = in[in.length-1-i];
+		}
+		return out;
+	}
 
 	public boolean isNonZero() {
 		return !x.equals(BigInteger.ZERO);

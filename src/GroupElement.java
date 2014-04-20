@@ -70,6 +70,58 @@ public class GroupElement {
 		this.T = T;
 	}
 
+	public GroupElement(byte[] s) {
+		byte[] ybyte = new byte[s.length];
+		for (int i = 0; i < s.length; i++) {
+			ybyte[i] = s[s.length-1-i];
+		}
+		FieldElement x, y, u, v, v3, vxx, check;
+		y = new FieldElement(s);
+		u = y.square();
+		v = u.multiply(new FieldElement(Constants.d));
+		u = u.subtract(FieldElement.ONE);	// u = y^2-1
+		v = v.add(FieldElement.ONE);		// v = dy^2+1
+
+		v3 = v.square().multiply(v);				// v3 = v^3
+		x = v3.square().multiply(v).multiply(u);	// x = uv^7
+
+		x = x.modPow(Constants.qp5.divide(BigInteger.valueOf(8)), Constants.q); //  x = (uv^7)^((q-5)/8)
+		x = x.multiply(v3).multiply(u);		// x = uv^3(uv^7)^((q-5)/8)
+
+		vxx = x.square().multiply(v);
+		check = vxx.subtract(u);			// vx^2-u
+		if (check.isNonZero()) {
+			check = vxx.add(u);				// vx^2+u
+			if (check.isNonZero())
+				throw new IllegalArgumentException();
+			x = x.multiply(new FieldElement(Constants.I));
+		}
+
+		if ((x.isNegative() ? 1 : 0) == (s[s.length-1] >> 7))
+			x = x.negate();
+
+		repr = Representation.P3;
+		X = x;
+		Y = y;
+		Z = FieldElement.ONE;
+		T = X.multiply(Y);
+	}
+
+	public byte[] toByteArray() {
+		switch (repr) {
+		case P2:
+		case P3:
+			FieldElement recip = Z.invert();
+			FieldElement x = X.multiply(recip);
+			FieldElement y = Y.multiply(recip);
+			byte[] s = y.toByteArray();
+			s[s.length-1] |= (x.isNegative() ? 0x80 : 0);
+			return s;
+		default:
+			return toRep(Representation.P2).toByteArray();
+		}
+	}
+
 	/**
 	 * Convert a GroupElement from one Representation to another.
 	 * r = p
