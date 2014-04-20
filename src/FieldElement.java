@@ -43,6 +43,10 @@ public class FieldElement {
 		return this;
 	}
 
+	public FieldElement squareAndDouble() {
+		return this;
+	}
+
 	public FieldElement invert() {
 		return this;
 	}
