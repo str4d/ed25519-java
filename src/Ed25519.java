@@ -9,7 +9,6 @@ import java.util.Arrays;
  */
 
 public class Ed25519 {
-
 	/**
 	 * Calculate the hash of a message.
 	 */
@@ -25,11 +24,20 @@ public class Ed25519 {
 		}
 		return null;
 	}
-	
+
+	private static BigInteger Hint(byte[] m) {
+		byte[] h = H(m);
+		BigInteger hsum = BigInteger.ZERO;
+		for (int i=0;i<2*Constants.b;i++) {
+			hsum = hsum.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
+		}
+		return hsum;
+	}
+
 	private static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
 		return b.modPow(e, m);
 	}
-	
+
 	private static BigInteger inv(BigInteger x) {
 		return expmod(x, Constants.qm2, Constants.q);
 	}
@@ -60,13 +68,13 @@ public class Ed25519 {
 		BigInteger y3 = ((y1.multiply(y2)).add((x1.multiply(x2)))).multiply(inv(BigInteger.ONE.subtract(dtemp)));
 		return new BigInteger[]{x3.mod(Constants.q), y3.mod(Constants.q)};
 	}
-	
+
 	private static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
 		BigInteger[] t = new BigInteger[9999];
 		BigInteger[] Q;		
 		t[0] = e;
 		int i=1;
-		
+
 		while(true) {			
 			t[i] = t[i-1].divide(BigInteger.valueOf(2));;			
 			if (t[i].equals(BigInteger.ZERO)) {				
@@ -74,7 +82,7 @@ public class Ed25519 {
 			}			
 			i++;
 		}
-		
+
 		Q = new BigInteger[]{BigInteger.ZERO, BigInteger.ONE};		
 		for (int j = i; j >= 0; j--) {
 			Q = edwards(Q, Q);
@@ -82,7 +90,46 @@ public class Ed25519 {
 		}		
 		return Q;
 	}
-	
+
+	/**
+	 * Verify that a point is on the curve.
+	 * @param P The point to check.
+	 * @return true if the point lies on the curve.
+	 */
+	private static boolean isoncurve(BigInteger[] P) {
+		BigInteger x = P[0];
+		BigInteger y = P[1];
+
+		BigInteger xx = x.multiply(x);
+		BigInteger yy = y.multiply(y);
+		BigInteger dxxyy = Constants.d.multiply(yy).multiply(xx);
+
+		return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(Constants.q).equals(BigInteger.ZERO);
+	}
+
+	private static BigInteger decodeint(byte[] s) {
+		byte[] out = new byte[s.length];
+		for (int i=0;i<s.length;i++) {
+			out[i] = s[s.length-1-i];
+		}
+		return new BigInteger(out).and(Constants.un);
+	}
+
+	private static BigInteger[] decodepoint(byte[] s) throws Exception {
+		byte[] ybyte = new byte[s.length];
+		for (int i=0;i<s.length;i++) {
+			ybyte[i] = s[s.length-1-i];
+		}
+		BigInteger y = new BigInteger(ybyte).and(Constants.un);
+		BigInteger x = xrecover(y);
+		if ((x.testBit(0)?1:0) != bit(s, Constants.b-1)) {
+			x = Constants.q.subtract(x);
+		}
+		BigInteger[] P = {x,y};
+		if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
+		return P;
+	}
+
 	public static byte[] encodeint(BigInteger y) {
 		byte[] in = y.toByteArray();
 		byte[] out = new byte[in.length];
@@ -91,7 +138,7 @@ public class Ed25519 {
 		}
 		return out;
 	}
-	
+
 	public static byte[] encodepoint(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
@@ -99,7 +146,7 @@ public class Ed25519 {
 		out[out.length-1] |= (x.testBit(0) ? 0x80 : 0);
 		return out;
 	}
-	
+
 	private static int bit(byte[] h, int i) {
 		return h[i/8] >> (i%8) & 1;
 	}
@@ -120,15 +167,6 @@ public class Ed25519 {
 		BigInteger[] A = scalarmult(Constants.B,a);
 
 		return encodepoint(A);
-	}
-	
-	private static BigInteger Hint(byte[] m) {
-		byte[] h = H(m);
-		BigInteger hsum = BigInteger.ZERO;
-		for (int i=0;i<2*Constants.b;i++) {
-			hsum = hsum.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
-		}
-		return hsum;
 	}
 
 	/**
@@ -167,45 +205,6 @@ public class Ed25519 {
 		ByteBuffer out = ByteBuffer.allocate(64);
 		out.put(encodepoint(R)).put(encodeint(S));
 		return out.array();
-	}
-
-	/**
-	 * Verify that a point is on the curve.
-	 * @param P The point to check.
-	 * @return true if the point lies on the curve.
-	 */
-	private static boolean isoncurve(BigInteger[] P) {
-		BigInteger x = P[0];
-		BigInteger y = P[1];
-
-		BigInteger xx = x.multiply(x);
-		BigInteger yy = y.multiply(y);
-		BigInteger dxxyy = Constants.d.multiply(yy).multiply(xx);
-
-		return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(Constants.q).equals(BigInteger.ZERO);
-	}
-	
-	private static BigInteger decodeint(byte[] s) {
-		byte[] out = new byte[s.length];
-		for (int i=0;i<s.length;i++) {
-			out[i] = s[s.length-1-i];
-		}
-		return new BigInteger(out).and(Constants.un);
-	}
-	
-	private static BigInteger[] decodepoint(byte[] s) throws Exception {
-		byte[] ybyte = new byte[s.length];
-		for (int i=0;i<s.length;i++) {
-			ybyte[i] = s[s.length-1-i];
-		}
-		BigInteger y = new BigInteger(ybyte).and(Constants.un);
-		BigInteger x = xrecover(y);
-		if ((x.testBit(0)?1:0) != bit(s, Constants.b-1)) {
-			x = Constants.q.subtract(x);
-		}
-		BigInteger[] P = {x,y};
-		if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
-		return P;
 	}
 
 	/**
