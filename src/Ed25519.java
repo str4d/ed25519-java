@@ -31,8 +31,6 @@ public class Ed25519 {
 	}
 	
 	private static BigInteger inv(BigInteger x) {
-		//System.out.println("inv open with " + x);
-		//System.out.println("inv close with " + expmod(x, qm2, q));
 		return expmod(x, Constants.qm2, Constants.q);
 	}
 
@@ -58,12 +56,8 @@ public class Ed25519 {
 		BigInteger x2 = Q[0];
 		BigInteger y2 = Q[1];
 		BigInteger dtemp = Constants.d.multiply(x1).multiply(x2).multiply(y1).multiply(y2);
-		//System.out.println("edwards open with "+x1+","+x2+" "+y1+","+y2+" d="+d+" dtemp="+dtemp);
 		BigInteger x3 = ((x1.multiply(y2)).add((x2.multiply(y1)))).multiply(inv(BigInteger.ONE.add(dtemp)));
-		//System.out.println("edwards 1/2 with "+x1+","+x2+" "+y1+","+y2+" d="+d+" dtemp="+dtemp);
 		BigInteger y3 = ((y1.multiply(y2)).add((x1.multiply(x2)))).multiply(inv(BigInteger.ONE.subtract(dtemp)));
-		//System.out.println("edwards 2/2 with "+x1+","+x2+" "+y1+","+y2+" d="+d+" dtemp="+dtemp);
-		//System.out.println("edwards close with "+x3.mod(q)+","+y3.mod(q));
 		return new BigInteger[]{x3.mod(Constants.q), y3.mod(Constants.q)};
 	}
 	
@@ -102,14 +96,11 @@ public class Ed25519 {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
 		byte[] out = encodeint(y);
-		//System.out.println("encodepoint x="+x+" testbit="+(x.testBit(0) ? 1 : 0));
 		out[out.length-1] |= (x.testBit(0) ? 0x80 : 0);
 		return out;
 	}
 	
 	private static int bit(byte[] h, int i) {
-		//System.out.println("bit open with i="+i);
-		//System.out.println("bit close with "+(h[i/8] >> (i%8) & 1));
 		return h[i/8] >> (i%8) & 1;
 	}
 
@@ -120,15 +111,14 @@ public class Ed25519 {
 	 */
 	public static byte[] publickey(byte[] sk) {
 		byte[] h = H(sk);
-		//System.out.println("publickey open with h=" + test.getHex(h));
+
 		BigInteger a = BigInteger.valueOf(2).pow(Constants.b-2);
 		for (int i=3;i<(Constants.b-2);i++) {
 			BigInteger apart = BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i)));
-			//System.out.println("publickey apart="+apart);
 			a = a.add(apart);
 		}
 		BigInteger[] A = scalarmult(Constants.B,a);
-		//System.out.println("publickey close with A="+A[0]+","+A[1]+" out="+test.getHex(encodepoint(A)));
+
 		return encodepoint(A);
 	}
 	
@@ -148,22 +138,32 @@ public class Ed25519 {
 	 * @param pk The public key.
 	 * @return The 64-byte signature (R+S).
 	 */
-	public static byte[] signature(byte[] m, byte[] sk, byte[] pk) { // msg, privKey, pubKey
+	public static byte[] signature(byte[] m, byte[] sk, byte[] pk) {
+		// H(k)
 		byte[] h = H(sk);
-		//System.out.println("signature open with m="+test.getHex(m)+" h="+test.getHex(h)+" pk="+test.getHex(pk));
+
+		// a
 		BigInteger a = BigInteger.valueOf(2).pow(Constants.b-2);
 		for (int i=3;i<(Constants.b-2);i++) {
 			a = a.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
 		}
+
+		// h_b,...,h_2b-1,M
 		ByteBuffer rsub = ByteBuffer.allocate((Constants.b/8)+m.length);
 		rsub.put(h, Constants.b/8, Constants.b/4-Constants.b/8).put(m);
-		//System.out.println("signature rsub="+test.getHex(rsub.array()));
+		// r = H(h_b,...,h_2b-1,M)
 		BigInteger r = Hint(rsub.array());
-		//System.out.println("signature r="+r);
+
+		// R = rB
 		BigInteger[] R = scalarmult(Constants.B,r);
+
+		// Rbar,Abar,M 
 		ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
 		Stemp.put(encodepoint(R)).put(pk).put(m);
+		// S = (r + H(Rbar,Abar,M)*a) mod l
 		BigInteger S = r.add(Hint(Stemp.array()).multiply(a)).mod(Constants.l);
+
+		// R+S
 		ByteBuffer out = ByteBuffer.allocate(64);
 		out.put(encodepoint(R)).put(encodeint(S));
 		return out.array();
@@ -177,11 +177,11 @@ public class Ed25519 {
 	private static boolean isoncurve(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
-		//System.out.println("isoncurve open with P="+x+","+y);
+
 		BigInteger xx = x.multiply(x);
 		BigInteger yy = y.multiply(y);
 		BigInteger dxxyy = Constants.d.multiply(yy).multiply(xx);
-		//System.out.println("isoncurve close with "+xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(q));
+
 		return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(Constants.q).equals(BigInteger.ZERO);
 	}
 	
@@ -198,11 +198,8 @@ public class Ed25519 {
 		for (int i=0;i<s.length;i++) {
 			ybyte[i] = s[s.length-1-i];
 		}
-		//System.out.println("decodepoint open with s="+test.getHex(s)+" ybyte="+test.getHex(ybyte));
 		BigInteger y = new BigInteger(ybyte).and(Constants.un);
-		//System.out.println("decodepoint y="+y);
 		BigInteger x = xrecover(y);
-		//System.out.println("decodepoint x="+x+" testbit="+(x.testBit(0)?1:0)+" bit="+bit(s, b-1));
 		if ((x.testBit(0)?1:0) != bit(s, Constants.b-1)) {
 			x = Constants.q.subtract(x);
 		}
@@ -221,22 +218,26 @@ public class Ed25519 {
 	public static boolean checkvalid(byte[] s, byte[] m, byte[] pk) throws Exception {
 		if (s.length != Constants.b/4) throw new Exception("signature length is wrong");
 		if (pk.length != Constants.b/8) throw new Exception("public-key length is wrong");
-		//System.out.println("checkvalid open with s="+test.getHex(s)+" m="+test.getHex(m)+" pk="+test.getHex(pk));
+
 		byte[] Rbyte = Arrays.copyOfRange(s, 0, Constants.b/8);
-		//System.out.println("checkvalid Rbyte="+test.getHex(Rbyte));
 		BigInteger[] R = decodepoint(Rbyte);
+
 		BigInteger[] A = decodepoint(pk);
-		//System.out.println("checkvalid R="+R[0]+","+R[1]+" A="+A[0]+","+A[1]);
+
 		byte[] Sbyte = Arrays.copyOfRange(s, Constants.b/8, Constants.b/4);
-		//System.out.println("checkvalid Sbyte="+test.getHex(Sbyte));
 		BigInteger S = decodeint(Sbyte);
-		//System.out.println("checkvalid S="+S);
+
+		// Rbar,Abar,M
 		ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
 		Stemp.put(encodepoint(R)).put(pk).put(m);
+		// h = H(Rbar,Abar,M)
 		BigInteger h = Hint(Stemp.array());
+		// SB
 		BigInteger[] ra = scalarmult(Constants.B,S);
+		// R + H(Rbar,Abar,M)A
 		BigInteger[] rb = edwards(R,scalarmult(A,h));
-		//System.out.println("checkvalid ra="+ra[0]+","+ra[1]+" rb="+rb[0]+","+rb[1]);
+
+		// SB = R + H(Rbar,Abar,M)A
 		if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
 			return false;
 		return true;
