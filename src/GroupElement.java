@@ -27,32 +27,20 @@ public class GroupElement {
 			FieldElement Z) {
 		return new GroupElement(Representation.P2, X, Y, Z, null);
 	}
-	public static GroupElement p2(GroupElement p) {
-		return p.toRep(Representation.P2);
-	}
 
 	public static GroupElement p3(FieldElement X, FieldElement Y,
 			FieldElement Z, FieldElement T) {
 		return new GroupElement(Representation.P3, X, Y, Z, T);
-	}
-	public static GroupElement p3(GroupElement p) {
-		return p.toRep(Representation.P3);
 	}
 
 	public static GroupElement p1p1(FieldElement X, FieldElement Y,
 			FieldElement Z, FieldElement T) {
 		return new GroupElement(Representation.P1P1, X, Y, Z, T);
 	}
-	public static GroupElement p1p1(GroupElement p) {
-		return p.toRep(Representation.P1P1);
-	}
 
 	public static GroupElement cached(FieldElement YpX, FieldElement YmX,
 			FieldElement Z, FieldElement T2d) {
 		return new GroupElement(Representation.CACHED, YpX, YmX, Z, T2d);
-	}
-	public static GroupElement cached(GroupElement p) {
-		return p.toRep(Representation.CACHED);
 	}
 
 	final Representation repr;
@@ -114,8 +102,21 @@ public class GroupElement {
 			s[s.length-1] |= (x.isNegative() ? 0x80 : 0);
 			return s;
 		default:
-			return toRep(Representation.P2).toByteArray();
+			return toP2().toByteArray();
 		}
+	}
+
+	public GroupElement toP2() {
+		return toRep(Representation.P2);
+	}
+	public GroupElement toP3() {
+		return toRep(Representation.P3);
+	}
+	public GroupElement toP1P1() {
+		return toRep(Representation.P1P1);
+	}
+	public GroupElement toCached() {
+		return toRep(Representation.CACHED);
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class GroupElement {
 			Zn = YY.subtract(XX);
 			return p1p1(AA.subtract(Yn), Yn, Zn, B.subtract(Zn));
 		case P3:
-			return toRep(Representation.P2).dbl();
+			return toP2().dbl();
 		default:
 			throw new UnsupportedOperationException();
 		}
