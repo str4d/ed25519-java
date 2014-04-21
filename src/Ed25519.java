@@ -69,7 +69,7 @@ public class Ed25519 {
 		return new BigInteger[]{x3.mod(Constants.q), y3.mod(Constants.q)};
 	}
 
-	private static GroupElement scalarmult(GroupElement P, BigInteger e) {
+	static GroupElement scalarmult(GroupElement P, BigInteger e) {
 		BigInteger[] t = new BigInteger[9999];
 		GroupElement Q;		
 		t[0] = e;
