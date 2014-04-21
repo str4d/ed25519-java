@@ -12,7 +12,7 @@ public class Ed25519 {
 	/**
 	 * Calculate the hash of a message.
 	 */
-	private static byte[] H(byte[] m) {
+	static byte[] H(byte[] m) {
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-512");

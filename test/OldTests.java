@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Released to the public domain
  */
 
-public class test {
+public class OldTests {
 
 	static final String HEXES = "0123456789abcdef";
 	

@@ -75,4 +75,12 @@ public class FieldElement {
 	public FieldElement modPow(BigInteger e, BigInteger m) {
 		return new FieldElement(bi.modPow(e, m));
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof FieldElement))
+			return false;
+		FieldElement fe = (FieldElement) obj;
+		return bi.equals(fe.bi);
+	}
 }
