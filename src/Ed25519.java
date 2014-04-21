@@ -34,18 +34,20 @@ public class Ed25519 {
 		return hsum;
 	}
 
+	/* XXX Deprecated, to be deleted
 	private static BigInteger expmod(BigInteger b, BigInteger e, BigInteger m) {
 		return b.modPow(e, m);
 	}
 
 	private static BigInteger inv(BigInteger x) {
 		return expmod(x, Constants.qm2, Constants.q);
-	}
+	}*/
 
 	/**
 	 * Recover x from element (x,y) given y. The caller must correct the
 	 * sign of x based on the stored sign.
 	 */
+	/* XXX Deprecated, to be deleted
 	private static BigInteger xrecover(BigInteger y) {
 		BigInteger y2 = y.multiply(y);
 		BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(Constants.d.bi.multiply(y2).add(BigInteger.ONE)));
@@ -53,11 +55,12 @@ public class Ed25519 {
 		if (!x.multiply(x).subtract(xx).mod(Constants.q).equals(BigInteger.ZERO)) x = (x.multiply(Constants.I.bi).mod(Constants.q));
 		if (!x.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) x = Constants.q.subtract(x);
 		return x;
-	}
+	}*/
 
 	/**
 	 * The twisted Edwards addition law.
 	 */
+	/* XXX Deprecated, to be deleted
 	private static BigInteger[] edwards(BigInteger[] P, BigInteger[] Q) {
 		BigInteger x1 = P[0];
 		BigInteger y1 = P[1];
@@ -67,7 +70,7 @@ public class Ed25519 {
 		BigInteger x3 = ((x1.multiply(y2)).add((x2.multiply(y1)))).multiply(inv(BigInteger.ONE.add(dtemp)));
 		BigInteger y3 = ((y1.multiply(y2)).add((x1.multiply(x2)))).multiply(inv(BigInteger.ONE.subtract(dtemp)));
 		return new BigInteger[]{x3.mod(Constants.q), y3.mod(Constants.q)};
-	}
+	} */
 
 	static GroupElement scalarmult(GroupElement P, BigInteger e) {
 		BigInteger[] t = new BigInteger[9999];
@@ -97,6 +100,7 @@ public class Ed25519 {
 	 * @param P The point to check.
 	 * @return true if the point lies on the curve.
 	 */
+	/* XXX Deprecated, to be deleted
 	private static boolean isoncurve(BigInteger[] P) {
 		BigInteger x = P[0];
 		BigInteger y = P[1];
@@ -146,7 +150,7 @@ public class Ed25519 {
 		byte[] out = encodeint(y);
 		out[out.length-1] |= (x.testBit(0) ? 0x80 : 0);
 		return out;
-	}
+	}*/
 
 	private static int bit(byte[] h, int i) {
 		return h[i/8] >> (i%8) & 1;
