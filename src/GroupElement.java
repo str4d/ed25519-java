@@ -71,10 +71,6 @@ public class GroupElement {
 	}
 
 	public GroupElement(byte[] s) {
-		byte[] ybyte = new byte[s.length];
-		for (int i = 0; i < s.length; i++) {
-			ybyte[i] = s[s.length-1-i];
-		}
 		FieldElement x, y, u, v, v3, vxx, check;
 		y = new FieldElement(s);
 		u = y.square();
