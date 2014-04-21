@@ -27,9 +27,9 @@ public class test {
 		Arrays.fill(sk, (byte)0);
 		byte[] pk = Ed25519.publickey(sk);
 		System.out.println("publickey for 0 is \"" + getHex(pk) + "\"");
-		System.out.println("encodeint 0 = " + getHex(Ed25519.encodeint(BigInteger.ZERO)));
-		System.out.println("encodeint 1 = " + getHex(Ed25519.encodeint(BigInteger.ONE)));
-		System.out.println("encodeint 10 = " + getHex(Ed25519.encodeint(BigInteger.TEN)));
+		System.out.println("encodeint 0 = " + getHex(FieldElement.ZERO.toByteArray()));
+		System.out.println("encodeint 1 = " + getHex(FieldElement.ONE.toByteArray()));
+		System.out.println("encodeint 10 = " + getHex(new FieldElement(BigInteger.TEN).toByteArray()));
 		BigInteger[] zerozero = new BigInteger[]{BigInteger.ZERO,BigInteger.ZERO};
 		BigInteger[] oneone = new BigInteger[]{BigInteger.ONE,BigInteger.ONE};
 		BigInteger[] tenzero = new BigInteger[]{BigInteger.TEN,BigInteger.ZERO};

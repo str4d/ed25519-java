@@ -84,10 +84,10 @@ public class Ed25519 {
 		}
 
 		GroupElement Pcached = GroupElement.cached(P);
-		Q = GroupElement.P2_ZERO;
+		Q = GroupElement.P3_ZERO;
 		for (int j = i; j >= 0; j--) {
-			Q = Q.add(GroupElement.cached(Q));
-			if (t[j].testBit(0)) Q = Q.add(Pcached);		
+			Q = GroupElement.p3(Q.add(GroupElement.cached(Q)));
+			if (t[j].testBit(0)) Q = GroupElement.p3(Q.add(Pcached));
 		}		
 		return Q;
 	}
