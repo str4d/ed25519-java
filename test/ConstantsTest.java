@@ -39,6 +39,8 @@ public class ConstantsTest {
 
 	@Test
 	public void testB() {
+		assertThat(GroupElement.isOnCurve(Constants.B), is(true));
+		assertThat(Ed25519.scalarmult(Constants.B, Constants.l), is(equalTo(GroupElement.P3_ZERO)));
 	}
 
 }

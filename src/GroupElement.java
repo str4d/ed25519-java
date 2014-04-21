@@ -262,6 +262,49 @@ public class GroupElement {
 		return p1p1(A.subtract(B), A.add(B), D.subtract(C), D.add(C));
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof GroupElement))
+			return false;
+		GroupElement ge = (GroupElement) obj;
+		if (!this.repr.equals(ge.repr)) {
+			try {
+				ge = ge.toRep(this.repr);
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		FieldElement recip1 = Z.invert();
+		FieldElement x1 = X.multiply(recip1);
+		FieldElement y1 = Y.multiply(recip1);
+		FieldElement recip2 = ge.Z.invert();
+		FieldElement x2 = ge.X.multiply(recip2);
+		FieldElement y2 = ge.Y.multiply(recip2);
+		return x1.equals(x2) && y1.equals(y2);
+	}
+
+	/**
+	 * Verify that a point is on the curve.
+	 * @param P The point to check.
+	 * @return true if the point lies on the curve.
+	 */
+	public static boolean isOnCurve(GroupElement P) {
+		switch (P.repr) {
+		case P2:
+		case P3:
+			FieldElement recip = P.Z.invert();
+			FieldElement x = P.X.multiply(recip);
+			FieldElement y = P.Y.multiply(recip);
+			FieldElement xx = x.square();
+			FieldElement yy = y.square();
+			FieldElement dxxyy = Constants.d.multiply(xx).multiply(yy);
+			return FieldElement.ONE.add(dxxyy).add(xx).subtract(yy).equals(FieldElement.ZERO);
+
+		default:
+			return isOnCurve(P.toP2());
+		}
+	}
+
 	/**
 	 * h = a * B
 	 * where a = a[0]+256*a[1]+...+256^31 a[31]
