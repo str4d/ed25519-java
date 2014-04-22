@@ -177,9 +177,11 @@ public class GroupElement {
 	}
 
 	/**
+	 * GroupElement addition using the twisted Edwards addition law with
+	 * extended coordinates (Hisil2008).
 	 * r = p + q
-	 * @param q
-	 * @return
+	 * @param q the PRECOMP representation of the GroupElement to add.
+	 * @return the P1P1 representation of the result.
 	 */
 	public GroupElement madd(GroupElement q) {
 		if (this.repr != Representation.P3)
@@ -198,9 +200,11 @@ public class GroupElement {
 	}
 
 	/**
+	 * GroupElement subtraction using the twisted Edwards addition law with
+	 * extended coordinates (Hisil2008).
 	 * r = p - q
-	 * @param q
-	 * @return
+	 * @param q the PRECOMP representation of the GroupElement to subtract.
+	 * @return the P1P1 representation of the result.
 	 */
 	public GroupElement msub(GroupElement q) {
 		if (this.repr != Representation.P3)
@@ -219,9 +223,11 @@ public class GroupElement {
 	}
 
 	/**
+	 * GroupElement addition using the twisted Edwards addition law with
+	 * extended coordinates (Hisil2008).
 	 * r = p + q
-	 * @param q
-	 * @return
+	 * @param q the CACHED representation of the GroupElement to add.
+	 * @return the P1P1 representation of the result.
 	 */
 	public GroupElement add(GroupElement q) {
 		if (this.repr != Representation.P3)
@@ -241,9 +247,11 @@ public class GroupElement {
 	}
 
 	/**
+	 * GroupElement subtraction using the twisted Edwards addition law with
+	 * extended coordinates (Hisil2008).
 	 * r = p - q
-	 * @param q
-	 * @return
+	 * @param q the PRECOMP representation of the GroupElement to subtract.
+	 * @return the P1P1 representation of the result.
 	 */
 	public GroupElement sub(GroupElement q) {
 		if (this.repr != Representation.P3)

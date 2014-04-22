@@ -5,7 +5,10 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-
+/**
+ * @author str4d
+ *
+ */
 public class FieldElementTest {
 	static final byte[] BYTES_ZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
 	static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");

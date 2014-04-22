@@ -1,4 +1,13 @@
+/**
+ * @author str4d
+ *
+ */
 public class Utils {
+	/**
+	 * Converts bytes to a hex string.
+	 * @param raw the byte[] to be converted.
+	 * @return the hex representation as a string.
+	 */
 	public static String getHex(byte[] raw) {
 		if ( raw == null ) {
 			return null;
@@ -11,6 +20,11 @@ public class Utils {
 		return hex.toString();
 	}
 
+	/**
+	 * Converts a hex string to bytes.
+	 * @param s the hex string to be converted.
+	 * @return the byte[]
+	 */
 	public static byte[] hexToBytes(String s) {
 	    int len = s.length();
 	    byte[] data = new byte[len / 2];

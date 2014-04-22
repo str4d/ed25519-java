@@ -4,10 +4,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/* Written by k3d3
+/**
+ * Written by k3d3
  * Released to the public domain
  */
-
 public class Ed25519 {
 	/**
 	 * Calculate the hash of a message.

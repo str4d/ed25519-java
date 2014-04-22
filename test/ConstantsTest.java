@@ -5,7 +5,11 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-
+/**
+ * Based on the tests in checkparams.py from the Python Ed25519 implementation.
+ * @author str4d
+ *
+ */
 public class ConstantsTest {
 
 	@Test

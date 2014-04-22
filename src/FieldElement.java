@@ -1,6 +1,10 @@
 import java.math.BigInteger;
 
-
+/**
+ * A particular element of the field \Z/(2^255-19).
+ * @author str4d
+ *
+ */
 public class FieldElement {
 	public static final FieldElement ZERO = new FieldElement(BigInteger.ZERO);
 	public static final FieldElement ONE = new FieldElement(BigInteger.ONE);
@@ -27,6 +31,13 @@ public class FieldElement {
 		this.bi = new BigInteger(out).and(Constants.un);
 	}
 
+	/**
+	 * Returns a byte array containing the two's-complement representation of
+	 * this FieldElement. The byte array will be in little-endian byte-order:
+	 * the least significant byte is in the zeroth element.
+	 * @return a byte array containing the two's-complement representation of
+	 * this FieldElement.
+	 */
 	public byte[] toByteArray() {
 		byte[] in = bi.toByteArray();
 		byte[] out = new byte[in.length];
