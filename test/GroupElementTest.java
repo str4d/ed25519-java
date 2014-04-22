@@ -102,16 +102,25 @@ public class GroupElementTest {
 	 */
 	@Test
 	public void testToByteArray() {
-		assertThat(GroupElement.p2(FieldElement.ZERO, FieldElement.ZERO, FieldElement.ONE).toByteArray(),
-				is(equalTo(BYTES_ZEROZERO)));
-		assertThat(GroupElement.p2(FieldElement.ONE, FieldElement.ONE, FieldElement.ONE).toByteArray(),
-				is(equalTo(BYTES_ONEONE)));
-		assertThat(GroupElement.p2(new FieldElement(BigInteger.TEN), FieldElement.ZERO, FieldElement.ONE).toByteArray(),
-				is(equalTo(BYTES_TENZERO)));
-		assertThat(GroupElement.p2(FieldElement.ONE, new FieldElement(BigInteger.TEN), FieldElement.ONE).toByteArray(),
-				is(equalTo(BYTES_ONETEN)));
-		assertThat(GroupElement.p2(PKR[0], PKR[1], FieldElement.ONE).toByteArray(),
-				is(equalTo(BYTES_PKR)));
+		byte[] zerozero = GroupElement.p2(FieldElement.ZERO, FieldElement.ZERO, FieldElement.ONE).toByteArray();
+		assertThat(zerozero.length, is(equalTo(BYTES_ZEROZERO.length)));
+		assertThat(zerozero, is(equalTo(BYTES_ZEROZERO)));
+
+		byte[] oneone = GroupElement.p2(FieldElement.ONE, FieldElement.ONE, FieldElement.ONE).toByteArray();
+		assertThat(oneone.length, is(equalTo(BYTES_ONEONE.length)));
+		assertThat(oneone, is(equalTo(BYTES_ONEONE)));
+
+		byte[] tenzero = GroupElement.p2(new FieldElement(BigInteger.TEN), FieldElement.ZERO, FieldElement.ONE).toByteArray();
+		assertThat(tenzero.length, is(equalTo(BYTES_TENZERO.length)));
+		assertThat(tenzero, is(equalTo(BYTES_TENZERO)));
+
+		byte[] oneten = GroupElement.p2(FieldElement.ONE, new FieldElement(BigInteger.TEN), FieldElement.ONE).toByteArray();
+		assertThat(oneten.length, is(equalTo(BYTES_ONETEN.length)));
+		assertThat(oneten, is(equalTo(BYTES_ONETEN)));
+
+		byte[] pkr = GroupElement.p2(PKR[0], PKR[1], FieldElement.ONE).toByteArray();
+		assertThat(pkr.length, is(equalTo(BYTES_PKR.length)));
+		assertThat(pkr, is(equalTo(BYTES_PKR)));
 	}
 
 	/**
