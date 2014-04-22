@@ -11,6 +11,9 @@ public class GroupElementTest {
 	static final byte[] BYTES_TENZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
 	static final byte[] BYTES_ONETEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
 
+	static final FieldElement[] PKR = new FieldElement[] {new FieldElement(new BigInteger("9639205628789703341510410801487549615560488670885798085067615194958049462616")), new FieldElement(new BigInteger("18930617471878267742194159801949745215346600387277955685031939302387136031291"))};
+	static final byte[] BYTES_PKR = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+
 	/**
 	 * Test method for {@link GroupElement#p2(FieldElement, FieldElement, FieldElement)}.
 	 */
@@ -81,7 +84,14 @@ public class GroupElementTest {
 		assertThat(t.X, is(equalTo(FieldElement.ONE)));
 		assertThat(t.Y, is(equalTo(new FieldElement(BigInteger.TEN))));
 		assertThat(t.Z, is(equalTo(FieldElement.ONE)));
-		assertThat(t.T, is(equalTo(new FieldElement(BigInteger.TEN))));	}
+		assertThat(t.T, is(equalTo(new FieldElement(BigInteger.TEN))));
+
+		t = new GroupElement(BYTES_PKR);
+		assertThat(t.X, is(equalTo(PKR[0])));
+		assertThat(t.Y, is(equalTo(PKR[1])));
+		assertThat(t.Z, is(equalTo(FieldElement.ONE)));
+		assertThat(t.T, is(equalTo(PKR[0].multiply(PKR[1]))));
+	}
 
 	/**
 	 * Test method for {@link GroupElement#toByteArray()}.
@@ -96,6 +106,8 @@ public class GroupElementTest {
 				is(equalTo(BYTES_TENZERO)));
 		assertThat(GroupElement.p2(FieldElement.ONE, new FieldElement(BigInteger.TEN), FieldElement.ONE).toByteArray(),
 				is(equalTo(BYTES_ONETEN)));
+		assertThat(GroupElement.p2(PKR[0], PKR[1], FieldElement.ONE).toByteArray(),
+				is(equalTo(BYTES_PKR)));
 	}
 
 	/**

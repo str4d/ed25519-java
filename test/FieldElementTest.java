@@ -28,6 +28,7 @@ public class FieldElementTest {
 	public void testFieldElementByteArray() {
 		assertThat(new FieldElement(BYTES_ZERO).bi, is(equalTo(BigInteger.ZERO)));
 		assertThat(new FieldElement(BYTES_ONE).bi, is(equalTo(BigInteger.ONE)));
+		assertThat(new FieldElement(BYTES_TEN).bi, is(equalTo(BigInteger.TEN)));
 		// XXX: Should these pass or fail?
 		assertThat(new FieldElement(Utils.hexToBytes("00")).bi, is(BigInteger.ZERO));
 		assertThat(new FieldElement(Utils.hexToBytes("01")).bi, is(BigInteger.ONE));

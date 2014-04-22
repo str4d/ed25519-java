@@ -219,10 +219,11 @@ public class Ed25519 {
 	 * @param m The message.
 	 * @param pk The 32-byte public key.
 	 * @return true if the signature is valid.
+	 * @throws IllegalArgumentException if the signature or public key are the wrong length.
 	 */
-	public static boolean checkvalid(byte[] s, byte[] m, byte[] pk) throws Exception {
-		if (s.length != Constants.b/4) throw new Exception("signature length is wrong");
-		if (pk.length != Constants.b/8) throw new Exception("public-key length is wrong");
+	public static boolean checkvalid(byte[] s, byte[] m, byte[] pk) {
+		if (s.length != Constants.b/4) throw new IllegalArgumentException("signature length is wrong");
+		if (pk.length != Constants.b/8) throw new IllegalArgumentException("public-key length is wrong");
 
 		byte[] Rbyte = Arrays.copyOfRange(s, 0, Constants.b/8);
 		GroupElement R = new GroupElement(Rbyte);
