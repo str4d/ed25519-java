@@ -34,15 +34,19 @@ public class FieldElement {
 	/**
 	 * Returns a byte array containing the two's-complement representation of
 	 * this FieldElement. The byte array will be in little-endian byte-order:
-	 * the least significant byte is in the zeroth element.
+	 * the least significant byte is in the zeroth element. The array will
+	 * contain b/8 bytes.
 	 * @return a byte array containing the two's-complement representation of
 	 * this FieldElement.
 	 */
 	public byte[] toByteArray() {
 		byte[] in = bi.toByteArray();
-		byte[] out = new byte[in.length];
+		byte[] out = new byte[Constants.b/8];
 		for (int i = 0; i < in.length; i++) {
 			out[i] = in[in.length-1-i];
+		}
+		for (int i = in.length; i < out.length; i++) {
+			out[i] = 0;
 		}
 		return out;
 	}
