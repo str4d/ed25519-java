@@ -42,9 +42,17 @@ public class FieldElementTest {
 	 */
 	@Test
 	public void testToByteArray() {
-		assertThat(FieldElement.ZERO.toByteArray(), is(equalTo(BYTES_ZERO)));
-		assertThat(FieldElement.ONE.toByteArray(), is(equalTo(BYTES_ONE)));
-		assertThat(new FieldElement(BigInteger.TEN).toByteArray(), is(equalTo(BYTES_TEN)));
+		byte[] zero = FieldElement.ZERO.toByteArray();
+		assertThat(zero.length, is(equalTo(BYTES_ZERO.length)));
+		assertThat(zero, is(equalTo(BYTES_ZERO)));
+
+		byte[] one = FieldElement.ONE.toByteArray();
+		assertThat(one.length, is(equalTo(BYTES_ONE.length)));
+		assertThat(one, is(equalTo(BYTES_ONE)));
+
+		byte[] ten = new FieldElement(BigInteger.TEN).toByteArray();
+		assertThat(ten.length, is(equalTo(BYTES_TEN.length)));
+		assertThat(ten, is(equalTo(BYTES_TEN)));
 	}
 
 	/**
