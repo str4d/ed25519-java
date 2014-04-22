@@ -141,6 +141,9 @@ public class FieldElementTest {
 	@Test
 	public void testEqualsObject() {
 		assertThat(new FieldElement(BigInteger.ZERO), is(equalTo(FieldElement.ZERO)));
+		assertThat(new FieldElement(BYTES_ZERO), is(equalTo(FieldElement.ZERO)));
+		assertThat(new FieldElement(BigInteger.valueOf(1000)), is(equalTo(new FieldElement(BigInteger.valueOf(1000)))));
+		assertThat(FieldElement.ONE, is(not(equalTo(FieldElement.TWO))));
 	}
 
 }

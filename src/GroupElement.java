@@ -77,7 +77,7 @@ public class GroupElement {
 		if (check.isNonZero()) {
 			check = vxx.add(u);				// vx^2+u
 			if (check.isNonZero())
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("not a valid GroupElement");
 			x = x.multiply(Constants.I);
 		}
 
