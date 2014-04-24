@@ -1,3 +1,5 @@
+package net.i2p.crypto.eddsa;
+
 /**
  * @author str4d
  *

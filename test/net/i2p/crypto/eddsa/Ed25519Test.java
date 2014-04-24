@@ -1,3 +1,5 @@
+package net.i2p.crypto.eddsa;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 

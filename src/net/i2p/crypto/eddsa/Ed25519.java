@@ -1,3 +1,5 @@
+package net.i2p.crypto.eddsa;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
