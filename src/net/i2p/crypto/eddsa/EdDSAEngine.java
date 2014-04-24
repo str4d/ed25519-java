@@ -94,7 +94,7 @@ public class EdDSAEngine extends Signature {
         BigInteger r = Hint(digest.digest(message));
 
         // R = rB
-        GroupElement R = GroupElement.scalarmult(key.getParams().getB(), r.mod(l));
+        GroupElement R = GroupElement.scalarmult(key.getParams().getB(), r);
         byte[] Rbyte = R.toByteArray();
 
         // S = (r + H(Rbar,Abar,M)*a) mod l
