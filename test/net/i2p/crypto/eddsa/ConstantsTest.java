@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 
+import net.i2p.crypto.eddsa.math.FieldElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
+
 import org.junit.Test;
 
 /**

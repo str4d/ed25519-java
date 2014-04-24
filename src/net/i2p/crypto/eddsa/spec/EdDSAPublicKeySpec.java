@@ -2,7 +2,7 @@ package net.i2p.crypto.eddsa.spec;
 
 import java.security.spec.KeySpec;
 
-import net.i2p.crypto.eddsa.GroupElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
  * @author str4d

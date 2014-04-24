@@ -2,6 +2,9 @@ package net.i2p.crypto.eddsa;
 
 import java.math.BigInteger;
 
+import net.i2p.crypto.eddsa.math.FieldElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
+
 public class Constants {
     static final int b = 256;
     static final BigInteger q = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819949");

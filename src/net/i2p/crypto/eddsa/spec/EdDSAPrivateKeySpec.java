@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 
-import net.i2p.crypto.eddsa.GroupElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
  * @author str4d

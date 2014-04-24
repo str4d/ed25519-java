@@ -10,6 +10,9 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.util.Arrays;
 
+import net.i2p.crypto.eddsa.math.FieldElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
+
 /**
  * @author str4d
  *

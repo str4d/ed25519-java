@@ -1,6 +1,8 @@
-package net.i2p.crypto.eddsa;
+package net.i2p.crypto.eddsa.math;
 
 import java.math.BigInteger;
+
+import net.i2p.crypto.eddsa.Constants;
 
 /**
  * The set of pairs (x,y) of FieldElements satisfying

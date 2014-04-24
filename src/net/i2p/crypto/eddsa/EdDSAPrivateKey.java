@@ -3,6 +3,7 @@ package net.i2p.crypto.eddsa;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 
+import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 

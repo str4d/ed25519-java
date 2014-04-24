@@ -6,8 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 
 import net.i2p.crypto.eddsa.EdDSAEncoding;
-import net.i2p.crypto.eddsa.FieldElement;
-import net.i2p.crypto.eddsa.GroupElement;
+import net.i2p.crypto.eddsa.math.FieldElement;
+import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
  * @author str4d

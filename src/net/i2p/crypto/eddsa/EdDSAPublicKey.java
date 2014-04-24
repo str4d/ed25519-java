@@ -2,6 +2,7 @@ package net.i2p.crypto.eddsa;
 
 import java.security.PublicKey;
 
+import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 

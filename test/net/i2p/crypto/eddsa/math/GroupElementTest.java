@@ -1,9 +1,11 @@
-package net.i2p.crypto.eddsa;
+package net.i2p.crypto.eddsa.math;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+
+import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
 
