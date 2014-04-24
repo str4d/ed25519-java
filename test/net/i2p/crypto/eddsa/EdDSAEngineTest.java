@@ -41,7 +41,7 @@ public class EdDSAEngineTest {
     @Test
     public void testSign() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
-    	Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
 
         EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(ZERO_SEED, ed25519Spec);
         PrivateKey sKey = new EdDSAPrivateKey(privKey);
@@ -57,35 +57,35 @@ public class EdDSAEngineTest {
     @Test
     public void testVerify() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
-    	Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
 
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK, ed25519Spec);
         PublicKey vKey = new EdDSAPublicKey(pubKey);
         sgr.initVerify(vKey);
 
-		byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
-		sgr.update(message);
+        byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
+        sgr.update(message);
 
-		assertThat(sgr.verify(ZERO_MSG_SIG), is(true));
+        assertThat(sgr.verify(ZERO_MSG_SIG), is(true));
     }
 
     /**
-	 * Checks that a wrong-length signature throws an IAE.
-	 */
-	@Test
-	public void testVerifyWrongSigLength() throws Exception {
+     * Checks that a wrong-length signature throws an IAE.
+     */
+    @Test
+    public void testVerifyWrongSigLength() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
-    	Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
 
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK, ed25519Spec);
         PublicKey vKey = new EdDSAPublicKey(pubKey);
         sgr.initVerify(vKey);
 
-		byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
-		sgr.update(message);
+        byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
+        sgr.update(message);
 
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage("signature length is wrong");
-		sgr.verify(new byte[] {0});
-	}
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("signature length is wrong");
+        sgr.verify(new byte[] {0});
+    }
 }

@@ -20,7 +20,7 @@ public class EdDSAEngine extends Signature {
     private EdDSAKey key;
 
     EdDSAEngine(MessageDigest digest) {
-    	super("EdDSA");
+        super("EdDSA");
         this.digest = digest;
     }
 
