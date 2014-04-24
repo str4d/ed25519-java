@@ -247,7 +247,7 @@ public class Ed25519 {
 		// SB
 		GroupElement ra = scalarmult(Constants.B,S.bi);
 		// R + H(Rbar,Abar,M)A
-		GroupElement rb = R.add(scalarmult(A,h));
+		GroupElement rb = R.add(scalarmult(A,h).toCached());
 
 		// SB = R + H(Rbar,Abar,M)A
 		if (!ra.equals(rb)) // Constant time comparison

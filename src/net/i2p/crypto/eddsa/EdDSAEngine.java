@@ -131,7 +131,7 @@ public class EdDSAEngine extends Signature {
         // SB
         GroupElement ra = GroupElement.scalarmult(key.getParams().getB(), S.bi);
         // R + H(Rbar,Abar,M)A
-        GroupElement rb = R.add(GroupElement.scalarmult(((EdDSAPublicKey) key).getA(), h));
+        GroupElement rb = R.add(GroupElement.scalarmult(((EdDSAPublicKey) key).getA(), h).toCached());
 
         // SB = R + H(Rbar,Abar,M)A
         if (!ra.equals(rb))
