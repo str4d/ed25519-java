@@ -315,6 +315,29 @@ public class GroupElement {
 		}
 	}
 
+    public static GroupElement scalarmult(GroupElement P, BigInteger e) {
+        BigInteger[] t = new BigInteger[9999];
+        GroupElement Q;     
+        t[0] = e;
+        int i=1;
+
+        while(true) {           
+            t[i] = t[i-1].divide(BigInteger.valueOf(2));;           
+            if (t[i].equals(BigInteger.ZERO)) {             
+                break;          
+            }           
+            i++;
+        }
+
+        GroupElement Pcached = P.toCached();
+        Q = GroupElement.P3_ZERO;
+        for (int j = i; j >= 0; j--) {
+            Q = Q.add(Q.toCached()).toP3();
+            if (t[j].testBit(0)) Q = Q.add(Pcached).toP3();
+        }       
+        return Q;
+    }
+
 	/**
 	 * h = a * B
 	 * where a = a[0]+256*a[1]+...+256^31 a[31]
