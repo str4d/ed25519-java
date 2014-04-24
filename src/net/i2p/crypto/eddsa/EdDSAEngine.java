@@ -6,20 +6,21 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
 import java.security.SignatureException;
-import java.security.SignatureSpi;
 import java.util.Arrays;
 
 /**
  * @author str4d
  *
  */
-public class EdDSAEngine extends SignatureSpi {
+public class EdDSAEngine extends Signature {
     private MessageDigest digest;
     private byte[] message;
     private EdDSAKey key;
 
     EdDSAEngine(MessageDigest digest) {
+    	super("EdDSA");
         this.digest = digest;
     }
 
