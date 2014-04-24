@@ -347,8 +347,27 @@ public class GroupElement {
 	 *   a[31] <= 127
 	 * @param a
 	 * @return
-	 */
+	 *//*
 	public static GroupElement scalarMultiplyBase(BigInteger a) {
-		return null;
-	}
+		GroupElement t;
+		int i;
+
+		for (i = 0; i < 63; i++) {
+		}
+
+		GroupElement h = P3_ZERO;
+		for (i = 1; i < 64; i += 2) {
+			t = select(i/2, e[i]);
+			h = h.madd(t).toP3();
+		}
+
+		h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
+
+		for (i = 0; i < 64; i += 2) {
+			t = select(i/2, e[i]);
+			h = h.madd(t).toP3();
+		}
+
+		return h;
+	}*/
 }
