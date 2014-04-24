@@ -63,8 +63,9 @@ public class GroupElement {
     }
 
     public GroupElement(byte[] s) {
-        FieldElement x, y, u, v, v3, vxx, check;
+        FieldElement x, y, u, v, v3, vxx, check, xx, yy;
         y = new FieldElement(s);
+        /*
         u = y.square();
         v = u.multiply(Constants.d);
         u = u.subtract(FieldElement.ONE);	// u = y^2-1
@@ -75,11 +76,19 @@ public class GroupElement {
 
         x = x.modPow(Constants.qp5.divide(BigInteger.valueOf(8)), Constants.q); //  x = (uv^7)^((q-5)/8)
         x = x.multiply(v3).multiply(u);		// x = uv^3(uv^7)^((q-5)/8)
+        */
 
-        vxx = x.square().multiply(v);
-        check = vxx.subtract(u);			// vx^2-u
+        // From xrecover
+        yy = y.square();
+        xx = (yy.subtract(FieldElement.ONE)).multiply(Constants.d.multiply(yy).add(FieldElement.ONE).invert());
+        x = xx.modPow(Constants.qp3.divide(BigInteger.valueOf(8)), Constants.q);
+
+        //vxx = x.square().multiply(v);
+        //check = vxx.subtract(u);			// vx^2-u
+        check = x.square().subtract(xx);
         if (check.isNonZero()) {
-            check = vxx.add(u);				// vx^2+u
+            //check = vxx.add(u);				// vx^2+u
+            check = x.square().add(xx);
             if (check.isNonZero())
                 throw new IllegalArgumentException("not a valid GroupElement");
             x = x.multiply(Constants.I);
