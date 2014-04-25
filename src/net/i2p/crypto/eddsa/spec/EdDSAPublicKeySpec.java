@@ -16,7 +16,7 @@ public class EdDSAPublicKeySpec implements KeySpec {
         if (pk.length != spec.getCurve().getb()/8)
             throw new IllegalArgumentException("public-key length is wrong");
 
-        this.A = null;//new GroupElement(pk);
+        this.A = new GroupElement(spec.getCurve(), pk);
         this.spec = spec;
     }
 
