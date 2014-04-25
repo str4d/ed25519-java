@@ -97,7 +97,7 @@ public class FieldElement {
     }
 
     public FieldElement invert() {
-        return modPow(Constants.qm2, q);
+        return modPow(q.subtract(Constants.TWO), q);
     }
 
     public FieldElement modPow(BigInteger e, BigInteger m) {

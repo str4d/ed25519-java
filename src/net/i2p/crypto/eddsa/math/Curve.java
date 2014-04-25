@@ -15,13 +15,13 @@ public class Curve {
     FieldElement d;
     private FieldElement d2;
 
-    public Curve(int b, BigInteger q, FieldElement d) {
+    public Curve(int b, BigInteger q, BigInteger d) {
         this.b = b;
         this.q = q;
         this.qm2 = q.subtract(Constants.TWO);
         this.qp3 = q.add(Constants.THREE);
-        this.d = d;
-        this.d2 = d.multiply(fromBigInteger(Constants.TWO));
+        this.d = fromBigInteger(d);
+        this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
     }
 
     public int getb() {
