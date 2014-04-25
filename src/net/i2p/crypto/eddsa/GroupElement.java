@@ -63,28 +63,38 @@ public class GroupElement {
     public GroupElement(byte[] s) {
         FieldElement x, y, u, v, v3, vxx, check;
         y = new FieldElement(s);
-        u = y.square();
-        v = u.multiply(Constants.d);
-        u = u.subtract(FieldElement.ONE);	// u = y^2-1
-        v = v.add(FieldElement.ONE);		// v = dy^2+1
 
-        v3 = v.square().multiply(v);				// v3 = v^3
-        x = v3.square().multiply(v).multiply(u);	// x = uv^7
+        // u = y^2-1	
+        u = y.square().subtract(FieldElement.ONE);
 
-        x = x.modPow(Constants.qp5.divide(BigInteger.valueOf(8)), Constants.q); //  x = (uv^7)^((q-5)/8)
-        x = x.multiply(v3).multiply(u);		// x = uv^3(uv^7)^((q-5)/8)
+        // v = dy^2+1
+        v = y.multiply(Constants.d).add(FieldElement.ONE);
+
+        // v3 = v^3
+        v3 = v.square().multiply(v);
+
+        // x = (v3^2)vu, aka x = uv^7
+        x = v3.square().multiply(v).multiply(u);	
+
+        //  x = (uv^7)^((q-5)/8)     
+        x = x.pow(Constants.QM5.divide(BigInteger.valueOf(8))); 
+
+        // x = uv^3(uv^7)^((q-5)/8)
+        x = v3.multiply(u).multiply(x);		
 
         vxx = x.square().multiply(v);
         check = vxx.subtract(u);			// vx^2-u
         if (check.isNonZero()) {
             check = vxx.add(u);				// vx^2+u
+            
             if (check.isNonZero())
                 throw new IllegalArgumentException("not a valid GroupElement");
             x = x.multiply(Constants.I);
         }
 
-        if ((x.isNegative() ? 1 : 0) == (s[s.length-1] >> 7))
+        if ((x.isNegative() ? 1 : 0) == (s[s.length-1] & 0x01)) {
             x = x.negate();
+        }
 
         repr = Representation.P3;
         X = x;
@@ -370,4 +380,9 @@ public class GroupElement {
 
 		return h;
 	}*/
+    
+    @Override
+    public String toString() {
+    	return "[GroupElement\nX="+X+"\nY="+Y+"\nZ="+Z+"\nT="+T+"\n]";
+    }
 }
