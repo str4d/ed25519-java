@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 
 import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
 import org.junit.Test;
 
@@ -19,7 +21,20 @@ public class GroupElementTest {
     static final byte[] BYTES_TENZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_ONETEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
 
-    static final FieldElement[] PKR = new FieldElement[] {new FieldElement(new BigInteger("9639205628789703341510410801487549615560488670885798085067615194958049462616")), new FieldElement(new BigInteger("18930617471878267742194159801949745215346600387277955685031939302387136031291"))};
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519");
+    static final Curve curve = ed25519.getCurve();
+
+    static final FieldElement ZERO = curve.fromBigInteger(Constants.ZERO);
+    static final FieldElement ONE = curve.fromBigInteger(Constants.ONE);
+    static final FieldElement TWO = curve.fromBigInteger(Constants.TWO);
+    static final FieldElement TEN = curve.fromBigInteger(BigInteger.valueOf(10));
+
+    static final GroupElement P2_ZERO = GroupElement.p2(curve, ZERO, ONE, ONE);
+
+    static final FieldElement[] PKR = new FieldElement[] {
+        curve.fromBigInteger(new BigInteger("9639205628789703341510410801487549615560488670885798085067615194958049462616")),
+        curve.fromBigInteger(new BigInteger("18930617471878267742194159801949745215346600387277955685031939302387136031291"))
+        };
     static final byte[] BYTES_PKR = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
 
     /**
@@ -69,35 +84,35 @@ public class GroupElementTest {
     public void testGroupElementByteArray() {
         GroupElement t;
 
-        t = new GroupElement(BYTES_ZEROZERO);
-        assertThat(t.X, is(equalTo(FieldElement.ZERO)));
-        assertThat(t.Y, is(equalTo(FieldElement.ZERO)));
-        assertThat(t.Z, is(equalTo(FieldElement.ONE)));
-        assertThat(t.T, is(equalTo(FieldElement.ZERO)));
+        t = new GroupElement(curve, BYTES_ZEROZERO);
+        assertThat(t.X, is(equalTo(ZERO)));
+        assertThat(t.Y, is(equalTo(ZERO)));
+        assertThat(t.Z, is(equalTo(ONE)));
+        assertThat(t.T, is(equalTo(ZERO)));
 
-        t = new GroupElement(BYTES_ONEONE);
-        assertThat(t.X, is(equalTo(FieldElement.ONE)));
-        assertThat(t.Y, is(equalTo(FieldElement.ONE)));
-        assertThat(t.Z, is(equalTo(FieldElement.ONE)));
-        assertThat(t.T, is(equalTo(FieldElement.ONE)));
+        t = new GroupElement(curve, BYTES_ONEONE);
+        assertThat(t.X, is(equalTo(ONE)));
+        assertThat(t.Y, is(equalTo(ONE)));
+        assertThat(t.Z, is(equalTo(ONE)));
+        assertThat(t.T, is(equalTo(ONE)));
 
 
-        t = new GroupElement(BYTES_TENZERO);
-        assertThat(t.X, is(equalTo(new FieldElement(BigInteger.TEN))));
-        assertThat(t.Y, is(equalTo(FieldElement.ZERO)));
-        assertThat(t.Z, is(equalTo(FieldElement.ONE)));
-        assertThat(t.T, is(equalTo(FieldElement.ZERO)));
+        t = new GroupElement(curve, BYTES_TENZERO);
+        assertThat(t.X, is(equalTo(TEN)));
+        assertThat(t.Y, is(equalTo(ZERO)));
+        assertThat(t.Z, is(equalTo(ONE)));
+        assertThat(t.T, is(equalTo(ZERO)));
 
-        t = new GroupElement(BYTES_ONETEN);
-        assertThat(t.X, is(equalTo(FieldElement.ONE)));
-        assertThat(t.Y, is(equalTo(new FieldElement(BigInteger.TEN))));
-        assertThat(t.Z, is(equalTo(FieldElement.ONE)));
-        assertThat(t.T, is(equalTo(new FieldElement(BigInteger.TEN))));
+        t = new GroupElement(curve, BYTES_ONETEN);
+        assertThat(t.X, is(equalTo(ONE)));
+        assertThat(t.Y, is(equalTo(TEN)));
+        assertThat(t.Z, is(equalTo(ONE)));
+        assertThat(t.T, is(equalTo(TEN)));
 
-        t = new GroupElement(BYTES_PKR);
+        t = new GroupElement(curve, BYTES_PKR);
         assertThat(t.X, is(equalTo(PKR[0])));
         assertThat(t.Y, is(equalTo(PKR[1])));
-        assertThat(t.Z, is(equalTo(FieldElement.ONE)));
+        assertThat(t.Z, is(equalTo(ONE)));
         assertThat(t.T, is(equalTo(PKR[0].multiply(PKR[1]))));
     }
 
@@ -106,23 +121,23 @@ public class GroupElementTest {
      */
     @Test
     public void testToByteArray() {
-        byte[] zerozero = GroupElement.p2(FieldElement.ZERO, FieldElement.ZERO, FieldElement.ONE).toByteArray();
+        byte[] zerozero = GroupElement.p2(curve, ZERO, ZERO, ONE).toByteArray();
         assertThat(zerozero.length, is(equalTo(BYTES_ZEROZERO.length)));
         assertThat(zerozero, is(equalTo(BYTES_ZEROZERO)));
 
-        byte[] oneone = GroupElement.p2(FieldElement.ONE, FieldElement.ONE, FieldElement.ONE).toByteArray();
+        byte[] oneone = GroupElement.p2(curve, ONE, ONE, ONE).toByteArray();
         assertThat(oneone.length, is(equalTo(BYTES_ONEONE.length)));
         assertThat(oneone, is(equalTo(BYTES_ONEONE)));
 
-        byte[] tenzero = GroupElement.p2(new FieldElement(BigInteger.TEN), FieldElement.ZERO, FieldElement.ONE).toByteArray();
+        byte[] tenzero = GroupElement.p2(curve, TEN, ZERO, ONE).toByteArray();
         assertThat(tenzero.length, is(equalTo(BYTES_TENZERO.length)));
         assertThat(tenzero, is(equalTo(BYTES_TENZERO)));
 
-        byte[] oneten = GroupElement.p2(FieldElement.ONE, new FieldElement(BigInteger.TEN), FieldElement.ONE).toByteArray();
+        byte[] oneten = GroupElement.p2(curve, ONE, TEN, ONE).toByteArray();
         assertThat(oneten.length, is(equalTo(BYTES_ONETEN.length)));
         assertThat(oneten, is(equalTo(BYTES_ONETEN)));
 
-        byte[] pkr = GroupElement.p2(PKR[0], PKR[1], FieldElement.ONE).toByteArray();
+        byte[] pkr = GroupElement.p2(curve, PKR[0], PKR[1], ONE).toByteArray();
         assertThat(pkr.length, is(equalTo(BYTES_PKR.length)));
         assertThat(pkr, is(equalTo(BYTES_PKR)));
     }
@@ -204,8 +219,8 @@ public class GroupElementTest {
      */
     @Test
     public void testEqualsObject() {
-        assertThat(GroupElement.p2(FieldElement.ZERO, FieldElement.ONE, FieldElement.ONE),
-                is(equalTo(GroupElement.P2_ZERO)));
+        assertThat(GroupElement.p2(curve, ZERO, ONE, ONE),
+                is(equalTo(P2_ZERO)));
     }
 
     /**
@@ -213,9 +228,9 @@ public class GroupElementTest {
      */
     @Test
     public void testIsOnCurve() {
-        assertThat(GroupElement.isOnCurve(GroupElement.P2_ZERO),
+        assertThat(GroupElement.isOnCurve(P2_ZERO),
                 is(true));
-        assertThat(GroupElement.isOnCurve(GroupElement.p2(FieldElement.ZERO, FieldElement.ZERO, FieldElement.ONE)),
+        assertThat(GroupElement.isOnCurve(GroupElement.p2(curve, ZERO, ZERO, ONE)),
                 is(false));
     }
 

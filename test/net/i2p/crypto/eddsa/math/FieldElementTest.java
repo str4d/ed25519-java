@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 
 import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
 import org.junit.Test;
 
@@ -18,14 +20,22 @@ public class FieldElementTest {
     static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_TEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
 
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519");
+    static final int b = ed25519.getCurve().getb();
+    static final BigInteger q = ed25519.getCurve().getQ();
+
+    static final FieldElement ZERO = new FieldElement(b, q, Constants.ZERO);
+    static final FieldElement ONE = new FieldElement(b, q, Constants.ONE);
+    static final FieldElement TWO = new FieldElement(b, q, Constants.TWO);
+
     /**
      * Test method for {@link FieldElement#FieldElement(java.math.BigInteger)}.
      */
     @Test
     public void testFieldElementBigInteger() {
-        assertThat(new FieldElement(BigInteger.ZERO).bi, is(BigInteger.ZERO));
-        assertThat(new FieldElement(BigInteger.ONE).bi, is(BigInteger.ONE));
-        assertThat(new FieldElement(BigInteger.valueOf(2)).bi, is(BigInteger.valueOf(2)));
+        assertThat(new FieldElement(b, q, BigInteger.ZERO).bi, is(BigInteger.ZERO));
+        assertThat(new FieldElement(b, q, BigInteger.ONE).bi, is(BigInteger.ONE));
+        assertThat(new FieldElement(b, q, BigInteger.valueOf(2)).bi, is(BigInteger.valueOf(2)));
     }
 
     /**
@@ -33,12 +43,12 @@ public class FieldElementTest {
      */
     @Test
     public void testFieldElementByteArray() {
-        assertThat(new FieldElement(BYTES_ZERO).bi, is(equalTo(BigInteger.ZERO)));
-        assertThat(new FieldElement(BYTES_ONE).bi, is(equalTo(BigInteger.ONE)));
-        assertThat(new FieldElement(BYTES_TEN).bi, is(equalTo(BigInteger.TEN)));
+        assertThat(new FieldElement(b, q, BYTES_ZERO).bi, is(equalTo(BigInteger.ZERO)));
+        assertThat(new FieldElement(b, q, BYTES_ONE).bi, is(equalTo(BigInteger.ONE)));
+        assertThat(new FieldElement(b, q, BYTES_TEN).bi, is(equalTo(BigInteger.TEN)));
         // XXX: Should these pass or fail?
-        assertThat(new FieldElement(Utils.hexToBytes("00")).bi, is(BigInteger.ZERO));
-        assertThat(new FieldElement(Utils.hexToBytes("01")).bi, is(BigInteger.ONE));
+        assertThat(new FieldElement(b, q, Utils.hexToBytes("00")).bi, is(BigInteger.ZERO));
+        assertThat(new FieldElement(b, q, Utils.hexToBytes("01")).bi, is(BigInteger.ONE));
     }
 
     /**
@@ -46,15 +56,15 @@ public class FieldElementTest {
      */
     @Test
     public void testToByteArray() {
-        byte[] zero = FieldElement.ZERO.toByteArray();
+        byte[] zero = ZERO.toByteArray();
         assertThat(zero.length, is(equalTo(BYTES_ZERO.length)));
         assertThat(zero, is(equalTo(BYTES_ZERO)));
 
-        byte[] one = FieldElement.ONE.toByteArray();
+        byte[] one = ONE.toByteArray();
         assertThat(one.length, is(equalTo(BYTES_ONE.length)));
         assertThat(one, is(equalTo(BYTES_ONE)));
 
-        byte[] ten = new FieldElement(BigInteger.TEN).toByteArray();
+        byte[] ten = new FieldElement(b, q, BigInteger.TEN).toByteArray();
         assertThat(ten.length, is(equalTo(BYTES_TEN.length)));
         assertThat(ten, is(equalTo(BYTES_TEN)));
     }
@@ -144,10 +154,10 @@ public class FieldElementTest {
      */
     @Test
     public void testEqualsObject() {
-        assertThat(new FieldElement(BigInteger.ZERO), is(equalTo(FieldElement.ZERO)));
-        assertThat(new FieldElement(BYTES_ZERO), is(equalTo(FieldElement.ZERO)));
-        assertThat(new FieldElement(BigInteger.valueOf(1000)), is(equalTo(new FieldElement(BigInteger.valueOf(1000)))));
-        assertThat(FieldElement.ONE, is(not(equalTo(FieldElement.TWO))));
+        assertThat(new FieldElement(b, q, BigInteger.ZERO), is(equalTo(ZERO)));
+        assertThat(new FieldElement(b, q, BYTES_ZERO), is(equalTo(ZERO)));
+        assertThat(new FieldElement(b, q, BigInteger.valueOf(1000)), is(equalTo(new FieldElement(b, q, BigInteger.valueOf(1000)))));
+        assertThat(ONE, is(not(equalTo(TWO))));
     }
 
 }
