@@ -11,6 +11,7 @@ public class Curve {
     int b;
     BigInteger q;
     private BigInteger qm2;
+    private BigInteger qm5;
     private BigInteger qp3;
     FieldElement d;
     private FieldElement d2;
@@ -19,6 +20,7 @@ public class Curve {
         this.b = b;
         this.q = q;
         this.qm2 = q.subtract(Constants.TWO);
+        this.qm5 = q.subtract(Constants.FIVE);
         this.qp3 = q.add(Constants.THREE);
         this.d = fromBigInteger(d);
         this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
@@ -34,6 +36,10 @@ public class Curve {
 
     public BigInteger getQm2() {
         return qm2;
+    }
+
+    public BigInteger getQm5() {
+        return qm5;
     }
 
     public BigInteger getQp3() {

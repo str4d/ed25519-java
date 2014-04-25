@@ -57,11 +57,11 @@ public class FieldElement {
     }
 
     public boolean isNonZero() {
-        return !bi.equals(BigInteger.ZERO);
+        return bi.compareTo(BigInteger.ZERO) != 0;
     }
 
     public boolean isNegative() {
-        return bi.testBit(0);
+        return bi.compareTo(BigInteger.ZERO) == -1;
     }
 
     public FieldElement add(FieldElement val) {
@@ -83,6 +83,13 @@ public class FieldElement {
     public FieldElement negate() {
         return new FieldElement(b, q, q.subtract(bi));
     }
+    
+    public FieldElement divide(FieldElement val) {
+    	return divide(val.bi);
+    }
+    public FieldElement divide(BigInteger val) {
+    	return new FieldElement(bi.divide(val).mod(Constants.q));
+    }
 
     public FieldElement multiply(FieldElement val) {
         return new FieldElement(b, q, bi.multiply(val.bi).mod(q));
@@ -103,6 +110,14 @@ public class FieldElement {
     public FieldElement modPow(BigInteger e, BigInteger m) {
         return new FieldElement(b, q, bi.modPow(e, m));
     }
+    
+    public FieldElement pow(BigInteger i){
+    	return modPow(i, Constants.q);
+    }
+    
+    public FieldElement pow(FieldElement e){
+    	return pow(e.bi);
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -110,5 +125,10 @@ public class FieldElement {
             return false;
         FieldElement fe = (FieldElement) obj;
         return bi.equals(fe.bi);
+    }
+    
+    @Override
+    public String toString() {
+    	return "[FieldElement val="+bi+"]";
     }
 }
