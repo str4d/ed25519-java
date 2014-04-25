@@ -50,11 +50,10 @@ public class EdDSAEngineTest {
     public void testVerify() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
-        java.security.KeyFactory f = java.security.KeyFactory.getInstance("EdDSA", "I2P");
 
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK,
                 EdDSANamedCurveTable.getByName("ed25519"));
-        PublicKey vKey = f.generatePublic(pubKey);
+        PublicKey vKey = new EdDSAPublicKey(pubKey);
         sgr.initVerify(vKey);
 
         byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
