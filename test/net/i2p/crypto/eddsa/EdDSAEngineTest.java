@@ -10,6 +10,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 
 import net.i2p.crypto.eddsa.math.Constants;
+import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
@@ -27,12 +28,14 @@ public class EdDSAEngineTest {
     static final byte[] ZERO_PK = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
     static final byte[] ZERO_MSG_SIG = Utils.hexToBytes("94825896c7075c31bcb81f06dba2bdcd9dcf16e79288d4b9f87c248215c8468d475f429f3de3b4a2cf67fe17077ae19686020364d6d4fa7a0174bab4a123ba0f");
 
-    static final EdDSAParameterSpec ed25519Spec = new EdDSAParameterSpec(
+    static final Curve ed25519Curve = new Curve(
             Constants.b,
-            "SHA-512",
             Constants.q,
+            Constants.d);
+    static final EdDSAParameterSpec ed25519Spec = new EdDSAParameterSpec(
+            ed25519Curve,
+            "SHA-512",
             null,
-            Constants.d,
             Constants.l,
             Constants.B);
 
@@ -59,9 +62,10 @@ public class EdDSAEngineTest {
     public void testVerify() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        java.security.KeyFactory f = java.security.KeyFactory.getInstance("EdDSA", "I2P");
 
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK, ed25519Spec);
-        PublicKey vKey = new EdDSAPublicKey(pubKey);
+        PublicKey vKey = f.generatePublic(pubKey);
         sgr.initVerify(vKey);
 
         byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));

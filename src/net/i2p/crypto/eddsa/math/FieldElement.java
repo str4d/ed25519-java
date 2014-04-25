@@ -8,13 +8,14 @@ import java.math.BigInteger;
  *
  */
 public class FieldElement {
-    public static final FieldElement ZERO = new FieldElement(BigInteger.ZERO);
-    public static final FieldElement ONE = new FieldElement(BigInteger.ONE);
-    public static final FieldElement TWO = new FieldElement(BigInteger.valueOf(2));
+    final int b;
+    final BigInteger q;
 
     final BigInteger bi;
 
-    public FieldElement(BigInteger bi) {
+    public FieldElement(int b, BigInteger q, BigInteger bi) {
+        this.b = b;
+        this.q = q;
         this.bi = bi;
     }
 
@@ -25,11 +26,13 @@ public class FieldElement {
      * in the zeroth element.
      * @param val
      */
-    public FieldElement(byte[] val) {
+    public FieldElement(int b, BigInteger q, byte[] val) {
         byte[] out = new byte[val.length];
         for (int i = 0; i < val.length; i++) {
             out[i] = val[val.length-1-i];
         }
+        this.b = b;
+        this.q = q;
         this.bi = new BigInteger(out).and(Constants.un);
     }
 
@@ -43,7 +46,7 @@ public class FieldElement {
      */
     public byte[] toByteArray() {
         byte[] in = bi.toByteArray();
-        byte[] out = new byte[Constants.b/8];
+        byte[] out = new byte[b/8];
         for (int i = 0; i < in.length; i++) {
             out[i] = in[in.length-1-i];
         }
@@ -62,35 +65,43 @@ public class FieldElement {
     }
 
     public FieldElement add(FieldElement val) {
-        return new FieldElement(bi.add(val.bi).mod(Constants.q));
+        return new FieldElement(b, q, bi.add(val.bi).mod(q));
+    }
+
+    public FieldElement addOne() {
+        return new FieldElement(b, q, bi.add(Constants.ONE).mod(q));
     }
 
     public FieldElement subtract(FieldElement val) {
-        return new FieldElement(bi.subtract(val.bi).mod(Constants.q));
+        return new FieldElement(b, q, bi.subtract(val.bi).mod(q));
+    }
+
+    public FieldElement subtractOne() {
+        return new FieldElement(b, q, bi.subtract(Constants.ONE).mod(q));
     }
 
     public FieldElement negate() {
-        return new FieldElement(Constants.q.subtract(bi));
+        return new FieldElement(b, q, q.subtract(bi));
     }
 
     public FieldElement multiply(FieldElement val) {
-        return new FieldElement(bi.multiply(val.bi).mod(Constants.q));
+        return new FieldElement(b, q, bi.multiply(val.bi).mod(q));
     }
 
     public FieldElement square() {
-        return modPow(BigInteger.valueOf(2), Constants.q);
+        return modPow(BigInteger.valueOf(2), q);
     }
 
     public FieldElement squareAndDouble() {
-        return square().multiply(TWO);
+        return square().multiply(new FieldElement(b, q, Constants.TWO));
     }
 
     public FieldElement invert() {
-        return modPow(Constants.qm2, Constants.q);
+        return modPow(Constants.qm2, q);
     }
 
     public FieldElement modPow(BigInteger e, BigInteger m) {
-        return new FieldElement(bi.modPow(e, m));
+        return new FieldElement(b, q, bi.modPow(e, m));
     }
 
     @Override

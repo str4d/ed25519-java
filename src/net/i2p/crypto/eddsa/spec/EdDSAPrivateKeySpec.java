@@ -12,19 +12,17 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  *
  */
 public class EdDSAPrivateKeySpec implements KeySpec {
-    private byte[] seed;
     private byte[] h;
     private BigInteger a;
     private GroupElement A;
     private EdDSAParameterSpec spec;
 
     public EdDSAPrivateKeySpec(byte[] seed, EdDSAParameterSpec spec) {
-        this.seed = seed;
         this.spec = spec;
 
         try {
             MessageDigest hash = MessageDigest.getInstance(spec.getHashAlgorithm());
-            int b = spec.getb();
+            int b = spec.getCurve().getb();
 
             // H(k)
             h = hash.digest(seed);
@@ -40,8 +38,12 @@ public class EdDSAPrivateKeySpec implements KeySpec {
         }
     }
 
-    public byte[] getSeed() {
-        return seed;
+    public EdDSAPrivateKeySpec(byte[] h, BigInteger a, GroupElement A, EdDSAParameterSpec spec) {
+        this.h = h;
+        this.a = a;
+        this.A = A;
+        this.spec = spec;
+        
     }
 
     public byte[] getH() {

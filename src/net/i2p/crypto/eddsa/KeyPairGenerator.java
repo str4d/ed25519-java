@@ -9,6 +9,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.util.Hashtable;
 
 import net.i2p.crypto.eddsa.math.Constants;
+import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
@@ -25,11 +26,9 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         edParameters = new Hashtable<Integer, AlgorithmParameterSpec>();
 
         edParameters.put(Integer.valueOf(25519), new EdDSAParameterSpec(
-                Constants.b,
+                new Curve(Constants.b, Constants.q, Constants.d),
                 "SHA-512",
-                Constants.q,
                 null,
-                Constants.d,
                 Constants.l,
                 Constants.B));
     }
@@ -49,6 +48,7 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
     @Override
     public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException {
         if (params instanceof EdDSAParameterSpec) {
+            edParams = (EdDSAParameterSpec) params;
         } else
             throw new InvalidAlgorithmParameterException("parameter object not a EdDSAParameterSpec");
 
@@ -61,7 +61,7 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         if (!initialized)
             initialize(strength, new SecureRandom());
 
-        byte[] seed = new byte[edParams.getb()];
+        byte[] seed = new byte[edParams.getCurve().getb()];
         random.nextBytes(seed);
 
         EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(seed, edParams);

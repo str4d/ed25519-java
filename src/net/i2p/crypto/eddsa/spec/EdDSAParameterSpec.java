@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 
 import net.i2p.crypto.eddsa.EdDSAEncoding;
-import net.i2p.crypto.eddsa.math.FieldElement;
+import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
@@ -14,54 +14,41 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  *
  */
 public class EdDSAParameterSpec implements AlgorithmParameterSpec {
-    private int b;
+    private Curve curve;
     private String hashAlgo;
-    private BigInteger q;
     private EdDSAEncoding enc;
-    private FieldElement d;
     private BigInteger l;
     private GroupElement B;
 
-    public EdDSAParameterSpec(int b,
-            String hashAlgo, BigInteger q,
-            EdDSAEncoding enc, FieldElement d,
+    public EdDSAParameterSpec(Curve curve,
+            String hashAlgo, EdDSAEncoding enc,
             BigInteger l, GroupElement B) {
         try {
             MessageDigest hash = MessageDigest.getInstance(hashAlgo);
             // EdDSA hash function must produce 2b-bit output
-            if (b/4 != hash.getDigestLength())
+            if (curve.getb()/4 != hash.getDigestLength())
                 throw new IllegalArgumentException("Hash output is not 2b-bit");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Unsupported hash algorithm");
         }
 
-        this.b = b;
+        this.curve = curve;
         this.hashAlgo = hashAlgo;
-        this.q = q;
         this.enc = enc;
-        this.d = d;
         this.l = l;
         this.B = B;
     }
 
-    public int getb() {
-        return b;
+    public Curve getCurve() {
+        return curve;
     }
 
     public String getHashAlgorithm() {
         return hashAlgo;
     }
 
-    public BigInteger getQ() {
-        return q;
-    }
-
     public EdDSAEncoding getEncoding() {
         return enc;
-    }
-
-    public FieldElement getD() {
-        return d;
     }
 
     public BigInteger getL() {

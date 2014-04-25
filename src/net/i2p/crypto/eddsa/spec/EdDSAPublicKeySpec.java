@@ -13,10 +13,10 @@ public class EdDSAPublicKeySpec implements KeySpec {
     private EdDSAParameterSpec spec;
 
     public EdDSAPublicKeySpec(byte[] pk, EdDSAParameterSpec spec) {
-        if (pk.length != spec.getb()/8)
+        if (pk.length != spec.getCurve().getb()/8)
             throw new IllegalArgumentException("public-key length is wrong");
 
-        this.A = new GroupElement(pk);
+        this.A = null;//new GroupElement(pk);
         this.spec = spec;
     }
 

@@ -10,6 +10,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.util.Arrays;
 
+import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.FieldElement;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
@@ -41,7 +42,7 @@ public class EdDSAEngine extends Signature {
 
             // Preparing for hash
             // r = H(h_b,...,h_2b-1,M)
-            int b = privKey.getParams().getb();
+            int b = privKey.getParams().getCurve().getb();
             digest.update(privKey.getH(), b/8, b/4 - b/8);
         } else
             throw new InvalidKeyException("cannot identify EdDSA private key.");
@@ -90,6 +91,7 @@ public class EdDSAEngine extends Signature {
 
     @Override
     protected byte[] engineSign() throws SignatureException {
+        Curve curve = key.getParams().getCurve();
         BigInteger l = key.getParams().getL();
         BigInteger a = ((EdDSAPrivateKey) key).geta();
 
@@ -103,7 +105,7 @@ public class EdDSAEngine extends Signature {
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
         digest.update(((EdDSAPrivateKey) key).getAbyte());
-        FieldElement S = new FieldElement(Hint(digest.digest(message)).multiply(a).add(r).mod(l));
+        FieldElement S = curve.fromBigInteger(Hint(digest.digest(message)).multiply(a).add(r).mod(l));
 
         // R+S
         ByteBuffer out = ByteBuffer.allocate(64);
@@ -113,7 +115,8 @@ public class EdDSAEngine extends Signature {
 
     @Override
     protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-        int b = key.getParams().getb();
+        Curve curve = key.getParams().getCurve();
+        int b = curve.getb();
         if (sigBytes.length != b/4)
             throw new IllegalArgumentException("signature length is wrong");
 
@@ -121,7 +124,7 @@ public class EdDSAEngine extends Signature {
         GroupElement R = new GroupElement(Rbyte);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
-        FieldElement S = new FieldElement(Sbyte);
+        FieldElement S = curve.fromByteArray(Sbyte);
 
         // If we get to here, Rbyte is valid
         digest.update(Rbyte);
@@ -161,7 +164,7 @@ public class EdDSAEngine extends Signature {
 
     private BigInteger Hint(byte[] h) {
         BigInteger hsum = BigInteger.ZERO;
-        for (int i = 0; i < 2*key.getParams().getb(); i++) {
+        for (int i = 0; i < 2*key.getParams().getCurve().getb(); i++) {
             hsum = hsum.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
         }
         return hsum;
