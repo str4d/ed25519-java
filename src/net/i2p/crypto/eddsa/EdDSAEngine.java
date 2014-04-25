@@ -121,7 +121,7 @@ public class EdDSAEngine extends Signature {
             throw new IllegalArgumentException("signature length is wrong");
 
         byte[] Rbyte = Arrays.copyOfRange(sigBytes, 0, b/8);
-        GroupElement R = new GroupElement(Rbyte);
+        GroupElement R = new GroupElement(curve, Rbyte);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
         FieldElement S = curve.fromByteArray(Sbyte);

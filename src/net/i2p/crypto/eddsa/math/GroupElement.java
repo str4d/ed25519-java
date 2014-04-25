@@ -94,7 +94,7 @@ public class GroupElement {
 
             if (check.isNonZero())
                 throw new IllegalArgumentException("not a valid GroupElement");
-            x = x.multiply(Constants.I);
+            x = x.multiply(curve.getI());
         }
 
         if ((x.isNegative() ? 1 : 0) == (s[s.length-1] & 0x01)) {

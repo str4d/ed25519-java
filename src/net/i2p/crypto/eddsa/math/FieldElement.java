@@ -27,13 +27,16 @@ public class FieldElement {
      * @param val
      */
     public FieldElement(int b, BigInteger q, byte[] val) {
+        if (val.length != b/8)
+            throw new IllegalArgumentException("Not a valid encoding");
         byte[] out = new byte[val.length];
         for (int i = 0; i < val.length; i++) {
             out[i] = val[val.length-1-i];
         }
+        out[0] &= 0x7f; // Ignore highest bit
         this.b = b;
         this.q = q;
-        this.bi = new BigInteger(out).and(Constants.un);
+        this.bi = new BigInteger(out);
     }
 
     /**

@@ -15,6 +15,7 @@ public class Curve {
     private BigInteger qp3;
     FieldElement d;
     private FieldElement d2;
+    private FieldElement I;
 
     public Curve(int b, BigInteger q, BigInteger d) {
         this.b = b;
@@ -24,6 +25,7 @@ public class Curve {
         this.qp3 = q.add(Constants.THREE);
         this.d = fromBigInteger(d);
         this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
+        this.I = fromBigInteger(Constants.TWO).modPow(q.subtract(Constants.ONE).divide(Constants.FOUR), q);
     }
 
     public int getb() {
@@ -52,6 +54,10 @@ public class Curve {
 
     public FieldElement get2D() {
         return d2;
+    }
+
+    public FieldElement getI() {
+        return I;
     }
 
     public FieldElement fromBigInteger(BigInteger x) {
