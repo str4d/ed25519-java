@@ -88,7 +88,7 @@ public class FieldElement {
     	return divide(val.bi);
     }
     public FieldElement divide(BigInteger val) {
-    	return new FieldElement(bi.divide(val).mod(Constants.q));
+    	return new FieldElement(b, q, bi.divide(val).mod(q));
     }
 
     public FieldElement multiply(FieldElement val) {
@@ -112,7 +112,7 @@ public class FieldElement {
     }
     
     public FieldElement pow(BigInteger i){
-    	return modPow(i, Constants.q);
+    	return modPow(i, q);
     }
     
     public FieldElement pow(FieldElement e){

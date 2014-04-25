@@ -25,7 +25,7 @@ public class GroupElement {
             FieldElement.ONE, FieldElement.ZERO);
     public static final GroupElement PRECOMP_ZERO = p2(
             FieldElement.ONE, FieldElement.ONE, FieldElement.ZERO);
-    */
+     */
 
     public static GroupElement p2(Curve curve, FieldElement X,
             FieldElement Y, FieldElement Z) {
@@ -65,14 +65,15 @@ public class GroupElement {
     }
 
     public GroupElement(Curve curve, byte[] s) {
-        FieldElement x, y, u, v, v3, vxx, check;
+        FieldElement x, y, yy, u, v, v3, vxx, check;
         y = curve.fromByteArray(s);
+        yy = y.square();
 
         // u = y^2-1	
-        u = y.square().subtractOne();
+        u = yy.subtractOne();
 
         // v = dy^2+1
-        v = y.multiply(curve.getD()).addOne();
+        v = yy.multiply(curve.getD()).addOne();
 
         // v3 = v^3
         v3 = v.square().multiply(v);
@@ -80,7 +81,7 @@ public class GroupElement {
         // x = (v3^2)vu, aka x = uv^7
         x = v3.square().multiply(v).multiply(u);	
 
-        //  x = (uv^7)^((q-5)/8)     
+        //  x = (uv^7)^((q-5)/8)
         x = x.pow(curve.getQm5().divide(BigInteger.valueOf(8))); 
 
         // x = uv^3(uv^7)^((q-5)/8)
@@ -385,7 +386,7 @@ public class GroupElement {
 
 		return h;
 	}*/
-    
+
     @Override
     public String toString() {
         return "[GroupElement\nX="+X+"\nY="+Y+"\nZ="+Z+"\nT="+T+"\n]";
