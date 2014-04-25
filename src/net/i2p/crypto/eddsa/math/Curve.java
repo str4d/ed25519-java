@@ -71,4 +71,26 @@ public class Curve {
     public GroupElement createPoint(BigInteger x, BigInteger y) {
         return GroupElement.p2(this, fromBigInteger(x), fromBigInteger(y), fromBigInteger(Constants.ONE));
     }
+
+    /**
+     * Verify that a point is on the curve.
+     * @param P The point to check.
+     * @return true if the point lies on the curve.
+     */
+    public boolean isOnCurve(GroupElement P) {
+        switch (P.repr) {
+        case P2:
+        case P3:
+            FieldElement recip = P.Z.invert();
+            FieldElement x = P.X.multiply(recip);
+            FieldElement y = P.Y.multiply(recip);
+            FieldElement xx = x.square();
+            FieldElement yy = y.square();
+            FieldElement dxxyy = d.multiply(xx).multiply(yy);
+            return fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(fromBigInteger(Constants.ZERO));
+
+        default:
+            return isOnCurve(P.toP2());
+        }
+    }
 }

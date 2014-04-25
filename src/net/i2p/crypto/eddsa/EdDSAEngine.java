@@ -99,7 +99,7 @@ public class EdDSAEngine extends Signature {
         BigInteger r = Hint(digest.digest(message));
 
         // R = rB
-        GroupElement R = GroupElement.scalarmult(key.getParams().getB(), r);
+        GroupElement R = key.getParams().getB().scalarmult(r);
         byte[] Rbyte = R.toByteArray();
 
         // S = (r + H(Rbar,Abar,M)*a) mod l
@@ -132,9 +132,9 @@ public class EdDSAEngine extends Signature {
         // h = H(Rbar,Abar,M)
         BigInteger h = Hint(digest.digest(message));
         // SB
-        GroupElement ra = GroupElement.scalarmult(key.getParams().getB(), S.bi);
+        GroupElement ra = key.getParams().getB().scalarmult(S);
         // R + H(Rbar,Abar,M)A
-        GroupElement rb = R.add(GroupElement.scalarmult(((EdDSAPublicKey) key).getA(), h).toCached());
+        GroupElement rb = R.add(((EdDSAPublicKey) key).getA().scalarmult(h).toCached());
 
         // SB = R + H(Rbar,Abar,M)A
         if (!ra.equals(rb))

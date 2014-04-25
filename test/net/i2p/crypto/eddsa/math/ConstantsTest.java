@@ -65,13 +65,13 @@ public class ConstantsTest {
     @Test
     public void testI() {
         BigInteger q = curve.getQ();
-        assertThat(Constants.I.modPow(BigInteger.valueOf(2), q), is(equalTo(curve.fromBigInteger(q.subtract(BigInteger.ONE)))));
+        assertThat(curve.getI().modPow(BigInteger.valueOf(2), q), is(equalTo(curve.fromBigInteger(q.subtract(BigInteger.ONE)))));
     }
 
     @Test
     public void testB() {
         GroupElement B = ed25519.getB();
-        assertThat(GroupElement.isOnCurve(B), is(true));
-        assertThat(GroupElement.scalarmult(B, ed25519.getL()), is(equalTo(P3_ZERO)));
+        assertThat(curve.isOnCurve(B), is(true));
+        assertThat(B.scalarmult(ed25519.getL()), is(equalTo(P3_ZERO)));
     }
 }

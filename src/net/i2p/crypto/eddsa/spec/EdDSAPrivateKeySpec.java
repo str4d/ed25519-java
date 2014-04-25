@@ -32,7 +32,7 @@ public class EdDSAPrivateKeySpec implements KeySpec {
                 a = a.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
             }
 
-            A = GroupElement.scalarmult(spec.getB(), a);
+            A = spec.getB().scalarmult(a);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Unsupported hash algorithm");
         }

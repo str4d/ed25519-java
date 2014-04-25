@@ -309,29 +309,11 @@ public class GroupElement {
         return x1.equals(x2) && y1.equals(y2);
     }
 
-    /**
-     * Verify that a point is on the curve.
-     * @param P The point to check.
-     * @return true if the point lies on the curve.
-     */
-    public static boolean isOnCurve(GroupElement P) {
-        switch (P.repr) {
-        case P2:
-        case P3:
-            FieldElement recip = P.Z.invert();
-            FieldElement x = P.X.multiply(recip);
-            FieldElement y = P.Y.multiply(recip);
-            FieldElement xx = x.square();
-            FieldElement yy = y.square();
-            FieldElement dxxyy = Constants.d.multiply(xx).multiply(yy);
-            return FieldElement.ONE.add(dxxyy).add(xx).subtract(yy).equals(FieldElement.ZERO);
-
-        default:
-            return isOnCurve(P.toP2());
-        }
+    public GroupElement scalarmult(FieldElement e) {
+        return scalarmult(e.bi);
     }
 
-    public static GroupElement scalarmult(GroupElement P, BigInteger e) {
+    public GroupElement scalarmult(BigInteger e) {
         BigInteger[] t = new BigInteger[9999];
         GroupElement Q;     
         t[0] = e;
@@ -345,8 +327,10 @@ public class GroupElement {
             i++;
         }
 
-        GroupElement Pcached = P.toCached();
-        Q = GroupElement.P3_ZERO;
+        GroupElement Pcached = toCached();
+        FieldElement zero = curve.fromBigInteger(Constants.ZERO);
+        FieldElement one = curve.fromBigInteger(Constants.ONE);
+        Q = GroupElement.p3(curve, zero, one, one, zero);
         for (int j = i; j >= 0; j--) {
             Q = Q.add(Q.toCached()).toP3();
             if (t[j].testBit(0)) Q = Q.add(Pcached).toP3();

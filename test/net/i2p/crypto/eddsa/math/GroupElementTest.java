@@ -85,35 +85,19 @@ public class GroupElementTest {
         GroupElement t;
 
         t = new GroupElement(curve, BYTES_ZEROZERO);
-        assertThat(t.X, is(equalTo(ZERO)));
-        assertThat(t.Y, is(equalTo(ZERO)));
-        assertThat(t.Z, is(equalTo(ONE)));
-        assertThat(t.T, is(equalTo(ZERO)));
+        assertThat(t, is(equalTo(GroupElement.p3(curve, ZERO, ZERO, ONE, ZERO))));
 
         t = new GroupElement(curve, BYTES_ONEONE);
-        assertThat(t.X, is(equalTo(ONE)));
-        assertThat(t.Y, is(equalTo(ONE)));
-        assertThat(t.Z, is(equalTo(ONE)));
-        assertThat(t.T, is(equalTo(ONE)));
-
+        assertThat(t, is(equalTo(GroupElement.p3(curve, ONE, ONE, ONE, ONE))));
 
         t = new GroupElement(curve, BYTES_TENZERO);
-        assertThat(t.X, is(equalTo(TEN)));
-        assertThat(t.Y, is(equalTo(ZERO)));
-        assertThat(t.Z, is(equalTo(ONE)));
-        assertThat(t.T, is(equalTo(ZERO)));
+        assertThat(t, is(equalTo(GroupElement.p3(curve, TEN, ZERO, ONE, ZERO))));
 
         t = new GroupElement(curve, BYTES_ONETEN);
-        assertThat(t.X, is(equalTo(ONE)));
-        assertThat(t.Y, is(equalTo(TEN)));
-        assertThat(t.Z, is(equalTo(ONE)));
-        assertThat(t.T, is(equalTo(TEN)));
+        assertThat(t, is(equalTo(GroupElement.p3(curve, ONE, TEN, ONE, TEN))));
 
         t = new GroupElement(curve, BYTES_PKR);
-        assertThat(t.X, is(equalTo(PKR[0])));
-        assertThat(t.Y, is(equalTo(PKR[1])));
-        assertThat(t.Z, is(equalTo(ONE)));
-        assertThat(t.T, is(equalTo(PKR[0].multiply(PKR[1]))));
+        assertThat(t, is(equalTo(GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1])))));
     }
 
     /**
@@ -228,9 +212,9 @@ public class GroupElementTest {
      */
     @Test
     public void testIsOnCurve() {
-        assertThat(GroupElement.isOnCurve(P2_ZERO),
+        assertThat(curve.isOnCurve(P2_ZERO),
                 is(true));
-        assertThat(GroupElement.isOnCurve(GroupElement.p2(curve, ZERO, ZERO, ONE)),
+        assertThat(curve.isOnCurve(GroupElement.p2(curve, ZERO, ZERO, ONE)),
                 is(false));
     }
 
