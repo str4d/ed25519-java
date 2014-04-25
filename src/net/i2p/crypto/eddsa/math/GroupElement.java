@@ -2,8 +2,6 @@ package net.i2p.crypto.eddsa.math;
 
 import java.math.BigInteger;
 
-import net.i2p.crypto.eddsa.Constants;
-
 /**
  * The set of pairs (x,y) of FieldElements satisfying
  * -x^2 + y^2 = 1 + d x^2y^2 where d = -121665/121666.

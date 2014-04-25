@@ -2,8 +2,6 @@ package net.i2p.crypto.eddsa.math;
 
 import java.math.BigInteger;
 
-import net.i2p.crypto.eddsa.Constants;
-
 /**
  * A particular element of the field \Z/(2^255-19).
  * @author str4d

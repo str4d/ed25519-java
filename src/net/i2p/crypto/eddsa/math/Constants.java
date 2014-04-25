@@ -1,9 +1,6 @@
-package net.i2p.crypto.eddsa;
+package net.i2p.crypto.eddsa.math;
 
 import java.math.BigInteger;
-
-import net.i2p.crypto.eddsa.math.FieldElement;
-import net.i2p.crypto.eddsa.math.GroupElement;
 
 public class Constants {
     static final int b = 256;
