@@ -13,6 +13,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
  *
  */
 public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
+    private transient byte[] seed;
     private transient byte[] h;
     private transient BigInteger a;
     private transient GroupElement A;
@@ -20,6 +21,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
     private transient EdDSAParameterSpec edDsaSpec;
 
     public EdDSAPrivateKey(EdDSAPrivateKeySpec spec) {
+        this.seed = spec.getSeed();
         this.h = spec.getH();
         this.a = spec.geta();
         this.A = spec.getA();
@@ -46,6 +48,10 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
     @Override
     public EdDSAParameterSpec getParams() {
         return edDsaSpec;
+    }
+
+    public byte[] getSeed() {
+        return seed;
     }
 
     public byte[] getH() {
