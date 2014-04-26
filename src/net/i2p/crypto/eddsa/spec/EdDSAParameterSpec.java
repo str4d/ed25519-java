@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 
 import net.i2p.crypto.eddsa.math.Curve;
-import net.i2p.crypto.eddsa.math.Encoding;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
@@ -17,12 +16,10 @@ import net.i2p.crypto.eddsa.math.GroupElement;
 public class EdDSAParameterSpec implements AlgorithmParameterSpec {
     private Curve curve;
     private String hashAlgo;
-    private Encoding enc;
     private BigInteger l;
     private GroupElement B;
 
-    public EdDSAParameterSpec(Curve curve,
-            String hashAlgo, Encoding enc,
+    public EdDSAParameterSpec(Curve curve, String hashAlgo,
             BigInteger l, GroupElement B) {
         try {
             MessageDigest hash = MessageDigest.getInstance(hashAlgo);
@@ -35,7 +32,6 @@ public class EdDSAParameterSpec implements AlgorithmParameterSpec {
 
         this.curve = curve;
         this.hashAlgo = hashAlgo;
-        this.enc = enc;
         this.l = l;
         this.B = B;
     }
@@ -46,10 +42,6 @@ public class EdDSAParameterSpec implements AlgorithmParameterSpec {
 
     public String getHashAlgorithm() {
         return hashAlgo;
-    }
-
-    public Encoding getEncoding() {
-        return enc;
     }
 
     public BigInteger getL() {

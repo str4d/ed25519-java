@@ -26,14 +26,16 @@ public class Field {
      * Mask where only the first b-1 bits are set.
      */
     private BigInteger mask;
+    private Encoding enc;
 
-    public Field(int b, BigInteger q) {
+    public Field(int b, BigInteger q, Encoding enc) {
         this.b = b;
         this.q = q;
         this.qm2 = q.subtract(Constants.TWO);
         this.qm5 = q.subtract(Constants.FIVE);
         this.qp3 = q.add(Constants.THREE);
         this.mask = Constants.ONE.shiftLeft(b-1).subtract(Constants.ONE);
+        this.enc = enc;
     }
 
     public int getb() {
@@ -58,5 +60,9 @@ public class Field {
 
     public BigInteger getMask() {
         return mask;
+    }
+
+    public Encoding getEncoding(){
+        return enc;
     }
 }

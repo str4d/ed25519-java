@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.math.BigInteger;
 
 /**
  * Common interface for all (b-1)-bit encodings of elements
@@ -8,6 +9,6 @@ package net.i2p.crypto.eddsa.math;
  *
  */
 public interface Encoding {
-    public byte[] toEncoding(FieldElement x);
-    public FieldElement toElement(Field f, byte[] in);
+    public byte[] encode(BigInteger x, int len);
+    public BigInteger decode(byte[] in);
 }

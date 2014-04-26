@@ -27,14 +27,8 @@ public class FieldElement {
         if (val.length != f.getb()/8)
             throw new IllegalArgumentException("Not a valid encoding");
 
-        // Convert 'val' to big endian
-        byte[] out = new byte[val.length];
-        for (int i = 0; i < val.length; i++) {
-            out[i] = val[val.length-1-i];
-        }
-
         this.f = f;
-        this.bi = new BigInteger(1, out).and(f.getMask());
+        this.bi = f.getEncoding().decode(val).and(f.getMask());
     }
 
     /**
@@ -42,15 +36,7 @@ public class FieldElement {
      * @return the (b-1)-bit encoding of this FieldElement.
      */
     public byte[] toByteArray() {
-        byte[] in = bi.and(f.getMask()).toByteArray();
-        byte[] out = new byte[f.getb()/8];
-        for (int i = 0; i < in.length; i++) {
-            out[i] = in[in.length-1-i];
-        }
-        for (int i = in.length; i < out.length; i++) {
-            out[i] = 0;
-        }
-        return out;
+        return f.getEncoding().encode(bi.and(f.getMask()), f.getb()/8);
     }
 
     public boolean isNonZero() {
