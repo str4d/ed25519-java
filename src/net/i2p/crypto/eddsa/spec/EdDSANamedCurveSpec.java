@@ -2,8 +2,8 @@ package net.i2p.crypto.eddsa.spec;
 
 import java.math.BigInteger;
 
-import net.i2p.crypto.eddsa.EdDSAEncoding;
 import net.i2p.crypto.eddsa.math.Curve;
+import net.i2p.crypto.eddsa.math.Encoding;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
@@ -15,7 +15,7 @@ public class EdDSANamedCurveSpec extends EdDSAParameterSpec {
     private String name;
 
     public EdDSANamedCurveSpec(String name, Curve curve, String hashAlgo,
-            EdDSAEncoding enc, BigInteger l, GroupElement B) {
+            Encoding enc, BigInteger l, GroupElement B) {
         super(curve, hashAlgo, enc, l, B);
         this.name = name;
     }

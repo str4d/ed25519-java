@@ -3,9 +3,9 @@ package net.i2p.crypto.eddsa.spec;
 import java.math.BigInteger;
 import java.util.Hashtable;
 
-import net.i2p.crypto.eddsa.EdDSALittleEndianEncoding;
 import net.i2p.crypto.eddsa.math.Constants;
 import net.i2p.crypto.eddsa.math.Curve;
+import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.FieldElement;
 import net.i2p.crypto.eddsa.math.GroupElement;
@@ -26,7 +26,7 @@ public class EdDSANamedCurveTable {
             "ed25519",
             ed25519curve,
             "SHA-512", // H
-            new EdDSALittleEndianEncoding(),
+            new LittleEndianEncoding(),
             new BigInteger("7237005577332262213973186563042994240857116359379907606001950938285454250989"), // l
             GroupElement.p3(ed25519curve, ed25519Bx, ed25519By,
                     ed25519curve.fromBigInteger(Constants.ONE),
