@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 
+import net.i2p.crypto.eddsa.Ed25519TestVectors;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -75,6 +76,20 @@ public class GroupElementTest {
     @Test
     public void testGroupElementRepresentationFieldElementFieldElementFieldElementFieldElement() {
         fail("Not yet implemented");
+    }
+
+    /**
+     * Tests {@link GroupElement#GroupElement(Curve, byte[])} and
+     * {@link GroupElement#toByteArray()} against valid public keys.
+     */
+    @Test
+    public void testToAndFromByteArray() {
+        GroupElement t;
+        for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
+            t = new GroupElement(curve, testCase.pk);
+            assertThat("Test case " + testCase.caseNum + " failed",
+                    t.toByteArray(), is(equalTo(testCase.pk)));
+        }
     }
 
     /**
