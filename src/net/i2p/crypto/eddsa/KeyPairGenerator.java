@@ -26,7 +26,7 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
     static {
         edParameters = new Hashtable<Integer, AlgorithmParameterSpec>();
 
-        edParameters.put(Integer.valueOf(256), new EdDSAGenParameterSpec("ed25519"));
+        edParameters.put(Integer.valueOf(256), new EdDSAGenParameterSpec("ed25519-sha-512"));
     }
 
     @Override
