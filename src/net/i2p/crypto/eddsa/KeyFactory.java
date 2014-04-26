@@ -34,18 +34,19 @@ public class KeyFactory extends KeyFactorySpi {
         throw new InvalidKeySpecException("key spec not recognised");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T extends KeySpec> T engineGetKeySpec(Key key, Class<T> keySpec)
             throws InvalidKeySpecException {
         if (keySpec.isAssignableFrom(EdDSAPublicKeySpec.class) && key instanceof EdDSAPublicKey) {
             EdDSAPublicKey k = (EdDSAPublicKey) key;
             if (k.getParams() != null) {
-                return new EdDSAPublicKeySpec(k.getA(), k.getParams());
+                return (T) new EdDSAPublicKeySpec(k.getA(), k.getParams());
             }
         } else if (keySpec.isAssignableFrom(EdDSAPrivateKeySpec.class) && key instanceof EdDSAPrivateKey) {
             EdDSAPrivateKey k = (EdDSAPrivateKey) key;
             if (k.getParams() != null) {
-                return new EdDSAPrivateKeySpec(k.getH(), k.geta(), k.getA(), k.getParams());
+                return (T) new EdDSAPrivateKeySpec(k.getH(), k.geta(), k.getA(), k.getParams());
             }
         }
         throw new InvalidKeySpecException("not implemented yet " + key + " " + keySpec);
