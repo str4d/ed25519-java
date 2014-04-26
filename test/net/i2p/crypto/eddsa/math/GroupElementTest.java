@@ -10,7 +10,9 @@ import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author str4d
@@ -22,7 +24,7 @@ public class GroupElementTest {
     static final byte[] BYTES_TENZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_ONETEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519");
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
     static final Curve curve = ed25519.getCurve();
 
     static final FieldElement ZERO = curve.fromBigInteger(Constants.ZERO);
@@ -37,6 +39,9 @@ public class GroupElementTest {
         curve.fromBigInteger(new BigInteger("18930617471878267742194159801949745215346600387277955685031939302387136031291"))
         };
     static final byte[] BYTES_PKR = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     /**
      * Test method for {@link GroupElement#p2(FieldElement, FieldElement, FieldElement)}.
@@ -98,18 +103,6 @@ public class GroupElementTest {
     @Test
     public void testGroupElementByteArray() {
         GroupElement t;
-
-        t = new GroupElement(curve, BYTES_ZEROZERO);
-        assertThat(t, is(equalTo(GroupElement.p3(curve, ZERO, ZERO, ONE, ZERO))));
-
-        t = new GroupElement(curve, BYTES_ONEONE);
-        assertThat(t, is(equalTo(GroupElement.p3(curve, ONE, ONE, ONE, ONE))));
-
-        t = new GroupElement(curve, BYTES_TENZERO);
-        assertThat(t, is(equalTo(GroupElement.p3(curve, TEN, ZERO, ONE, ZERO))));
-
-        t = new GroupElement(curve, BYTES_ONETEN);
-        assertThat(t, is(equalTo(GroupElement.p3(curve, ONE, TEN, ONE, TEN))));
 
         t = new GroupElement(curve, BYTES_PKR);
         assertThat(t, is(equalTo(GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1])))));
@@ -231,6 +224,14 @@ public class GroupElementTest {
                 is(true));
         assertThat(curve.isOnCurve(GroupElement.p2(curve, ZERO, ZERO, ONE)),
                 is(false));
+        assertThat(curve.isOnCurve(GroupElement.p2(curve, ONE, ONE, ONE)),
+                is(false));
+        assertThat(curve.isOnCurve(GroupElement.p2(curve, TEN, ZERO, ONE)),
+                is(false));
+        assertThat(curve.isOnCurve(GroupElement.p2(curve, ONE, TEN, ONE)),
+                is(false));
+        assertThat(curve.isOnCurve(GroupElement.p2(curve, PKR[0], PKR[1], ONE)),
+                is(true));
     }
 
 }

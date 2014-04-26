@@ -20,7 +20,7 @@ public class FieldElementTest {
     static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_TEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519");
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
     static final Field ed25519Field = ed25519.getCurve().getField();
 
     static final FieldElement ZERO = new FieldElement(ed25519Field, Constants.ZERO);

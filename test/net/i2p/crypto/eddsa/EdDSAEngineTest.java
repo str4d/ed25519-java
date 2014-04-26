@@ -34,7 +34,7 @@ public class EdDSAEngineTest {
     public void testSign() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
-        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519-sha-512");
 
         for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
             EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(testCase.seed, spec);
@@ -52,7 +52,7 @@ public class EdDSAEngineTest {
     public void testVerify() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
-        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519-sha-512");
 
         for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
             EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(testCase.pk, spec);
@@ -75,7 +75,7 @@ public class EdDSAEngineTest {
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
 
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK,
-                EdDSANamedCurveTable.getByName("ed25519"));
+                EdDSANamedCurveTable.getByName("ed25519-sha-512"));
         PublicKey vKey = new EdDSAPublicKey(pubKey);
         sgr.initVerify(vKey);
 
