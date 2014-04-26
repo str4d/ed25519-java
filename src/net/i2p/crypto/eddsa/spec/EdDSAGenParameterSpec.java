@@ -2,6 +2,12 @@ package net.i2p.crypto.eddsa.spec;
 
 import java.security.spec.AlgorithmParameterSpec;
 
+/**
+ * Implementation of AlgorithmParameterSpec that holds the name of a named
+ * EdDSA curve specification.
+ * @author str4d
+ *
+ */
 public class EdDSAGenParameterSpec implements AlgorithmParameterSpec {
     private String name;
 

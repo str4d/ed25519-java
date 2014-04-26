@@ -10,6 +10,7 @@ import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
+ * Parameter specification for an EdDSA algorithm.
  * @author str4d
  *
  */

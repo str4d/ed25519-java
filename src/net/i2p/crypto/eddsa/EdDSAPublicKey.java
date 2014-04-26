@@ -7,6 +7,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
 /**
+ * An EdDSA public key.
  * @author str4d
  *
  */

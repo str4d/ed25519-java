@@ -68,6 +68,13 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         return new KeyPair(new EdDSAPublicKey(pubKey), new EdDSAPrivateKey(privKey));
     }
 
+    /**
+     * Create an EdDSANamedCurveSpec from the provided curve name. The current
+     * implementation fetches the pre-created curve spec from a table.
+     * @param curveName the EdDSA named curve.
+     * @return the specification for the named curve.
+     * @throws InvalidAlgorithmParameterException if the named curve is unknown.
+     */
     protected EdDSANamedCurveSpec createNamedCurveSpec(String curveName) throws InvalidAlgorithmParameterException {
         EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName(curveName);
         if (spec == null) {
