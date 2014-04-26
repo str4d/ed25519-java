@@ -1,5 +1,7 @@
 package net.i2p.crypto.eddsa;
 
+import java.math.BigInteger;
+
 /**
  * @author str4d
  *
@@ -13,6 +15,23 @@ public class Utils {
      */
     public static int bit(byte[] h, int i) {
         return h[i/8] >> (i%8) & 1;
+    }
+
+    /**
+     * From the Ed25519 paper:
+     * Here we interpret 2b-bit strings in little-endian form as integers in
+     * {0, 1,..., 2^(2b)-1}.
+     * @param h the output of a hash function.
+     * @return 2^h
+     */
+    public static BigInteger Hint(byte[] h) {
+        // Reverse h
+        for (int i = 0; i < h.length/2; i++) {
+            byte tmp = h[i];
+            h[i] = h[h.length-1-i];
+            h[h.length-1-i] = tmp;
+        }
+        return new BigInteger(1, h);
     }
 
     /**

@@ -96,7 +96,7 @@ public class EdDSAEngine extends Signature {
         BigInteger a = ((EdDSAPrivateKey) key).geta();
 
         // r = H(h_b,...,h_2b-1,M)
-        BigInteger r = Hint(digest.digest(message));
+        BigInteger r = Utils.Hint(digest.digest(message));
 
         // R = rB
         GroupElement R = key.getParams().getB().scalarmult(r);
@@ -105,7 +105,7 @@ public class EdDSAEngine extends Signature {
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
         digest.update(((EdDSAPrivateKey) key).getAbyte());
-        FieldElement S = curve.fromBigInteger(Hint(digest.digest(message)).multiply(a).add(r).mod(l));
+        FieldElement S = curve.fromBigInteger(Utils.Hint(digest.digest(message)).multiply(a).add(r).mod(l));
 
         // R+S
         ByteBuffer out = ByteBuffer.allocate(64);
@@ -130,7 +130,7 @@ public class EdDSAEngine extends Signature {
         digest.update(Rbyte);
         digest.update(((EdDSAPublicKey) key).getAbyte());
         // h = H(Rbar,Abar,M)
-        BigInteger h = Hint(digest.digest(message));
+        BigInteger h = Utils.Hint(digest.digest(message));
         // SB
         GroupElement ra = key.getParams().getB().scalarmult(S);
         // R + H(Rbar,Abar,M)A
@@ -156,24 +156,5 @@ public class EdDSAEngine extends Signature {
     @Override
     protected Object engineGetParameter(String param) {
         throw new UnsupportedOperationException("engineSetParameter unsupported");
-    }
-
-    /**
-     * From the Ed25519 paper:
-     * Here we interpret 2b-bit strings in little-endian form as integers in
-     * {0, 1,..., 2^(2b)-1}.
-     * @param h the output of a hash function.
-     * @return 2^h
-     */
-    private BigInteger Hint(byte[] h) {
-        if (h.length != key.getParams().getCurve().getField().getb()/4)
-            throw new IllegalArgumentException("invalid hash output length");
-        // Reverse h
-        for (int i = 0; i < h.length/2; i++) {
-            byte tmp = h[i];
-            h[i] = h[h.length-1-i];
-            h[h.length-1-i] = tmp;
-        }
-        return new BigInteger(1, h);
     }
 }
