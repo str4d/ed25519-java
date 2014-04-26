@@ -10,6 +10,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
@@ -33,33 +34,36 @@ public class EdDSAEngineTest {
     public void testSign() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
 
-        EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(ZERO_SEED,
-                EdDSANamedCurveTable.getByName("ed25519"));
-        PrivateKey sKey = new EdDSAPrivateKey(privKey);
-        sgr.initSign(sKey);
+        for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
+            EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(testCase.seed, spec);
+            PrivateKey sKey = new EdDSAPrivateKey(privKey);
+            sgr.initSign(sKey);
 
-        byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
-        sgr.update(message);
+            sgr.update(testCase.message);
 
-        byte[] sig = sgr.sign();
-        assertThat(sig, is(equalTo(ZERO_MSG_SIG)));
+            assertThat("Test case " + testCase.caseNum + " failed",
+                    sgr.sign(), is(equalTo(testCase.sig)));
+        }
     }
 
     @Test
     public void testVerify() throws Exception {
         //Signature sgr = Signature.getInstance("EdDSA", "I2P");
         Signature sgr = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
 
-        EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(ZERO_PK,
-                EdDSANamedCurveTable.getByName("ed25519"));
-        PublicKey vKey = new EdDSAPublicKey(pubKey);
-        sgr.initVerify(vKey);
+        for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
+            EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(testCase.pk, spec);
+            PublicKey vKey = new EdDSAPublicKey(pubKey);
+            sgr.initVerify(vKey);
 
-        byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
-        sgr.update(message);
+            sgr.update(testCase.message);
 
-        assertThat(sgr.verify(ZERO_MSG_SIG), is(true));
+            assertThat("Test case " + testCase.caseNum + " failed",
+                    sgr.verify(testCase.sig), is(true));
+        }
     }
 
     /**
