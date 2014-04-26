@@ -16,7 +16,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
 public class KeyPairGenerator extends KeyPairGeneratorSpi {
-    int strength = 25519;
+    int strength = 256;
     EdDSAParameterSpec edParams;
     SecureRandom random;
     boolean initialized = false;
@@ -59,7 +59,7 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         if (!initialized)
             initialize(strength, new SecureRandom());
 
-        byte[] seed = new byte[edParams.getCurve().getField().getb()];
+        byte[] seed = new byte[edParams.getCurve().getField().getb()/8];
         random.nextBytes(seed);
 
         EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(seed, edParams);
