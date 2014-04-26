@@ -2,6 +2,8 @@ package net.i2p.crypto.eddsa.math;
 
 import java.math.BigInteger;
 
+import net.i2p.crypto.eddsa.Utils;
+
 /**
  * A point (x,y) on an EdDSA curve.
  * @author str4d
@@ -96,7 +98,7 @@ public class GroupElement {
             x = x.multiply(curve.getI());
         }
 
-        if ((x.isNegative() ? 1 : 0) == (s[s.length-1] & 0x01)) {
+        if ((x.isNegative() ? 1 : 0) != Utils.bit(s, curve.getField().getb()-1)) {
             x = x.negate();
         }
 
@@ -116,7 +118,7 @@ public class GroupElement {
             FieldElement x = X.multiply(recip);
             FieldElement y = Y.multiply(recip);
             byte[] s = y.toByteArray();
-            s[s.length-1] |= (x.isNegative() ? 0x80 : 0);
+            s[s.length-1] |= (x.isNegative() ? (byte) 0x80 : 0);
             return s;
         default:
             return toP2().toByteArray();

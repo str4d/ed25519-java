@@ -10,9 +10,22 @@ import java.math.BigInteger;
 public class Field {
     private int b;
     private BigInteger q;
+    /**
+     * q-2
+     */
     private BigInteger qm2;
+    /**
+     * q-5
+     */
     private BigInteger qm5;
+    /**
+     * q+3
+     */
     private BigInteger qp3;
+    /**
+     * Mask where only the first b-1 bits are set.
+     */
+    private BigInteger mask;
 
     public Field(int b, BigInteger q) {
         this.b = b;
@@ -20,6 +33,7 @@ public class Field {
         this.qm2 = q.subtract(Constants.TWO);
         this.qm5 = q.subtract(Constants.FIVE);
         this.qp3 = q.add(Constants.THREE);
+        this.mask = Constants.ONE.shiftLeft(b-1).subtract(Constants.ONE);
     }
 
     public int getb() {
@@ -40,5 +54,9 @@ public class Field {
 
     public BigInteger getQp3() {
         return qp3;
+    }
+
+    public BigInteger getMask() {
+        return mask;
     }
 }

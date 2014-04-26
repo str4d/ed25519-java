@@ -6,6 +6,16 @@ package net.i2p.crypto.eddsa;
  */
 public class Utils {
     /**
+     * Get the i'th bit of a byte array.
+     * @param h the byte array.
+     * @param i the bit index.
+     * @return the value of the i'th bit in h.
+     */
+    public static int bit(byte[] h, int i) {
+        return h[i/8] >> (i%8) & 1;
+    }
+
+    /**
      * Converts bytes to a hex string.
      * @param raw the byte[] to be converted.
      * @return the hex representation as a string.

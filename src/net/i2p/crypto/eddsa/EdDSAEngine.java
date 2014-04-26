@@ -158,15 +158,22 @@ public class EdDSAEngine extends Signature {
         throw new UnsupportedOperationException("engineSetParameter unsupported");
     }
 
-    private static int bit(byte[] h, int i) {
-        return h[i/8] >> (i%8) & 1;
-    }
-
+    /**
+     * From the Ed25519 paper:
+     * Here we interpret 2b-bit strings in little-endian form as integers in
+     * {0, 1,..., 2^(2b)-1}.
+     * @param h the output of a hash function.
+     * @return 2^h
+     */
     private BigInteger Hint(byte[] h) {
-        BigInteger hsum = BigInteger.ZERO;
-        for (int i = 0; i < 2*key.getParams().getCurve().getField().getb(); i++) {
-            hsum = hsum.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
+        if (h.length != key.getParams().getCurve().getField().getb()/4)
+            throw new IllegalArgumentException("invalid hash output length");
+        // Reverse h
+        for (int i = 0; i < h.length/2; i++) {
+            byte tmp = h[i];
+            h[i] = h[h.length-1-i];
+            h[h.length-1-i] = tmp;
         }
-        return hsum;
+        return new BigInteger(1, h);
     }
 }

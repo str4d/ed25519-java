@@ -18,34 +18,31 @@ public class FieldElement {
     }
 
     /**
-     * Translates a byte array containing the two's-complement binary
-     * representation of a FieldElement into a FieldElement. The input array is
-     * assumed to be in little-endian byte-order: the least significant byte is
-     * in the zeroth element.
-     * @param val
+     * Decode a FieldElement from its (b-1)-bit encoding.
+     * The highest bit is masked out.
+     * @param val the (b-1)-bit encoding of a FieldElement.
+     * @return the FieldElement represented by 'val'.
      */
     public FieldElement(Field f, byte[] val) {
         if (val.length != f.getb()/8)
             throw new IllegalArgumentException("Not a valid encoding");
+
+        // Convert 'val' to big endian
         byte[] out = new byte[val.length];
         for (int i = 0; i < val.length; i++) {
             out[i] = val[val.length-1-i];
         }
-        out[0] &= 0x7f; // Ignore highest bit
+
         this.f = f;
-        this.bi = new BigInteger(out);
+        this.bi = new BigInteger(1, out).and(f.getMask());
     }
 
     /**
-     * Returns a byte array containing the two's-complement representation of
-     * this FieldElement. The byte array will be in little-endian byte-order:
-     * the least significant byte is in the zeroth element. The array will
-     * contain b/8 bytes.
-     * @return a byte array containing the two's-complement representation of
-     * this FieldElement.
+     * Encode a FieldElement in its (b-1)-bit encoding.
+     * @return the (b-1)-bit encoding of this FieldElement.
      */
     public byte[] toByteArray() {
-        byte[] in = bi.toByteArray();
+        byte[] in = bi.and(f.getMask()).toByteArray();
         byte[] out = new byte[f.getb()/8];
         for (int i = 0; i < in.length; i++) {
             out[i] = in[in.length-1-i];
@@ -60,8 +57,16 @@ public class FieldElement {
         return bi.compareTo(BigInteger.ZERO) != 0;
     }
 
+    /**
+     * From the Ed25519 paper:
+     * x is negative if the (b-1)-bit encoding of x is lexicographically larger
+     * than the (b-1)-bit encoding of -x. If q is an odd prime and the encoding
+     * is the little-endian representation of {0, 1,..., q-1} then the negative
+     * elements of F_q are {1, 3, 5,..., q-2}.
+     * @return
+     */
     public boolean isNegative() {
-        return bi.compareTo(BigInteger.ZERO) == -1;
+        return bi.testBit(0);
     }
 
     public FieldElement add(FieldElement val) {
