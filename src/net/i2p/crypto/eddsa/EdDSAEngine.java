@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -23,6 +24,17 @@ public class EdDSAEngine extends Signature {
     private byte[] message;
     private EdDSAKey key;
 
+    /**
+     * No specific hash requested, allows any EdDSA key.
+     */
+    public EdDSAEngine() {
+        super("EdDSA");
+    }
+
+    /**
+     * Specific hash requested, only matching keys will be allowed.
+     * @param digest the hash algorithm that keys must have to sign or verify.
+     */
     public EdDSAEngine(MessageDigest digest) {
         super("EdDSA");
         this.digest = digest;
@@ -30,14 +42,22 @@ public class EdDSAEngine extends Signature {
 
     @Override
     protected void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
-        digest.reset();
+        if (digest != null)
+            digest.reset();
         message = new byte[0];
 
         if (privateKey instanceof EdDSAPrivateKey) {
             EdDSAPrivateKey privKey = (EdDSAPrivateKey) privateKey;
             key = privKey;
 
-            if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
+            if (digest == null) {
+                // Instantiate the digest from the key parameters
+                try {
+                    digest = MessageDigest.getInstance(key.getParams().getHashAlgorithm());
+                } catch (NoSuchAlgorithmException e) {
+                    throw new InvalidKeyException("cannot get required digest " + key.getParams().getHashAlgorithm() + " for private key.");
+                }
+            } else if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
                 throw new InvalidKeyException("Key hash algorithm does not match chosen digest");
 
             // Preparing for hash
@@ -50,13 +70,21 @@ public class EdDSAEngine extends Signature {
 
     @Override
     protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
-        digest.reset();
+        if (digest != null)
+            digest.reset();
         message = new byte[0];
 
         if (publicKey instanceof EdDSAPublicKey) {
             key = (EdDSAPublicKey) publicKey;
 
-            if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
+            if (digest == null) {
+                // Instantiate the digest from the key parameters
+                try {
+                    digest = MessageDigest.getInstance(key.getParams().getHashAlgorithm());
+                } catch (NoSuchAlgorithmException e) {
+                    throw new InvalidKeyException("cannot get required digest " + key.getParams().getHashAlgorithm() + " for private key.");
+                }
+            } else if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
                 throw new InvalidKeyException("Key hash algorithm does not match chosen digest");
         } else
             throw new InvalidKeyException("cannot identify EdDSA public key.");
