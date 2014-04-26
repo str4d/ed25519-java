@@ -9,44 +9,20 @@ import java.math.BigInteger;
  *
  */
 public class Curve {
-    int b;
-    BigInteger q;
-    private BigInteger qm2;
-    private BigInteger qm5;
-    private BigInteger qp3;
-    FieldElement d;
+    private Field f;
+    private FieldElement d;
     private FieldElement d2;
     private FieldElement I;
 
-    public Curve(int b, BigInteger q, BigInteger d) {
-        this.b = b;
-        this.q = q;
-        this.qm2 = q.subtract(Constants.TWO);
-        this.qm5 = q.subtract(Constants.FIVE);
-        this.qp3 = q.add(Constants.THREE);
+    public Curve(Field f, BigInteger d) {
+        this.f = f;
         this.d = fromBigInteger(d);
         this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
-        this.I = fromBigInteger(Constants.TWO).modPow(q.subtract(Constants.ONE).divide(Constants.FOUR), q);
+        this.I = fromBigInteger(Constants.TWO).modPow(f.getQ().subtract(Constants.ONE).divide(Constants.FOUR), f.getQ());
     }
 
-    public int getb() {
-        return b;
-    }
-
-    public BigInteger getQ() {
-        return q;
-    }
-
-    public BigInteger getQm2() {
-        return qm2;
-    }
-
-    public BigInteger getQm5() {
-        return qm5;
-    }
-
-    public BigInteger getQp3() {
-        return qp3;
+    public Field getField() {
+        return f;
     }
 
     public FieldElement getD() {
@@ -62,11 +38,11 @@ public class Curve {
     }
 
     public FieldElement fromBigInteger(BigInteger x) {
-        return new FieldElement(b, q, x);
+        return new FieldElement(f, x);
     }
 
     public FieldElement fromByteArray(byte[] x) {
-        return new FieldElement(b, q, x);
+        return new FieldElement(f, x);
     }
 
     public GroupElement createPoint(BigInteger x, BigInteger y) {

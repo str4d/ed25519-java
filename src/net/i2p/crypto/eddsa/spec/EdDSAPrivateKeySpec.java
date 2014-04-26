@@ -22,7 +22,7 @@ public class EdDSAPrivateKeySpec implements KeySpec {
 
         try {
             MessageDigest hash = MessageDigest.getInstance(spec.getHashAlgorithm());
-            int b = spec.getCurve().getb();
+            int b = spec.getCurve().getField().getb();
 
             // H(k)
             h = hash.digest(seed);

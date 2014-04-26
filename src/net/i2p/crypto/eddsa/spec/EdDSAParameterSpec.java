@@ -27,7 +27,7 @@ public class EdDSAParameterSpec implements AlgorithmParameterSpec {
         try {
             MessageDigest hash = MessageDigest.getInstance(hashAlgo);
             // EdDSA hash function must produce 2b-bit output
-            if (curve.getb()/4 != hash.getDigestLength())
+            if (curve.getField().getb()/4 != hash.getDigestLength())
                 throw new IllegalArgumentException("Hash output is not 2b-bit");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Unsupported hash algorithm");

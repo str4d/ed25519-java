@@ -29,7 +29,7 @@ public class ConstantsTest {
 
     @Test
     public void testb() {
-        int b = curve.getb();
+        int b = curve.getField().getb();
         assertThat(b, is(greaterThanOrEqualTo(10)));
         try {
             MessageDigest h = MessageDigest.getInstance(ed25519.getHashAlgorithm());
@@ -41,14 +41,14 @@ public class ConstantsTest {
 
     @Test
     public void testq() {
-        BigInteger q = curve.getQ();
+        BigInteger q = curve.getField().getQ();
         assertThat(TWO.modPow(q.subtract(BigInteger.ONE), q), is(equalTo(ONE)));
         assertThat(q.mod(BigInteger.valueOf(4)), is(equalTo(BigInteger.ONE)));
     }
 
     @Test
     public void testl() {
-        int b = curve.getb();
+        int b = curve.getField().getb();
         BigInteger l = ed25519.getL();
         assertThat(TWO.modPow(l.subtract(BigInteger.ONE), l), is(equalTo(ONE)));
         assertThat(l, is(greaterThanOrEqualTo(BigInteger.valueOf(2).pow(b-4))));
@@ -57,14 +57,14 @@ public class ConstantsTest {
 
     @Test
     public void testd() {
-        BigInteger q = curve.getQ();
+        BigInteger q = curve.getField().getQ();
         BigInteger qm1 = q.subtract(BigInteger.ONE);
         assertThat(curve.getD().modPow(qm1.divide(BigInteger.valueOf(2)), q), is(equalTo(curve.fromBigInteger(qm1))));
     }
 
     @Test
     public void testI() {
-        BigInteger q = curve.getQ();
+        BigInteger q = curve.getField().getQ();
         assertThat(curve.getI().modPow(BigInteger.valueOf(2), q), is(equalTo(curve.fromBigInteger(q.subtract(BigInteger.ONE)))));
     }
 

@@ -21,21 +21,20 @@ public class FieldElementTest {
     static final byte[] BYTES_TEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
 
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519");
-    static final int b = ed25519.getCurve().getb();
-    static final BigInteger q = ed25519.getCurve().getQ();
+    static final Field ed25519Field = ed25519.getCurve().getField();
 
-    static final FieldElement ZERO = new FieldElement(b, q, Constants.ZERO);
-    static final FieldElement ONE = new FieldElement(b, q, Constants.ONE);
-    static final FieldElement TWO = new FieldElement(b, q, Constants.TWO);
+    static final FieldElement ZERO = new FieldElement(ed25519Field, Constants.ZERO);
+    static final FieldElement ONE = new FieldElement(ed25519Field, Constants.ONE);
+    static final FieldElement TWO = new FieldElement(ed25519Field, Constants.TWO);
 
     /**
      * Test method for {@link FieldElement#FieldElement(java.math.BigInteger)}.
      */
     @Test
     public void testFieldElementBigInteger() {
-        assertThat(new FieldElement(b, q, BigInteger.ZERO).bi, is(BigInteger.ZERO));
-        assertThat(new FieldElement(b, q, BigInteger.ONE).bi, is(BigInteger.ONE));
-        assertThat(new FieldElement(b, q, BigInteger.valueOf(2)).bi, is(BigInteger.valueOf(2)));
+        assertThat(new FieldElement(ed25519Field, BigInteger.ZERO).bi, is(BigInteger.ZERO));
+        assertThat(new FieldElement(ed25519Field, BigInteger.ONE).bi, is(BigInteger.ONE));
+        assertThat(new FieldElement(ed25519Field, BigInteger.valueOf(2)).bi, is(BigInteger.valueOf(2)));
     }
 
     /**
@@ -43,9 +42,9 @@ public class FieldElementTest {
      */
     @Test
     public void testFieldElementByteArray() {
-        assertThat(new FieldElement(b, q, BYTES_ZERO).bi, is(equalTo(BigInteger.ZERO)));
-        assertThat(new FieldElement(b, q, BYTES_ONE).bi, is(equalTo(BigInteger.ONE)));
-        assertThat(new FieldElement(b, q, BYTES_TEN).bi, is(equalTo(BigInteger.TEN)));
+        assertThat(new FieldElement(ed25519Field, BYTES_ZERO).bi, is(equalTo(BigInteger.ZERO)));
+        assertThat(new FieldElement(ed25519Field, BYTES_ONE).bi, is(equalTo(BigInteger.ONE)));
+        assertThat(new FieldElement(ed25519Field, BYTES_TEN).bi, is(equalTo(BigInteger.TEN)));
     }
 
     /**
@@ -61,7 +60,7 @@ public class FieldElementTest {
         assertThat(one.length, is(equalTo(BYTES_ONE.length)));
         assertThat(one, is(equalTo(BYTES_ONE)));
 
-        byte[] ten = new FieldElement(b, q, BigInteger.TEN).toByteArray();
+        byte[] ten = new FieldElement(ed25519Field, BigInteger.TEN).toByteArray();
         assertThat(ten.length, is(equalTo(BYTES_TEN.length)));
         assertThat(ten, is(equalTo(BYTES_TEN)));
     }
@@ -151,9 +150,9 @@ public class FieldElementTest {
      */
     @Test
     public void testEqualsObject() {
-        assertThat(new FieldElement(b, q, BigInteger.ZERO), is(equalTo(ZERO)));
-        assertThat(new FieldElement(b, q, BYTES_ZERO), is(equalTo(ZERO)));
-        assertThat(new FieldElement(b, q, BigInteger.valueOf(1000)), is(equalTo(new FieldElement(b, q, BigInteger.valueOf(1000)))));
+        assertThat(new FieldElement(ed25519Field, BigInteger.ZERO), is(equalTo(ZERO)));
+        assertThat(new FieldElement(ed25519Field, BYTES_ZERO), is(equalTo(ZERO)));
+        assertThat(new FieldElement(ed25519Field, BigInteger.valueOf(1000)), is(equalTo(new FieldElement(ed25519Field, BigInteger.valueOf(1000)))));
         assertThat(ONE, is(not(equalTo(TWO))));
     }
 

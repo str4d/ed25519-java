@@ -59,7 +59,7 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         if (!initialized)
             initialize(strength, new SecureRandom());
 
-        byte[] seed = new byte[edParams.getCurve().getb()];
+        byte[] seed = new byte[edParams.getCurve().getField().getb()];
         random.nextBytes(seed);
 
         EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(seed, edParams);

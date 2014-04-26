@@ -42,7 +42,7 @@ public class EdDSAEngine extends Signature {
 
             // Preparing for hash
             // r = H(h_b,...,h_2b-1,M)
-            int b = privKey.getParams().getCurve().getb();
+            int b = privKey.getParams().getCurve().getField().getb();
             digest.update(privKey.getH(), b/8, b/4 - b/8);
         } else
             throw new InvalidKeyException("cannot identify EdDSA private key.");
@@ -116,7 +116,7 @@ public class EdDSAEngine extends Signature {
     @Override
     protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
         Curve curve = key.getParams().getCurve();
-        int b = curve.getb();
+        int b = curve.getField().getb();
         if (sigBytes.length != b/4)
             throw new IllegalArgumentException("signature length is wrong");
 
@@ -164,7 +164,7 @@ public class EdDSAEngine extends Signature {
 
     private BigInteger Hint(byte[] h) {
         BigInteger hsum = BigInteger.ZERO;
-        for (int i = 0; i < 2*key.getParams().getCurve().getb(); i++) {
+        for (int i = 0; i < 2*key.getParams().getCurve().getField().getb(); i++) {
             hsum = hsum.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
         }
         return hsum;

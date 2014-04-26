@@ -81,7 +81,7 @@ public class GroupElement {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getQm5().divide(BigInteger.valueOf(8))); 
+        x = x.pow(curve.getField().getQm5().divide(BigInteger.valueOf(8))); 
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);

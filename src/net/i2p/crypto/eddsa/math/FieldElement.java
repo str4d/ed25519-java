@@ -8,14 +8,12 @@ import java.math.BigInteger;
  *
  */
 public class FieldElement {
-    final int b;
-    final BigInteger q;
+    final Field f;
 
     final BigInteger bi;
 
-    public FieldElement(int b, BigInteger q, BigInteger bi) {
-        this.b = b;
-        this.q = q;
+    public FieldElement(Field f, BigInteger bi) {
+        this.f = f;
         this.bi = bi;
     }
 
@@ -26,16 +24,15 @@ public class FieldElement {
      * in the zeroth element.
      * @param val
      */
-    public FieldElement(int b, BigInteger q, byte[] val) {
-        if (val.length != b/8)
+    public FieldElement(Field f, byte[] val) {
+        if (val.length != f.getb()/8)
             throw new IllegalArgumentException("Not a valid encoding");
         byte[] out = new byte[val.length];
         for (int i = 0; i < val.length; i++) {
             out[i] = val[val.length-1-i];
         }
         out[0] &= 0x7f; // Ignore highest bit
-        this.b = b;
-        this.q = q;
+        this.f = f;
         this.bi = new BigInteger(out);
     }
 
@@ -49,7 +46,7 @@ public class FieldElement {
      */
     public byte[] toByteArray() {
         byte[] in = bi.toByteArray();
-        byte[] out = new byte[b/8];
+        byte[] out = new byte[f.getb()/8];
         for (int i = 0; i < in.length; i++) {
             out[i] = in[in.length-1-i];
         }
@@ -68,54 +65,54 @@ public class FieldElement {
     }
 
     public FieldElement add(FieldElement val) {
-        return new FieldElement(b, q, bi.add(val.bi).mod(q));
+        return new FieldElement(f, bi.add(val.bi).mod(f.getQ()));
     }
 
     public FieldElement addOne() {
-        return new FieldElement(b, q, bi.add(Constants.ONE).mod(q));
+        return new FieldElement(f, bi.add(Constants.ONE).mod(f.getQ()));
     }
 
     public FieldElement subtract(FieldElement val) {
-        return new FieldElement(b, q, bi.subtract(val.bi).mod(q));
+        return new FieldElement(f, bi.subtract(val.bi).mod(f.getQ()));
     }
 
     public FieldElement subtractOne() {
-        return new FieldElement(b, q, bi.subtract(Constants.ONE).mod(q));
+        return new FieldElement(f, bi.subtract(Constants.ONE).mod(f.getQ()));
     }
 
     public FieldElement negate() {
-        return new FieldElement(b, q, q.subtract(bi));
+        return new FieldElement(f, f.getQ().subtract(bi));
     }
     
     public FieldElement divide(FieldElement val) {
     	return divide(val.bi);
     }
     public FieldElement divide(BigInteger val) {
-    	return new FieldElement(b, q, bi.divide(val).mod(q));
+    	return new FieldElement(f, bi.divide(val).mod(f.getQ()));
     }
 
     public FieldElement multiply(FieldElement val) {
-        return new FieldElement(b, q, bi.multiply(val.bi).mod(q));
+        return new FieldElement(f, bi.multiply(val.bi).mod(f.getQ()));
     }
 
     public FieldElement square() {
-        return modPow(BigInteger.valueOf(2), q);
+        return modPow(BigInteger.valueOf(2), f.getQ());
     }
 
     public FieldElement squareAndDouble() {
-        return square().multiply(new FieldElement(b, q, Constants.TWO));
+        return square().multiply(new FieldElement(f, Constants.TWO));
     }
 
     public FieldElement invert() {
-        return modPow(q.subtract(Constants.TWO), q);
+        return modPow(f.getQm2(), f.getQ());
     }
 
     public FieldElement modPow(BigInteger e, BigInteger m) {
-        return new FieldElement(b, q, bi.modPow(e, m));
+        return new FieldElement(f, bi.modPow(e, m));
     }
     
     public FieldElement pow(BigInteger i){
-    	return modPow(i, q);
+    	return modPow(i, f.getQ());
     }
     
     public FieldElement pow(FieldElement e){
