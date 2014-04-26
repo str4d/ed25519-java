@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
+import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
 /**
@@ -27,10 +29,16 @@ public class EdDSAPrivateKeySpec implements KeySpec {
             // H(k)
             h = hash.digest(seed);
 
-            a = BigInteger.valueOf(2).pow(b-2);
+            /*a = BigInteger.valueOf(2).pow(b-2);
             for (int i=3;i<(b-2);i++) {
-                a = a.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i))));
-            }
+                a = a.add(BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(Utils.bit(h,i))));
+            }*/
+            // Saves ~0.4ms per key when running signing tests.
+            // TODO: are these bitflips the same for any hash function?
+            h[0] &= 248;
+            h[(b/8)-1] &= 63;
+            h[(b/8)-1] |= 64;
+            a = Utils.Hint(Arrays.copyOfRange(h, 0, b/8));
 
             A = spec.getB().scalarmult(a);
         } catch (NoSuchAlgorithmException e) {
@@ -60,9 +68,5 @@ public class EdDSAPrivateKeySpec implements KeySpec {
 
     public EdDSAParameterSpec getParams() {
         return spec;
-    }
-
-    private static int bit(byte[] h, int i) {
-        return h[i/8] >> (i%8) & 1;
     }
 }
