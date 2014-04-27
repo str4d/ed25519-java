@@ -46,7 +46,9 @@ public class Curve {
     }
 
     public GroupElement createPoint(BigInteger x, BigInteger y) {
-        return GroupElement.p2(this, fromBigInteger(x), fromBigInteger(y), fromBigInteger(Constants.ONE));
+        FieldElement X = fromBigInteger(x);
+        FieldElement Y = fromBigInteger(y);
+        return GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
     }
 
     /**
