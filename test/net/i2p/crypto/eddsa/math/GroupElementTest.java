@@ -216,6 +216,23 @@ public class GroupElementTest {
     }
 
     /**
+     * Test method for {@link GroupElement#scalarMultiply(byte[])}.
+     */
+    @Test
+    public void testScalarMultiplyByteArray() {
+        GroupElement t;
+
+        t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
+        t.precompute();
+        assertThat(t.scalarMultiply(BYTES_ONETEN), is(equalTo(t.scalarmult(Utils.Hint(BYTES_ONETEN)))));
+        assertThat(t.scalarMultiply(BYTES_PKR), is(equalTo(t.scalarmult(Utils.Hint(BYTES_PKR)))));
+
+        t = new GroupElement(curve, BYTES_PKR);
+        t.precompute();
+        assertThat(t.scalarMultiply(BYTES_ONETEN), is(equalTo(t.scalarmult(Utils.Hint(BYTES_ONETEN)))));
+    }
+
+    /**
      * Test method for {@link GroupElement#isOnCurve(GroupElement)}.
      */
     @Test
