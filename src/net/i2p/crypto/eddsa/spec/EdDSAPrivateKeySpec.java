@@ -40,9 +40,10 @@ public class EdDSAPrivateKeySpec implements KeySpec {
             h[0] &= 248;
             h[(b/8)-1] &= 63;
             h[(b/8)-1] |= 64;
-            a = Utils.Hint(Arrays.copyOfRange(h, 0, b/8));
+            byte[] abyte = Arrays.copyOfRange(h, 0, b/8);
+            a = Utils.Hint(abyte);
 
-            A = spec.getB().scalarmult(a);
+            A = spec.getB().scalarMultiply(abyte);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Unsupported hash algorithm");
         }
