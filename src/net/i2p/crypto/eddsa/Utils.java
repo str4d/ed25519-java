@@ -19,6 +19,15 @@ public class Utils {
     }
 
     /**
+     * Constant-time determine if byte is negative.
+     * @param b the byte to check.
+     * @return 1 if the byte is negative, 0 otherwise.
+     */
+    public static int negative(int b) {
+        return (b >> 8) & 1;
+    }
+
+    /**
      * Get the i'th bit of a byte array.
      * @param h the byte array.
      * @param i the bit index.

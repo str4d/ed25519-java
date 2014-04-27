@@ -396,7 +396,7 @@ public class GroupElement {
      */
     private GroupElement select(int pos, int b) {
         // Is r_i negative?
-        int bnegative = (b >> 8) & 1;
+        int bnegative = Utils.negative(b);
         // |r_i|
         int babs = b - (((-bnegative) & b) << 1);
 

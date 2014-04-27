@@ -27,6 +27,20 @@ public class UtilsTest {
     }
 
     /**
+     * Test method for {@link net.i2p.crypto.eddsa.Utils#negative(int)}.
+     */
+    @Test
+    public void testNegative() {
+        assertThat(Utils.negative(0),    is(0));
+        assertThat(Utils.negative(1),    is(0));
+        assertThat(Utils.negative(-1),   is(1));
+        assertThat(Utils.negative(32),   is(0));
+        assertThat(Utils.negative(-100), is(1));
+        assertThat(Utils.negative(127),  is(0));
+        assertThat(Utils.negative(-255), is(1));
+    }
+
+    /**
      * Test method for {@link net.i2p.crypto.eddsa.Utils#bit(byte[], int)}.
      */
     @Test
