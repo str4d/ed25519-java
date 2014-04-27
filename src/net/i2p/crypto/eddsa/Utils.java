@@ -8,6 +8,17 @@ import java.math.BigInteger;
  */
 public class Utils {
     /**
+     * Constant-time byte comparison.
+     */
+    public static int equal(int b, int c) {
+        int result = 0;
+        for (int i = 0; i < 8; i++) {
+            result |= (b >> i & 1) ^ (c >> i & 1);
+        }
+        return result == 0 ? 1 : 0;
+    }
+
+    /**
      * Get the i'th bit of a byte array.
      * @param h the byte array.
      * @param i the bit index.

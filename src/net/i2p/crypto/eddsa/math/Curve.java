@@ -14,11 +14,18 @@ public class Curve {
     private FieldElement d2;
     private FieldElement I;
 
+    private final GroupElement zeroP3;
+    private final GroupElement zeroPrecomp;
+
     public Curve(Field f, BigInteger d) {
         this.f = f;
         this.d = fromBigInteger(d);
         this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
         this.I = fromBigInteger(Constants.TWO).modPow(f.getQ().subtract(Constants.ONE).divide(Constants.FOUR), f.getQ());
+
+        zeroP3 = createPoint(Constants.ZERO, Constants.ONE);
+        zeroPrecomp = GroupElement.precomp(this, fromBigInteger(Constants.ONE),
+                fromBigInteger(Constants.ONE), fromBigInteger(Constants.ZERO));
     }
 
     public Field getField() {
@@ -37,6 +44,17 @@ public class Curve {
         return I;
     }
 
+    public GroupElement getZero(GroupElement.Representation repr) {
+        switch (repr) {
+        case P3:
+            return zeroP3;
+        case PRECOMP:
+            return zeroPrecomp;
+        default:
+            return null;
+        }
+    }
+
     public FieldElement fromBigInteger(BigInteger x) {
         return new FieldElement(f, x);
     }
@@ -46,9 +64,16 @@ public class Curve {
     }
 
     public GroupElement createPoint(BigInteger x, BigInteger y) {
+        return createPoint(x, y, false);
+    }
+
+    public GroupElement createPoint(BigInteger x, BigInteger y, boolean precompute) {
         FieldElement X = fromBigInteger(x);
         FieldElement Y = fromBigInteger(y);
-        return GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
+        GroupElement ge = GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
+        if (precompute)
+            ge.precompute();
+        return ge;
     }
 
     /**

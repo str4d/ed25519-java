@@ -43,6 +43,11 @@ public class GroupElement {
         return new GroupElement(curve, Representation.P1P1, X, Y, Z, T);
     }
 
+    public static GroupElement precomp(Curve curve, FieldElement ypx,
+            FieldElement ymx, FieldElement xy2d) {
+        return new GroupElement(curve, Representation.PRECOMP, ypx, ymx, xy2d, null);
+    }
+
     public static GroupElement cached(Curve curve, FieldElement YpX,
             FieldElement YmX, FieldElement Z, FieldElement T2d) {
         return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
@@ -54,6 +59,9 @@ public class GroupElement {
     final FieldElement Y;
     final FieldElement Z;
     final FieldElement T;
+
+    // Precomputed table for scalarMultiply, filled if necessary
+    GroupElement[][] precmp;
 
     public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
             FieldElement Z, FieldElement T) {
@@ -125,6 +133,10 @@ public class GroupElement {
         }
     }
 
+    public GroupElement clone() {
+        return new GroupElement(curve, repr, X, Y, Z, T);
+    }
+
     public GroupElement toP2() {
         return toRep(Representation.P2);
     }
@@ -169,6 +181,28 @@ public class GroupElement {
             }
         default:
             throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Precompute the table for {@link GroupElement#scalarMultiply(byte[])}.
+     */
+    public void precompute() {
+        precmp = new GroupElement[32][8];
+
+        GroupElement Bi = clone();
+        for (int i = 0; i < 32; i++) {
+            GroupElement Bij = Bi.clone();
+            for (int j = 0; j < 8; j++) {
+                FieldElement recip = Bij.Z.invert();
+                FieldElement x = Bij.X.multiply(recip);
+                FieldElement y = Bij.Y.multiply(recip);
+                precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+                Bij = Bij.add(Bi.toCached()).toP3();
+            }
+            for (int k = 0; k < 8; k++) {
+                Bi = Bi.add(Bi.toCached()).toP3();
+            }
         }
     }
 
@@ -314,6 +348,11 @@ public class GroupElement {
         return scalarmult(e.bi);
     }
 
+    /**
+     * Old, slow scalar multiplication.
+     * @param e
+     * @return
+     */
     public GroupElement scalarmult(BigInteger e) {
         BigInteger[] t = new BigInteger[9999];
         GroupElement Q;     
@@ -329,9 +368,7 @@ public class GroupElement {
         }
 
         GroupElement Pcached = toCached();
-        FieldElement zero = curve.fromBigInteger(Constants.ZERO);
-        FieldElement one = curve.fromBigInteger(Constants.ONE);
-        Q = GroupElement.p3(curve, zero, one, one, zero);
+        Q = curve.getZero(Representation.P3);
         for (int j = i; j >= 0; j--) {
             Q = Q.add(Q.toCached()).toP3();
             if (t[j].testBit(0)) Q = Q.add(Pcached).toP3();
@@ -340,37 +377,92 @@ public class GroupElement {
     }
 
     /**
-     * h = a * B
-     * where a = a[0]+256*a[1]+...+256^31 a[31]
-     * B is the Ed25519 base point (x,4/5) with x positive.
+     * Replace this with u if b == 1.
+     * Replace this with this if b == 0.
+     * @param u
+     * @param b in {0, 1}
+     * @return
+     */
+    private GroupElement cmov(GroupElement u, int b) {
+        return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
+    }
+
+    /**
+     * Look up 16^i r_i B in the precomputed table.
+     * No secret array indices, no secret branching.
+     * @param pos = i/2 for i in {0, 2, 4,..., 62}
+     * @param b = r_i
+     * @return
+     */
+    private GroupElement select(int pos, int b) {
+        // Is r_i negative?
+        int bnegative = (b >> 8) & 1;
+        // |r_i|
+        int babs = b - (((-bnegative) & b) << 1);
+
+        // 16^i |r_i| B
+        GroupElement t = curve.getZero(Representation.PRECOMP)
+                .cmov(precmp[pos][0], Utils.equal(babs, 1))
+                .cmov(precmp[pos][1], Utils.equal(babs, 2))
+                .cmov(precmp[pos][2], Utils.equal(babs, 3))
+                .cmov(precmp[pos][3], Utils.equal(babs, 4))
+                .cmov(precmp[pos][4], Utils.equal(babs, 5))
+                .cmov(precmp[pos][5], Utils.equal(babs, 6))
+                .cmov(precmp[pos][6], Utils.equal(babs, 7))
+                .cmov(precmp[pos][7], Utils.equal(babs, 8));
+        // -16^i |r_i| B
+        GroupElement tminus = precomp(curve, t.Y, t.X, t.Z.negate());
+        // 16^i r_i B
+        return t.cmov(tminus, bnegative);
+    }
+
+    /**
+     * h = a * Bb where a = a[0]+256*a[1]+...+256^31 a[31] and
+     * B is this point. If its lookup table has not been precomputed, it
+     * will be at the start of the method (and cached for later calls). 
      *
      * Preconditions: TODO: Check this applies here
      *   a[31] <= 127
-     * @param a
+     * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @return
-     *//*
-	public static GroupElement scalarMultiplyBase(BigInteger a) {
-		GroupElement t;
-		int i;
+     */
+    public GroupElement scalarMultiply(byte[] a) {
+        byte[] e = new byte[64];
+        GroupElement t;
+        int i;
 
-		for (i = 0; i < 63; i++) {
-		}
+        // Radix 16 notation
+        for (i = 0; i < 32; i++) {
+            e[2*i+0] = (byte) ((a[i] >> 0) & 15);
+            e[2*i+1] = (byte) ((a[i] >> 4) & 15);
+        }
+        /* each e[i] is between 0 and 15 */
+        /* e[63] is between 0 and 7 */
+        int carry = 0;
+        for (i = 0; i < 63; i++) {
+            e[i] += carry;
+            carry = e[i] + 8;
+            carry >>= 4;
+        e[i] -= carry << 4;
+        }
+        e[63] += carry;
+        /* each e[i] is between -8 and 8 */
 
-		GroupElement h = P3_ZERO;
-		for (i = 1; i < 64; i += 2) {
-			t = select(i/2, e[i]);
-			h = h.madd(t).toP3();
-		}
+        GroupElement h = curve.getZero(Representation.P3);
+        for (i = 1; i < 64; i += 2) {
+            t = select(i/2, e[i]);
+            h = h.madd(t).toP3();
+        }
 
-		h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
+        h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
 
-		for (i = 0; i < 64; i += 2) {
-			t = select(i/2, e[i]);
-			h = h.madd(t).toP3();
-		}
+        for (i = 0; i < 64; i += 2) {
+            t = select(i/2, e[i]);
+            h = h.madd(t).toP3();
+        }
 
-		return h;
-	}*/
+        return h;
+    }
 
     @Override
     public String toString() {
