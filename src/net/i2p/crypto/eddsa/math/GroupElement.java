@@ -383,7 +383,7 @@ public class GroupElement {
      * @param b in {0, 1}
      * @return
      */
-    private GroupElement cmov(GroupElement u, int b) {
+    public GroupElement cmov(GroupElement u, int b) {
         return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
     }
 

@@ -216,6 +216,17 @@ public class GroupElementTest {
     }
 
     /**
+     * Test method for {@link GroupElement#cmov(GroupElement, int)}.
+     */
+    @Test
+    public void testCmov() {
+        GroupElement a = curve.getZero(GroupElement.Representation.PRECOMP);
+        GroupElement b = GroupElement.precomp(curve, TWO, ZERO, TEN);
+        assertThat(a.cmov(b, 0), is(equalTo(a)));
+        assertThat(a.cmov(b, 1), is(equalTo(b)));
+    }
+
+    /**
      * Test method for {@link GroupElement#scalarMultiply(byte[])}.
      */
     @Test
