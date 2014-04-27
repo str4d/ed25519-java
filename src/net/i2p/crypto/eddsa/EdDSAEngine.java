@@ -124,16 +124,23 @@ public class EdDSAEngine extends Signature {
         BigInteger a = ((EdDSAPrivateKey) key).geta();
 
         // r = H(h_b,...,h_2b-1,M)
-        BigInteger r = Utils.Hint(digest.digest(message));
+        byte[] r = digest.digest(message);
+        BigInteger rBI = Utils.Hint(r);
 
         // R = rB
-        GroupElement R = key.getParams().getB().scalarmult(r);
+        GroupElement R = key.getParams().getB().scalarMultiply(r);
+        GroupElement Rold = key.getParams().getB().scalarmult(rBI);
+        System.out.println(R);
+        System.out.println(Rold);
+        System.out.println("R == Rold ? " + R.equals(Rold));
         byte[] Rbyte = R.toByteArray();
+        byte[] Roldbyte = Rold.toByteArray();
+        System.out.println("Rbyte == Roldbyte ? " + Rbyte.equals(Roldbyte));
 
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
         digest.update(((EdDSAPrivateKey) key).getAbyte());
-        FieldElement S = curve.fromBigInteger(Utils.Hint(digest.digest(message)).multiply(a).add(r).mod(l));
+        FieldElement S = curve.fromBigInteger(Utils.Hint(digest.digest(message)).multiply(a).add(rBI).mod(l));
 
         // R+S
         ByteBuffer out = ByteBuffer.allocate(64);
