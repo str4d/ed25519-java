@@ -48,7 +48,8 @@ public class EdDSAPrivateKeySpec implements KeySpec {
         }
     }
 
-    public EdDSAPrivateKeySpec(byte[] h, BigInteger a, GroupElement A, EdDSAParameterSpec spec) {
+    public EdDSAPrivateKeySpec(byte[] seed, byte[] h, BigInteger a, GroupElement A, EdDSAParameterSpec spec) {
+        this.seed = seed;
         this.h = h;
         this.a = a;
         this.A = A;
