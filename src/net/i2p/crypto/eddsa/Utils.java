@@ -28,6 +28,46 @@ public class Utils {
     }
 
     /**
+     * I don't really know what this method does.
+     * @param a
+     * @return
+     */
+    public static byte[] slide(byte[] a) {
+        byte[] r = new byte[256];
+        int i;
+        int b;
+        int k;
+
+        for (i = 0;i < 256;++i) {
+            r[i] = (byte) (1 & (a[i >> 3] >> (i & 7)));
+        }
+
+        for (i = 0;i < 256;++i) {
+            if (r[i] != 0) {
+                for (b = 1; b <= 6 && i + b < 256; ++b) {
+                    if (r[i + b] != 0) {
+                        if (r[i] + (r[i + b] << b) <= 15) {
+                            r[i] += r[i + b] << b; r[i + b] = 0;
+                        } else if (r[i] - (r[i + b] << b) >= -15) {
+                            r[i] -= r[i + b] << b;
+                            for (k = i + b; k < 256; ++k) {
+                                if (r[k] == 0) {
+                                    r[k] = 1;
+                                    break;
+                                }
+                                r[k] = 0;
+                            }
+                        } else
+                            break;
+                    }
+                }
+            }
+        }
+
+        return r;
+    }
+
+    /**
      * Get the i'th bit of a byte array.
      * @param h the byte array.
      * @param i the bit index.

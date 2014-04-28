@@ -150,7 +150,6 @@ public class EdDSAEngine extends Signature {
             throw new IllegalArgumentException("signature length is wrong");
 
         byte[] Rbyte = Arrays.copyOfRange(sigBytes, 0, b/8);
-        GroupElement R = new GroupElement(curve, Rbyte);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
 
@@ -158,14 +157,14 @@ public class EdDSAEngine extends Signature {
         digest.update(Rbyte);
         digest.update(((EdDSAPublicKey) key).getAbyte());
         // h = H(Rbar,Abar,M)
-        BigInteger h = Utils.Hint(digest.digest(message));
-        // SB
-        GroupElement ra = key.getParams().getB().scalarMultiply(Sbyte);
-        // R + H(Rbar,Abar,M)A
-        GroupElement rb = R.add(((EdDSAPublicKey) key).getA().scalarmult(h).toCached());
+        byte[] h = digest.digest(message);
 
-        // SB = R + H(Rbar,Abar,M)A
-        if (!ra.equals(rb))
+        // R = SB - H(Rbar,Abar,M)A
+        // TODO: Where is the negation of A supposed to happen?
+        GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
+                ((EdDSAPublicKey) key).getA(), h, Sbyte);
+
+        if (!R.toByteArray().equals(Rbyte)) // TODO: Make this constant time.
             return false;
         return true;
     }

@@ -62,6 +62,8 @@ public class GroupElement {
 
     // Precomputed table for scalarMultiply, filled if necessary
     GroupElement[][] precmp;
+    // Precomputed table for doubleScalarMultiplyVariableTime
+    GroupElement[] dblPrecmp;
 
     public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
             FieldElement Z, FieldElement T) {
@@ -185,10 +187,12 @@ public class GroupElement {
     }
 
     /**
-     * Precompute the table for {@link GroupElement#scalarMultiply(byte[])}.
+     * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
+     * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      */
     public void precompute() {
         precmp = new GroupElement[32][8];
+        dblPrecmp = new GroupElement[8];
 
         GroupElement Bi = clone();
         for (int i = 0; i < 32; i++) {
@@ -203,6 +207,16 @@ public class GroupElement {
             for (int k = 0; k < 8; k++) {
                 Bi = Bi.add(Bi.toCached()).toP3();
             }
+        }
+
+        Bi = clone();
+        for (int i = 0; i < 8; i++) {
+            FieldElement recip = Bi.Z.invert();
+            FieldElement x = Bi.X.multiply(recip);
+            FieldElement y = Bi.Y.multiply(recip);
+            dblPrecmp[i] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+            // Bi = edwards(B,edwards(B,Bi))
+            Bi = add(add(Bi.toCached()).toP3().toCached()).toP3();
         }
     }
 
@@ -467,14 +481,53 @@ public class GroupElement {
     /**
      * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
      * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
-     * @param A
+     * @param A in P3 representation.
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @param b = b[0]+256*b[1]+...+256^31 b[31]
      * @return
      */
-    public GroupElement doubleScalarMultiply(GroupElement A, byte[] a, byte[] b) {
+    public GroupElement doubleScalarMultiplyVariableTime(GroupElement A, byte[] a, byte[] b) {
+        GroupElement[] Ai = new GroupElement[8]; // A,3A,5A,7A,9A,11A,13A,15A
+
+        byte[] aslide = Utils.slide(a);
+        byte[] bslide = Utils.slide(b);
+
+        Ai[0] = A.toCached();
+        GroupElement A2 = A.dbl().toP3();
+        Ai[1] = A2.add(Ai[0]).toP3().toCached();
+        Ai[2] = A2.add(Ai[1]).toP3().toCached();
+        Ai[3] = A2.add(Ai[2]).toP3().toCached();
+        Ai[4] = A2.add(Ai[3]).toP3().toCached();
+        Ai[5] = A2.add(Ai[4]).toP3().toCached();
+        Ai[6] = A2.add(Ai[5]).toP3().toCached();
+        Ai[7] = A2.add(Ai[6]).toP3().toCached();
+
         GroupElement r = curve.getZero(Representation.P2);
-        return r.toP2();
+
+        int i;
+        for (i = 255; i >= 0; --i) {
+            if (aslide[i] != 0 || bslide[i] != 0) break;
+        }
+
+        for (; i >= 0; --i) {
+            GroupElement t = r.dbl();
+
+            if (aslide[i] > 0) {
+                t = t.toP3().add(Ai[aslide[i]/2]);
+            } else if(aslide[i] < 0) {
+                t = t.toP3().sub(Ai[(-aslide[i])/2]);
+            }
+
+            if (bslide[i] > 0) {
+                t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
+            } else if(bslide[i] < 0) {
+                t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
+            }
+
+            r = t.toP2();
+        }
+
+        return r;
     }
 
     @Override
