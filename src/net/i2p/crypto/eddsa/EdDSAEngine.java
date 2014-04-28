@@ -129,13 +129,7 @@ public class EdDSAEngine extends Signature {
 
         // R = rB
         GroupElement R = key.getParams().getB().scalarMultiply(r);
-        GroupElement Rold = key.getParams().getB().scalarmult(rBI);
-        System.out.println(R);
-        System.out.println(Rold);
-        System.out.println("R == Rold ? " + R.equals(Rold));
         byte[] Rbyte = R.toByteArray();
-        byte[] Roldbyte = Rold.toByteArray();
-        System.out.println("Rbyte == Roldbyte ? " + Rbyte.equals(Roldbyte));
 
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
@@ -159,7 +153,6 @@ public class EdDSAEngine extends Signature {
         GroupElement R = new GroupElement(curve, Rbyte);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
-        FieldElement S = curve.fromByteArray(Sbyte);
 
         // If we get to here, Rbyte is valid
         digest.update(Rbyte);
@@ -167,7 +160,7 @@ public class EdDSAEngine extends Signature {
         // h = H(Rbar,Abar,M)
         BigInteger h = Utils.Hint(digest.digest(message));
         // SB
-        GroupElement ra = key.getParams().getB().scalarmult(S);
+        GroupElement ra = key.getParams().getB().scalarMultiply(Sbyte);
         // R + H(Rbar,Abar,M)A
         GroupElement rb = R.add(((EdDSAPublicKey) key).getA().scalarmult(h).toCached());
 
