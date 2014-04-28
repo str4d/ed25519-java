@@ -14,6 +14,7 @@ public class Curve {
     private FieldElement d2;
     private FieldElement I;
 
+    private final GroupElement zeroP2;
     private final GroupElement zeroP3;
     private final GroupElement zeroPrecomp;
 
@@ -23,9 +24,11 @@ public class Curve {
         this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
         this.I = fromBigInteger(Constants.TWO).modPow(f.getQ().subtract(Constants.ONE).divide(Constants.FOUR), f.getQ());
 
+        FieldElement zero = fromBigInteger(Constants.ZERO);
+        FieldElement one = fromBigInteger(Constants.ONE);
+        zeroP2 = GroupElement.p2(this, zero, one, one);
         zeroP3 = createPoint(Constants.ZERO, Constants.ONE);
-        zeroPrecomp = GroupElement.precomp(this, fromBigInteger(Constants.ONE),
-                fromBigInteger(Constants.ONE), fromBigInteger(Constants.ZERO));
+        zeroPrecomp = GroupElement.precomp(this, one, one, zero);
     }
 
     public Field getField() {
@@ -46,6 +49,8 @@ public class Curve {
 
     public GroupElement getZero(GroupElement.Representation repr) {
         switch (repr) {
+        case P2:
+            return zeroP2;
         case P3:
             return zeroP3;
         case PRECOMP:

@@ -464,6 +464,19 @@ public class GroupElement {
         return h;
     }
 
+    /**
+     * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
+     * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
+     * @param A
+     * @param a = a[0]+256*a[1]+...+256^31 a[31]
+     * @param b = b[0]+256*b[1]+...+256^31 b[31]
+     * @return
+     */
+    public GroupElement doubleScalarMultiply(GroupElement A, byte[] a, byte[] b) {
+        GroupElement r = curve.getZero(Representation.P2);
+        return r.toP2();
+    }
+
     @Override
     public String toString() {
         return "[GroupElement\nX="+X+"\nY="+Y+"\nZ="+Z+"\nT="+T+"\n]";
