@@ -28,6 +28,33 @@ public class Utils {
     }
 
     /**
+     * Convert a to radix 16.
+     * @param a = a[0]+256*a[1]+...+256^31 a[31]
+     * @return
+     */
+    public static byte[] toRadix16(byte[] a) {
+        byte[] e = new byte[64];
+        int i;
+        // Radix 16 notation
+        for (i = 0; i < 32; i++) {
+            e[2*i+0] = (byte) ((a[i] >> 0) & 15);
+            e[2*i+1] = (byte) ((a[i] >> 4) & 15);
+        }
+        /* each e[i] is between 0 and 15 */
+        /* e[63] is between 0 and 7 */
+        int carry = 0;
+        for (i = 0; i < 63; i++) {
+            e[i] += carry;
+            carry = e[i] + 8;
+            carry >>= 4;
+        e[i] -= carry << 4;
+        }
+        e[63] += carry;
+        /* each e[i] is between -8 and 8 */
+        return e;
+    }
+
+    /**
      * I don't really know what this method does.
      * @param a
      * @return

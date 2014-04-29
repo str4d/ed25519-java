@@ -441,26 +441,10 @@ public class GroupElement {
      * @return
      */
     public GroupElement scalarMultiply(byte[] a) {
-        byte[] e = new byte[64];
         GroupElement t;
         int i;
 
-        // Radix 16 notation
-        for (i = 0; i < 32; i++) {
-            e[2*i+0] = (byte) ((a[i] >> 0) & 15);
-            e[2*i+1] = (byte) ((a[i] >> 4) & 15);
-        }
-        /* each e[i] is between 0 and 15 */
-        /* e[63] is between 0 and 7 */
-        int carry = 0;
-        for (i = 0; i < 63; i++) {
-            e[i] += carry;
-            carry = e[i] + 8;
-            carry >>= 4;
-        e[i] -= carry << 4;
-        }
-        e[63] += carry;
-        /* each e[i] is between -8 and 8 */
+        byte[] e = Utils.toRadix16(a);
 
         GroupElement h = curve.getZero(Representation.P3);
         for (i = 1; i < 64; i += 2) {
