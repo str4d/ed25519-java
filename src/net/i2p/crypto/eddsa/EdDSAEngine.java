@@ -172,7 +172,6 @@ public class EdDSAEngine extends Signature {
         h = leEnc.encode(leEnc.decode(h).mod(key.getParams().getL()), b/8);
 
         // R = SB - H(Rbar,Abar,M)A
-        // TODO: Where is the negation of A supposed to happen?
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
                 ((EdDSAPublicKey) key).getA().negate(), h, Sbyte);
 
