@@ -159,7 +159,6 @@ public class EdDSAEngine extends Signature {
             throw new IllegalArgumentException("signature length is wrong");
 
         byte[] Rbyte = Arrays.copyOfRange(sigBytes, 0, b/8);
-
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
 
         // If we get to here, Rbyte is valid
@@ -167,6 +166,10 @@ public class EdDSAEngine extends Signature {
         digest.update(((EdDSAPublicKey) key).getAbyte());
         // h = H(Rbar,Abar,M)
         byte[] h = digest.digest(message);
+
+        // h mod l
+        LittleEndianEncoding leEnc = new LittleEndianEncoding();
+        h = leEnc.encode(leEnc.decode(h).mod(key.getParams().getL()), b/8);
 
         // R = SB - H(Rbar,Abar,M)A
         // TODO: Where is the negation of A supposed to happen?
