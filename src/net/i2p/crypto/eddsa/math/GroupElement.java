@@ -411,7 +411,7 @@ public class GroupElement {
      * @param b = r_i
      * @return
      */
-    private GroupElement select(int pos, int b) {
+    public GroupElement select(int pos, int b) {
         // Is r_i negative?
         int bnegative = Utils.negative(b);
         // |r_i|

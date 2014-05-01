@@ -139,7 +139,13 @@ public class GroupElementTest {
      */
     @Test
     public void testToP2() {
-        fail("Not yet implemented");
+        GroupElement p3zero = curve.getZero(GroupElement.Representation.P3);
+        GroupElement t = p3zero.toP2();
+        assertThat(t.repr, is(GroupElement.Representation.P2));
+        assertThat(t.X, is(p3zero.X));
+        assertThat(t.Y, is(p3zero.Y));
+        assertThat(t.Z, is(p3zero.Z));
+        assertThat(t.T, is((FieldElement) null));
     }
 
     /**
@@ -234,6 +240,33 @@ public class GroupElementTest {
         GroupElement b = GroupElement.precomp(curve, TWO, ZERO, TEN);
         assertThat(a.cmov(b, 0), is(equalTo(a)));
         assertThat(a.cmov(b, 1), is(equalTo(b)));
+    }
+
+    /**
+     * Test method for {@link GroupElement#select(int, int)}.
+     */
+    @Test
+    public void testSelect() {
+        GroupElement B = ed25519.getB();
+        for (int i = 0; i < 32; i++) {
+            // 16^i 0 B
+            assertThat(i + ",0", B.select(i, 0),
+                    is(equalTo(GroupElement.precomp(curve, ONE, ONE, ZERO))));
+            for (int j = 1; j < 8; j++) {
+                // 16^i r_i B
+                GroupElement t = B.select(i, j);
+                assertThat(i + "," + j,
+                        t, is(equalTo(B.precmp[i][j-1])));
+                // -16^i r_i B
+                t = B.select(i, -j);
+                GroupElement neg = GroupElement.precomp(curve,
+                        B.precmp[i][j-1].Y,
+                        B.precmp[i][j-1].X,
+                        B.precmp[i][j-1].Z.negate());
+                assertThat(i + "," + -j,
+                        t, is(equalTo(neg)));
+            }
+        }
     }
 
     /**
