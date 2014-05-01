@@ -232,6 +232,29 @@ public class GroupElementTest {
     }
 
     /**
+     * Test method for {@link GroupElement#scalarmult(BigInteger)}.
+     * Test values generated with Python Ed25519 implementation.
+     */
+    @Test
+    public void testScalarmult() {
+        byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+        byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+        byte[] a = Utils.hexToBytes("7c437ee3291573c3a79ab86d2f20e91e30265d324b2ad2c87bfa079cddf872d0");
+        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
+
+        assertThat("scalarmult() failed",
+                ed25519.getB().scalarmult(new BigInteger(zero)), is(equalTo(curve.getZero(GroupElement.Representation.P3))));
+        assertThat("scalarmult() failed",
+                ed25519.getB().scalarmult(new BigInteger(one)), is(equalTo(ed25519.getB())));
+        assertThat("scalarmult() failed",
+                ed25519.getB().scalarmult(new BigInteger(two)), is(equalTo(ed25519.getB().dbl())));
+
+        assertThat("scalarmult() failed",
+                ed25519.getB().scalarmult(new BigInteger(a)), is(equalTo(A)));
+    }
+
+    /**
      * Test method for {@link GroupElement#cmov(GroupElement, int)}.
      */
     @Test
@@ -275,10 +298,19 @@ public class GroupElementTest {
      */
     @Test
     public void testScalarMultiplyByteArray() {
+        byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+        byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
         byte[] a = Utils.hexToBytes("7c437ee3291573c3a79ab86d2f20e91e30265d324b2ad2c87bfa079cddf872d0");
         GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
-        assertThat("scalarmult() failed",
-                ed25519.getB().scalarmult(new BigInteger(a)), is(equalTo(A)));
+
+        assertThat("scalarMultiply() failed",
+                ed25519.getB().scalarMultiply(zero), is(equalTo(curve.getZero(GroupElement.Representation.P3))));
+        assertThat("scalarMultiply() failed",
+                ed25519.getB().scalarMultiply(one), is(equalTo(ed25519.getB())));
+        assertThat("scalarMultiply() failed",
+                ed25519.getB().scalarMultiply(two), is(equalTo(ed25519.getB().dbl())));
+
         assertThat("scalarMultiply() failed",
                 ed25519.getB().scalarMultiply(a), is(equalTo(A)));
     }
