@@ -340,6 +340,12 @@ public class GroupElement {
         return p1p1(curve, A.subtract(B), A.add(B), D.subtract(C), D.add(C));
     }
 
+    public GroupElement negate() {
+        if (this.repr != Representation.P3)
+            throw new UnsupportedOperationException();
+        return curve.getZero(Representation.P3).sub(toCached()).toP3();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof GroupElement))

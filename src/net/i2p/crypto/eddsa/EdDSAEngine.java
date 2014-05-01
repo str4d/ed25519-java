@@ -174,11 +174,14 @@ public class EdDSAEngine extends Signature {
         // R = SB - H(Rbar,Abar,M)A
         // TODO: Where is the negation of A supposed to happen?
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
-                ((EdDSAPublicKey) key).getA(), h, Sbyte);
+                ((EdDSAPublicKey) key).getA().negate(), h, Sbyte);
 
-        if (!R.toByteArray().equals(Rbyte)) // TODO: Make this constant time.
-            return false;
-        return true;
+        byte[] Rcalc = R.toByteArray();
+        int result = 1;
+        for (int i = 0; i < Rcalc.length; i++) {
+            result &= Utils.equal(Rcalc[i], Rbyte[i]);
+        }
+        return result == 1;
     }
 
     /**
