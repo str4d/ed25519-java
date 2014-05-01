@@ -238,19 +238,16 @@ public class GroupElementTest {
 
     /**
      * Test method for {@link GroupElement#scalarMultiply(byte[])}.
+     * Test values generated with Python Ed25519 implementation.
      */
     @Test
     public void testScalarMultiplyByteArray() {
-        GroupElement t;
-
-        t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
-        t.precompute();
-        assertThat(t.scalarMultiply(BYTES_ONETEN), is(equalTo(t.scalarmult(Utils.Hint(BYTES_ONETEN)))));
-        assertThat(t.scalarMultiply(BYTES_PKR), is(equalTo(t.scalarmult(Utils.Hint(BYTES_PKR)))));
-
-        t = new GroupElement(curve, BYTES_PKR);
-        t.precompute();
-        assertThat(t.scalarMultiply(BYTES_ONETEN), is(equalTo(t.scalarmult(Utils.Hint(BYTES_ONETEN)))));
+        byte[] a = Utils.hexToBytes("7c437ee3291573c3a79ab86d2f20e91e30265d324b2ad2c87bfa079cddf872d0");
+        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
+        assertThat("scalarmult() failed",
+                ed25519.getB().scalarmult(new BigInteger(a)), is(equalTo(A)));
+        assertThat("scalarMultiply() failed",
+                ed25519.getB().scalarMultiply(a), is(equalTo(A)));
     }
 
     /**
