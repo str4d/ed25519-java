@@ -14,6 +14,7 @@ import java.util.Arrays;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.FieldElement;
 import net.i2p.crypto.eddsa.math.GroupElement;
+import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
 
 /**
  * @author str4d
@@ -122,10 +123,17 @@ public class EdDSAEngine extends Signature {
         Curve curve = key.getParams().getCurve();
         BigInteger l = key.getParams().getL();
         BigInteger a = ((EdDSAPrivateKey) key).geta();
+        LittleEndianEncoding leEnc = new LittleEndianEncoding();
 
         // r = H(h_b,...,h_2b-1,M)
         byte[] r = digest.digest(message);
-        BigInteger rBI = Utils.Hint(r);
+        // From the Ed25519 paper:
+        // Here we interpret 2b-bit strings in little-endian form as integers in
+        // {0, 1,..., 2^(2b)-1}.
+        BigInteger rBI = leEnc.decode(r);
+
+        // r mod l
+        r = leEnc.encode(rBI.mod(l), curve.getField().getb()/8);
 
         // R = rB
         GroupElement R = key.getParams().getB().scalarMultiply(r);
@@ -134,7 +142,7 @@ public class EdDSAEngine extends Signature {
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
         digest.update(((EdDSAPrivateKey) key).getAbyte());
-        FieldElement S = curve.fromBigInteger(Utils.Hint(digest.digest(message)).multiply(a).add(rBI).mod(l));
+        FieldElement S = curve.fromBigInteger(leEnc.decode(digest.digest(message)).multiply(a).add(rBI).mod(l));
 
         // R+S
         ByteBuffer out = ByteBuffer.allocate(64);

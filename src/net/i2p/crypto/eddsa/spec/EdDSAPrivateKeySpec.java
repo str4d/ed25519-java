@@ -6,8 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.GroupElement;
+import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
 
 /**
  * @author str4d
@@ -41,7 +41,7 @@ public class EdDSAPrivateKeySpec implements KeySpec {
             h[(b/8)-1] &= 63;
             h[(b/8)-1] |= 64;
             byte[] abyte = Arrays.copyOfRange(h, 0, b/8);
-            a = Utils.Hint(abyte);
+            a = new LittleEndianEncoding().decode(abyte);
 
             A = spec.getB().scalarMultiply(abyte);
         } catch (NoSuchAlgorithmException e) {

@@ -87,14 +87,6 @@ public class UtilsTest {
     }
 
     /**
-     * Test method for {@link net.i2p.crypto.eddsa.Utils#Hint(byte[])}.
-     */
-    @Test
-    public void testHint() {
-        fail("Not yet implemented");
-    }
-
-    /**
      * Test method for {@link net.i2p.crypto.eddsa.Utils#getHex(byte[])}.
      */
     @Test
