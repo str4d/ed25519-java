@@ -167,6 +167,16 @@ public class GroupElementTest {
     }
 
     /**
+     * Test method for {@link GroupElement#precompute()}.
+     */
+    @Test
+    public void testPrecompute() {
+        GroupElement B = ed25519.getB();
+        assertThat(B.precmp, is(equalTo(PrecomputationTestVectors.testPrecmp)));
+        assertThat(B.dblPrecmp, is(equalTo(PrecomputationTestVectors.testDblPrecmp)));
+    }
+
+    /**
      * Test method for {@link GroupElement#dbl()}.
      */
     @Test
