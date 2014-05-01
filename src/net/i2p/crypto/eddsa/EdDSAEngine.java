@@ -133,6 +133,7 @@ public class EdDSAEngine extends Signature {
         BigInteger rBI = leEnc.decode(r);
 
         // r mod l
+        // Reduces r from 64 bytes to 32 bytes
         r = leEnc.encode(rBI.mod(l), curve.getField().getb()/8);
 
         // R = rB
