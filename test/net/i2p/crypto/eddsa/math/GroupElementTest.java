@@ -4,12 +4,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
-
 import net.i2p.crypto.eddsa.Ed25519TestVectors;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -320,29 +318,42 @@ public class GroupElementTest {
         byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
         byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
         byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+        byte[] a = Utils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
+        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
+        GroupElement B = ed25519.getB();
         GroupElement geZero = curve.getZero(GroupElement.Representation.P3);
 
         // 0 * GE(0) + 0 * GE(0) = GE(0)
         assertThat(geZero.doubleScalarMultiplyVariableTime(geZero, zero, zero),
                 is(equalTo(geZero)));
         // 0 * GE(0) + 0 * B = GE(0)
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, zero, zero),
+        assertThat(B.doubleScalarMultiplyVariableTime(geZero, zero, zero),
                 is(equalTo(geZero)));
         // 1 * GE(0) + 0 * B = GE(0)
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, one, zero),
+        assertThat(B.doubleScalarMultiplyVariableTime(geZero, one, zero),
                 is(equalTo(geZero)));
         // 1 * GE(0) + 1 * B = B
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, one, one),
-                is(equalTo(ed25519.getB())));
+        assertThat(B.doubleScalarMultiplyVariableTime(geZero, one, one),
+                is(equalTo(B)));
         // 1 * B + 1 * B = 2 * B
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), one, one),
-                is(equalTo(ed25519.getB().dbl())));
+        assertThat(B.doubleScalarMultiplyVariableTime(B, one, one),
+                is(equalTo(B.dbl())));
         // 1 * B + 2 * B = 3 * B
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), one, two),
-                is(equalTo(ed25519.getB().dbl().toP3().add(ed25519.getB().toCached()))));
+        assertThat(B.doubleScalarMultiplyVariableTime(B, one, two),
+                is(equalTo(B.dbl().toP3().add(B.toCached()))));
         // 2 * B + 2 * B = 4 * B
-        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), two, two),
-                is(equalTo(ed25519.getB().dbl().toP3().dbl())));
+        assertThat(B.doubleScalarMultiplyVariableTime(B, two, two),
+                is(equalTo(B.dbl().toP3().dbl())));
+
+        // 0 * B + a * B = A
+        assertThat(B.doubleScalarMultiplyVariableTime(B, zero, a),
+                is(equalTo(A)));
+        // a * B + 0 * B = A
+        assertThat(B.doubleScalarMultiplyVariableTime(B, a, zero),
+                is(equalTo(A)));
+        // a * B + a * B = 2 * A
+        assertThat(B.doubleScalarMultiplyVariableTime(B, a, a),
+                is(equalTo(A.dbl())));
     }
 
     /**
