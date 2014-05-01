@@ -367,38 +367,6 @@ public class GroupElement {
         return x1.equals(x2) && y1.equals(y2);
     }
 
-    public GroupElement scalarmult(FieldElement e) {
-        return scalarmult(e.bi);
-    }
-
-    /**
-     * Old, slow scalar multiplication.
-     * @param e
-     * @return
-     */
-    public GroupElement scalarmult(BigInteger e) {
-        BigInteger[] t = new BigInteger[9999];
-        GroupElement Q;     
-        t[0] = e;
-        int i=1;
-
-        while(true) {           
-            t[i] = t[i-1].divide(BigInteger.valueOf(2));;           
-            if (t[i].equals(BigInteger.ZERO)) {             
-                break;          
-            }           
-            i++;
-        }
-
-        GroupElement Pcached = toCached();
-        Q = curve.getZero(Representation.P3);
-        for (int j = i; j >= 0; j--) {
-            Q = Q.add(Q.toCached()).toP3();
-            if (t[j].testBit(0)) Q = Q.add(Pcached).toP3();
-        }       
-        return Q;
-    }
-
     /**
      * Replace this with u if b == 1.
      * Replace this with this if b == 0.

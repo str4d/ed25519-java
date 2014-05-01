@@ -230,27 +230,6 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#scalarmult(BigInteger)}.
-     * Test values generated with Python Ed25519 implementation.
-     */
-    @Test
-    public void testScalarmult() {
-        // Big-endian
-        byte[] a = Utils.hexToBytes("7c437ee3291573c3a79ab86d2f20e91e30265d324b2ad2c87bfa079cddf872d0");
-        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
-
-        assertThat("scalarmult(0) failed",
-                ed25519.getB().scalarmult(Constants.ZERO), is(equalTo(curve.getZero(GroupElement.Representation.P3))));
-        assertThat("scalarmult(1) failed",
-                ed25519.getB().scalarmult(Constants.ONE), is(equalTo(ed25519.getB())));
-        assertThat("scalarmult(2) failed",
-                ed25519.getB().scalarmult(Constants.TWO), is(equalTo(ed25519.getB().dbl())));
-
-        assertThat("scalarmult(a) failed",
-                ed25519.getB().scalarmult(new BigInteger(a)), is(equalTo(A)));
-    }
-
-    /**
      * Test method for {@link GroupElement#cmov(GroupElement, int)}.
      */
     @Test
