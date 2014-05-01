@@ -153,11 +153,14 @@ public class GroupElement {
     }
 
     /**
-     * Convert a GroupElement from one Representation to another.
-     * r = p
-     * Supported conversions:
-     * - P3 -> P2
-     * - P1P1 -> P2|P3
+     * Convert a GroupElement from one Representation to another.<br>
+     * r = p<br>
+     * <br>
+     * Supported conversions:<br>
+     * - P3 -> P2<br>
+     * - P3 -> CACHED (1 multiply, 1 add, 1 subtract)<br>
+     * - P1P1 -> P2 (3 multiply)<br>
+     * - P1P1 -> P3 (4 multiply)
      * @param rep The Representation to convert to.
      * @return A new GroupElement in the given Representation.
      */
@@ -245,7 +248,7 @@ public class GroupElement {
 
     /**
      * GroupElement addition using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).
+     * extended coordinates (Hisil2008).<br>
      * r = p + q
      * @param q the PRECOMP representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
@@ -268,7 +271,7 @@ public class GroupElement {
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).
+     * extended coordinates (Hisil2008).<br>
      * r = p - q
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
@@ -291,7 +294,7 @@ public class GroupElement {
 
     /**
      * GroupElement addition using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).
+     * extended coordinates (Hisil2008).<br>
      * r = p + q
      * @param q the CACHED representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
@@ -315,7 +318,7 @@ public class GroupElement {
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).
+     * extended coordinates (Hisil2008).<br>
      * r = p - q
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
@@ -435,7 +438,7 @@ public class GroupElement {
      * B is this point. If its lookup table has not been precomputed, it
      * will be at the start of the method (and cached for later calls). 
      *
-     * Preconditions: TODO: Check this applies here
+     * Preconditions: (TODO: Check this applies here)
      *   a[31] <= 127
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @return
