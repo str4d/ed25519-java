@@ -314,6 +314,37 @@ public class GroupElementTest {
                 ed25519.getB().scalarMultiply(a), is(equalTo(A)));
     }
 
+    @Test
+    public void testDoubleScalarMultiplyVariableTime() {
+        // Little-endian
+        byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+        byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+        GroupElement geZero = curve.getZero(GroupElement.Representation.P3);
+
+        // 0 * GE(0) + 0 * GE(0) = GE(0)
+        assertThat(geZero.doubleScalarMultiplyVariableTime(geZero, zero, zero),
+                is(equalTo(geZero)));
+        // 0 * GE(0) + 0 * B = GE(0)
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, zero, zero),
+                is(equalTo(geZero)));
+        // 1 * GE(0) + 0 * B = GE(0)
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, one, zero),
+                is(equalTo(geZero)));
+        // 1 * GE(0) + 1 * B = B
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(geZero, one, one),
+                is(equalTo(ed25519.getB())));
+        // 1 * B + 1 * B = 2 * B
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), one, one),
+                is(equalTo(ed25519.getB().dbl())));
+        // 1 * B + 2 * B = 3 * B
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), one, two),
+                is(equalTo(ed25519.getB().dbl().toP3().add(ed25519.getB().toCached()))));
+        // 2 * B + 2 * B = 4 * B
+        assertThat(ed25519.getB().doubleScalarMultiplyVariableTime(ed25519.getB(), two, two),
+                is(equalTo(ed25519.getB().dbl().toP3().dbl())));
+    }
+
     /**
      * Test method for {@link GroupElement#isOnCurve(GroupElement)}.
      */
