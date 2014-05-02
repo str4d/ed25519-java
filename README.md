@@ -5,7 +5,7 @@ This is an implementation of Ed25519 in Java. Structurally, it is based on the r
 
 There are no guarantees that this is secure for use. Tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input) are passing, but this has not yet been audited by a professional cryptographer. In particular, this implementation is unlikely to have the constant-time properties of ref10 (for now).
 
-To run the tests, place `junit4.jar` and `hamcrest-all.jar` in a folder `lib`.
+The JUnit4 tests require the Hamcrest library `hamcrest-all.jar`.
 
 This code is released to the public domain and can be used for any purpose.
 
