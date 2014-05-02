@@ -145,9 +145,6 @@ public class GroupElement {
     public GroupElement toP3() {
         return toRep(Representation.P3);
     }
-    public GroupElement toP1P1() {
-        return toRep(Representation.P1P1);
-    }
     public GroupElement toCached() {
         return toRep(Representation.CACHED);
     }

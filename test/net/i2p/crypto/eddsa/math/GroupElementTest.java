@@ -46,7 +46,13 @@ public class GroupElementTest {
      */
     @Test
     public void testP2() {
-        fail("Not yet implemented");
+        GroupElement t = GroupElement.p2(curve, ZERO, ONE, ONE);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P2));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is((FieldElement) null));
     }
 
     /**
@@ -54,7 +60,13 @@ public class GroupElementTest {
      */
     @Test
     public void testP3() {
-        fail("Not yet implemented");
+        GroupElement t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P3));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ZERO));
     }
 
     /**
@@ -62,7 +74,27 @@ public class GroupElementTest {
      */
     @Test
     public void testP1p1() {
-        fail("Not yet implemented");
+        GroupElement t = GroupElement.p1p1(curve, ZERO, ONE, ONE, ONE);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P1P1));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ONE));
+    }
+
+    /**
+     * Test method for {@link GroupElement#precomp(Curve, FieldElement, FieldElement, FieldElement)}.
+     */
+    @Test
+    public void testPrecomp() {
+        GroupElement t = GroupElement.precomp(curve, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.PRECOMP));
+        assertThat(t.X, is(ONE));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ZERO));
+        assertThat(t.T, is((FieldElement) null));
     }
 
     /**
@@ -70,15 +102,27 @@ public class GroupElementTest {
      */
     @Test
     public void testCached() {
-        fail("Not yet implemented");
+        GroupElement t = GroupElement.cached(curve, ONE, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.CACHED));
+        assertThat(t.X, is(ONE));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ZERO));
     }
 
     /**
-     * Test method for {@link GroupElement#GroupElement(GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
-    public void testGroupElementRepresentationFieldElementFieldElementFieldElementFieldElement() {
-        fail("Not yet implemented");
+    public void testGroupElementCurveRepresentationFieldElementFieldElementFieldElementFieldElement() {
+        GroupElement t = new GroupElement(curve, GroupElement.Representation.P3, ZERO, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P3));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ZERO));
     }
 
     /**
@@ -144,6 +188,14 @@ public class GroupElementTest {
         assertThat(t.Y, is(p3zero.Y));
         assertThat(t.Z, is(p3zero.Z));
         assertThat(t.T, is((FieldElement) null));
+
+        GroupElement B = ed25519.getB();
+        t = B.toP2();
+        assertThat(t.repr, is(GroupElement.Representation.P2));
+        assertThat(t.X, is(B.X));
+        assertThat(t.Y, is(B.Y));
+        assertThat(t.Z, is(B.Z));
+        assertThat(t.T, is((FieldElement) null));
     }
 
     /**
@@ -151,14 +203,6 @@ public class GroupElementTest {
      */
     @Test
     public void testToP3() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link GroupElement#toP1P1()}.
-     */
-    @Test
-    public void testToP1P1() {
         fail("Not yet implemented");
     }
 
@@ -185,7 +229,9 @@ public class GroupElementTest {
      */
     @Test
     public void testDbl() {
-        fail("Not yet implemented");
+        GroupElement B = ed25519.getB();
+        // 2 * B = B + B
+        assertThat(B.dbl(), is(equalTo(B.add(B.toCached()))));
     }
 
     /**
