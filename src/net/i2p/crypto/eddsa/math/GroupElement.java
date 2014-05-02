@@ -18,16 +18,6 @@ public class GroupElement {
         CACHED   // Cached: (Y+X,Y-X,Z,2dT)
     }
 
-    /*
-    public static final GroupElement P2_ZERO = p2(
-            FieldElement.ZERO, FieldElement.ONE, FieldElement.ONE);
-    public static final GroupElement P3_ZERO = p3(
-            FieldElement.ZERO, FieldElement.ONE,
-            FieldElement.ONE, FieldElement.ZERO);
-    public static final GroupElement PRECOMP_ZERO = p2(
-            FieldElement.ONE, FieldElement.ONE, FieldElement.ZERO);
-     */
-
     public static GroupElement p2(Curve curve, FieldElement X,
             FieldElement Y, FieldElement Z) {
         return new GroupElement(curve, Representation.P2, X, Y, Z, null);
