@@ -12,9 +12,9 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
  *
  */
 public class EdDSAPublicKey implements EdDSAKey, PublicKey {
-    private transient GroupElement A;
-    private transient byte[] Abyte;
-    private transient EdDSAParameterSpec edDsaSpec;
+    private transient final GroupElement A;
+    private transient final byte[] Abyte;
+    private transient final EdDSAParameterSpec edDsaSpec;
 
     public EdDSAPublicKey(EdDSAPublicKeySpec spec) {
         this.A = spec.getA();

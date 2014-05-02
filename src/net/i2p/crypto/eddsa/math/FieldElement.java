@@ -8,9 +8,9 @@ import java.math.BigInteger;
  *
  */
 public class FieldElement {
-    final Field f;
+    private final Field f;
 
-    final BigInteger bi;
+    public final BigInteger bi;
 
     public FieldElement(Field f, BigInteger bi) {
         this.f = f;
@@ -74,12 +74,12 @@ public class FieldElement {
     public FieldElement negate() {
         return new FieldElement(f, f.getQ().subtract(bi));
     }
-    
+
     public FieldElement divide(FieldElement val) {
-    	return divide(val.bi);
+        return divide(val.bi);
     }
     public FieldElement divide(BigInteger val) {
-    	return new FieldElement(f, bi.divide(val).mod(f.getQ()));
+        return new FieldElement(f, bi.divide(val).mod(f.getQ()));
     }
 
     public FieldElement multiply(FieldElement val) {
@@ -101,13 +101,13 @@ public class FieldElement {
     public FieldElement modPow(BigInteger e, BigInteger m) {
         return new FieldElement(f, bi.modPow(e, m));
     }
-    
+
     public FieldElement pow(BigInteger i){
-    	return modPow(i, f.getQ());
+        return modPow(i, f.getQ());
     }
-    
+
     public FieldElement pow(FieldElement e){
-    	return pow(e.bi);
+        return pow(e.bi);
     }
 
     /**
@@ -124,15 +124,20 @@ public class FieldElement {
     }
 
     @Override
+    public int hashCode() {
+        return bi.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof FieldElement))
             return false;
         FieldElement fe = (FieldElement) obj;
         return bi.equals(fe.bi);
     }
-    
+
     @Override
     public String toString() {
-    	return "[FieldElement val="+bi+"]";
+        return "[FieldElement val="+bi+"]";
     }
 }

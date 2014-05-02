@@ -9,7 +9,7 @@ import java.security.spec.AlgorithmParameterSpec;
  *
  */
 public class EdDSAGenParameterSpec implements AlgorithmParameterSpec {
-    private String name;
+    private final String name;
 
     public EdDSAGenParameterSpec(String stdName) {
         name = stdName;

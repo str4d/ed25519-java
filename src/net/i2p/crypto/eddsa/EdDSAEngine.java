@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -22,7 +23,7 @@ import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
  */
 public class EdDSAEngine extends Signature {
     private MessageDigest digest;
-    private byte[] message;
+    private final ByteArrayOutputStream baos;
     private EdDSAKey key;
 
     /**
@@ -30,6 +31,7 @@ public class EdDSAEngine extends Signature {
      */
     public EdDSAEngine() {
         super("EdDSA");
+        baos = new ByteArrayOutputStream(256);
     }
 
     /**
@@ -37,7 +39,7 @@ public class EdDSAEngine extends Signature {
      * @param digest the hash algorithm that keys must have to sign or verify.
      */
     public EdDSAEngine(MessageDigest digest) {
-        super("EdDSA");
+        this();
         this.digest = digest;
     }
 
@@ -45,7 +47,7 @@ public class EdDSAEngine extends Signature {
     protected void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
         if (digest != null)
             digest.reset();
-        message = new byte[0];
+        baos.reset();
 
         if (privateKey instanceof EdDSAPrivateKey) {
             EdDSAPrivateKey privKey = (EdDSAPrivateKey) privateKey;
@@ -73,7 +75,7 @@ public class EdDSAEngine extends Signature {
     protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
         if (digest != null)
             digest.reset();
-        message = new byte[0];
+        baos.reset();
 
         if (publicKey instanceof EdDSAPublicKey) {
             key = (EdDSAPublicKey) publicKey;
@@ -95,12 +97,7 @@ public class EdDSAEngine extends Signature {
     protected void engineUpdate(byte b) throws SignatureException {
         // We need to store the message because it is used in several hashes
         // XXX Can this be done more efficiently?
-        byte[] msg = new byte[message.length + 1];
-        for (int i = 0; i < message.length; i++) {
-            msg[i] = message[i];
-        }
-        msg[message.length] = b;
-        message = msg;
+        baos.write(b);
     }
 
     @Override
@@ -108,14 +105,7 @@ public class EdDSAEngine extends Signature {
             throws SignatureException {
         // We need to store the message because it is used in several hashes
         // XXX Can this be done more efficiently?
-        byte[] msg = new byte[message.length + len];
-        for (int i = 0; i < message.length; i++) {
-            msg[i] = message[i];
-        }
-        for (int i = 0; i < len; i++) {
-            msg[i] = b[off+i];
-        }
-        message = msg;
+        baos.write(b, off, len);
     }
 
     @Override
@@ -125,6 +115,7 @@ public class EdDSAEngine extends Signature {
         BigInteger a = ((EdDSAPrivateKey) key).geta();
         LittleEndianEncoding leEnc = new LittleEndianEncoding();
 
+        byte[] message = baos.toByteArray();
         // r = H(h_b,...,h_2b-1,M)
         byte[] r = digest.digest(message);
         // From the Ed25519 paper:
@@ -165,6 +156,7 @@ public class EdDSAEngine extends Signature {
         digest.update(Rbyte);
         digest.update(((EdDSAPublicKey) key).getAbyte());
         // h = H(Rbar,Abar,M)
+        byte[] message = baos.toByteArray();
         byte[] h = digest.digest(message);
 
         // h mod l

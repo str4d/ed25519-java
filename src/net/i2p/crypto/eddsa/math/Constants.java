@@ -9,4 +9,5 @@ public class Constants {
     public static final BigInteger THREE = BigInteger.valueOf(3);
     public static final BigInteger FOUR = BigInteger.valueOf(4);
     public static final BigInteger FIVE = BigInteger.valueOf(5);
+    public static final BigInteger EIGHT = BigInteger.valueOf(8);
 }

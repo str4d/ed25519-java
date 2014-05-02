@@ -8,25 +8,25 @@ import java.math.BigInteger;
  *
  */
 public class Field {
-    private int b;
-    private BigInteger q;
+    private final int b;
+    private final BigInteger q;
     /**
      * q-2
      */
-    private BigInteger qm2;
+    private final BigInteger qm2;
     /**
      * q-5
      */
-    private BigInteger qm5;
+    private final BigInteger qm5;
     /**
      * q+3
      */
-    private BigInteger qp3;
+    private final BigInteger qp3;
     /**
      * Mask where only the first b-1 bits are set.
      */
-    private BigInteger mask;
-    private Encoding enc;
+    private final BigInteger mask;
+    private final Encoding enc;
 
     public Field(int b, BigInteger q, Encoding enc) {
         this.b = b;

@@ -11,7 +11,7 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  *
  */
 public class EdDSANamedCurveSpec extends EdDSAParameterSpec {
-    private String name;
+    private final String name;
 
     public EdDSANamedCurveSpec(String name, Curve curve,
             String hashAlgo, BigInteger l, GroupElement B) {

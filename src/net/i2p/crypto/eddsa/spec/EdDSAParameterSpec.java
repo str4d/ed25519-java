@@ -14,10 +14,10 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  *
  */
 public class EdDSAParameterSpec implements AlgorithmParameterSpec {
-    private Curve curve;
-    private String hashAlgo;
-    private BigInteger l;
-    private GroupElement B;
+    private final Curve curve;
+    private final String hashAlgo;
+    private final BigInteger l;
+    private final GroupElement B;
 
     public EdDSAParameterSpec(Curve curve, String hashAlgo,
             BigInteger l, GroupElement B) {

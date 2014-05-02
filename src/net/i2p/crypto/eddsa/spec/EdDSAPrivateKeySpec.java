@@ -14,11 +14,11 @@ import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
  *
  */
 public class EdDSAPrivateKeySpec implements KeySpec {
-    private byte[] seed;
-    private byte[] h;
-    private BigInteger a;
-    private GroupElement A;
-    private EdDSAParameterSpec spec;
+    private final byte[] seed;
+    private final byte[] h;
+    private final BigInteger a;
+    private final GroupElement A;
+    private final EdDSAParameterSpec spec;
 
     public EdDSAPrivateKeySpec(byte[] seed, EdDSAParameterSpec spec) {
         this.spec = spec;

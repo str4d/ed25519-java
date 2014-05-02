@@ -16,12 +16,12 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
 public class KeyPairGenerator extends KeyPairGeneratorSpi {
-    int strength = 256;
-    EdDSAParameterSpec edParams;
-    SecureRandom random;
-    boolean initialized = false;
+    private int strength = 256;
+    private EdDSAParameterSpec edParams;
+    private SecureRandom random;
+    private boolean initialized;
 
-    static private Hashtable<Integer, AlgorithmParameterSpec> edParameters;
+    private static final Hashtable<Integer, AlgorithmParameterSpec> edParameters;
 
     static {
         edParameters = new Hashtable<Integer, AlgorithmParameterSpec>();

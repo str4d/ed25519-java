@@ -9,8 +9,8 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  *
  */
 public class EdDSAPublicKeySpec implements KeySpec {
-    private GroupElement A;
-    private EdDSAParameterSpec spec;
+    private final GroupElement A;
+    private final EdDSAParameterSpec spec;
 
     public EdDSAPublicKeySpec(byte[] pk, EdDSAParameterSpec spec) {
         if (pk.length != spec.getCurve().getField().getb()/8)

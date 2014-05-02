@@ -9,10 +9,10 @@ import java.math.BigInteger;
  *
  */
 public class Curve {
-    private Field f;
-    private FieldElement d;
-    private FieldElement d2;
-    private FieldElement I;
+    private final Field f;
+    private final FieldElement d;
+    private final FieldElement d2;
+    private final FieldElement I;
 
     private final GroupElement zeroP2;
     private final GroupElement zeroP3;

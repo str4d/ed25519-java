@@ -7,13 +7,10 @@ package net.i2p.crypto.eddsa;
 public class Utils {
     /**
      * Constant-time byte comparison.
+     * @return 1 if b and c are equal, 0 otherwise.
      */
     public static int equal(int b, int c) {
-        int result = 0;
-        for (int i = 0; i < 8; i++) {
-            result |= (b >> i & 1) ^ (c >> i & 1);
-        }
-        return result == 0 ? 1 : 0;
+        return b == c ? 1 : 0;
     }
 
     /**

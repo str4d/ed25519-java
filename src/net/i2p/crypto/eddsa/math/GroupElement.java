@@ -1,7 +1,5 @@
 package net.i2p.crypto.eddsa.math;
 
-import java.math.BigInteger;
-
 import net.i2p.crypto.eddsa.Utils;
 
 /**
@@ -43,17 +41,17 @@ public class GroupElement {
         return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
     }
 
-    final Curve curve;
-    final Representation repr;
-    final FieldElement X;
-    final FieldElement Y;
-    final FieldElement Z;
-    final FieldElement T;
+    protected final Curve curve;
+    protected final Representation repr;
+    protected final FieldElement X;
+    protected final FieldElement Y;
+    protected final FieldElement Z;
+    protected final FieldElement T;
 
     // Precomputed table for scalarMultiply, filled if necessary
-    GroupElement[][] precmp;
+    protected GroupElement[][] precmp;
     // Precomputed table for doubleScalarMultiplyVariableTime
-    GroupElement[] dblPrecmp;
+    protected GroupElement[] dblPrecmp;
 
     public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
             FieldElement Z, FieldElement T) {
@@ -83,7 +81,7 @@ public class GroupElement {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getField().getQm5().divide(BigInteger.valueOf(8))); 
+        x = x.pow(curve.getField().getQm5().divide(Constants.EIGHT));
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);
@@ -332,6 +330,11 @@ public class GroupElement {
             throw new UnsupportedOperationException();
         return curve.getZero(Representation.P3).sub(toCached()).toP3();
     }
+
+    //@Override
+    //public int hashCode() {
+    // TODO
+    //}
 
     @Override
     public boolean equals(Object obj) {

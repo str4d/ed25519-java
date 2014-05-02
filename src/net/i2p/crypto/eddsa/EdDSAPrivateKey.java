@@ -13,12 +13,12 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
  *
  */
 public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
-    private transient byte[] seed;
-    private transient byte[] h;
-    private transient BigInteger a;
-    private transient GroupElement A;
-    private transient byte[] Abyte;
-    private transient EdDSAParameterSpec edDsaSpec;
+    private transient final byte[] seed;
+    private transient final byte[] h;
+    private transient final BigInteger a;
+    private transient final GroupElement A;
+    private transient final byte[] Abyte;
+    private transient final EdDSAParameterSpec edDsaSpec;
 
     public EdDSAPrivateKey(EdDSAPrivateKeySpec spec) {
         this.seed = spec.getSeed();
