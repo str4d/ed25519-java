@@ -1,12 +1,16 @@
 ed25519-java
 ============
 
-Ed25519 ported to Java
+This is an implementation of Ed25519 in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see http://ed25519.cr.yp.to/software.html). Internally, it uses BigIntegers for calculation.
 
-This class was ported from the Python Ed25519 reference implementation, located at http://ed25519.cr.yp.to/python/ed25519.py
+There are no guarantees that this is secure for use. Tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input) are passing, but this has not yet been audited by a professional cryptographer. In particular, this implementation is unlikely to have the constant-time properties of ref10 (for now).
 
-It is not meant to be a proper OOP Java class, but rather a (mostly) direct translation from the Python code.
-
-Compile and run test.java, and compare the output to validtest.txt - if it matches, you have a working Ed25519 library.
+The JUnit4 tests require the Hamcrest library `hamcrest-all.jar`.
 
 This code is released to the public domain and can be used for any purpose.
+
+Credits
+-------
+
+* The Ed25519 class was originally ported by k3d3 from [the Python Ed25519 reference implementation](http://ed25519.cr.yp.to/python/ed25519.py).
+* Useful comments and tweaks were found in [the GNUnet implementation of Ed25519](https://gnunet.org/svn/gnunet-java/src/main/java/org/gnunet/util/crypto/) (based on k3d3's class).
