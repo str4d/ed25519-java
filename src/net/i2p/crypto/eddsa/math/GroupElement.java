@@ -183,7 +183,9 @@ public class GroupElement implements Serializable {
      * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      */
-    public void precompute() {
+    public synchronized void precompute() {
+        if (precmp != null)
+            return;
         precmp = new GroupElement[32][8];
         dblPrecmp = new GroupElement[8];
 
@@ -422,16 +424,22 @@ public class GroupElement implements Serializable {
         byte[] e = Utils.toRadix16(a);
 
         GroupElement h = curve.getZero(Representation.P3);
-        for (i = 1; i < 64; i += 2) {
-            t = select(i/2, e[i]);
-            h = h.madd(t).toP3();
-        }
+        synchronized(this) {
+            // TODO: Get opinion from a crypto professional.
+            // This should in practice never be necessary, the only point that
+            // this should get called on is EdDSA's B.
+            //precompute();
+            for (i = 1; i < 64; i += 2) {
+                t = select(i/2, e[i]);
+                h = h.madd(t).toP3();
+            }
 
-        h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
+            h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
 
-        for (i = 0; i < 64; i += 2) {
-            t = select(i/2, e[i]);
-            h = h.madd(t).toP3();
+            for (i = 0; i < 64; i += 2) {
+                t = select(i/2, e[i]);
+                h = h.madd(t).toP3();
+            }
         }
 
         return h;
@@ -468,22 +476,28 @@ public class GroupElement implements Serializable {
             if (aslide[i] != 0 || bslide[i] != 0) break;
         }
 
-        for (; i >= 0; --i) {
-            GroupElement t = r.dbl();
+        synchronized(this) {
+            // TODO: Get opinion from a crypto professional.
+            // This should in practice never be necessary, the only point that
+            // this should get called on is EdDSA's B.
+            //precompute();
+            for (; i >= 0; --i) {
+                GroupElement t = r.dbl();
 
-            if (aslide[i] > 0) {
-                t = t.toP3().add(Ai[aslide[i]/2]);
-            } else if(aslide[i] < 0) {
-                t = t.toP3().sub(Ai[(-aslide[i])/2]);
+                if (aslide[i] > 0) {
+                    t = t.toP3().add(Ai[aslide[i]/2]);
+                } else if(aslide[i] < 0) {
+                    t = t.toP3().sub(Ai[(-aslide[i])/2]);
+                }
+
+                if (bslide[i] > 0) {
+                    t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
+                } else if(bslide[i] < 0) {
+                    t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
+                }
+
+                r = t.toP2();
             }
-
-            if (bslide[i] > 0) {
-                t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
-            } else if(bslide[i] < 0) {
-                t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
-            }
-
-            r = t.toP2();
         }
 
         return r;
