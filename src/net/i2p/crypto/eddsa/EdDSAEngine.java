@@ -147,7 +147,7 @@ public class EdDSAEngine extends Signature {
         Curve curve = key.getParams().getCurve();
         int b = curve.getField().getb();
         if (sigBytes.length != b/4)
-            throw new IllegalArgumentException("signature length is wrong");
+            throw new SignatureException("signature length is wrong");
 
         byte[] Rbyte = Arrays.copyOfRange(sigBytes, 0, b/8);
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);

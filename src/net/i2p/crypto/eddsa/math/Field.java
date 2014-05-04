@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -7,7 +8,8 @@ import java.math.BigInteger;
  * @author str4d
  *
  */
-public class Field {
+public class Field implements Serializable {
+    private static final long serialVersionUID = 8746587465875676L;
     private final int b;
     private final BigInteger q;
     /**

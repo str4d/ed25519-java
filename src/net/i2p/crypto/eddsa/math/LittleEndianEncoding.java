@@ -1,9 +1,11 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class LittleEndianEncoding implements Encoding {
-    @Override
+public class LittleEndianEncoding implements Encoding, Serializable {
+    private static final long serialVersionUID = 3984579843759837L;
+
     public byte[] encode(BigInteger x, int len) {
         byte[] in = x.toByteArray();
         byte[] out = new byte[len];
@@ -16,7 +18,6 @@ public class LittleEndianEncoding implements Encoding {
         return out;
     }
 
-    @Override
     public BigInteger decode(byte[] in) {
         // Convert 'in' to big endian
         byte[] out = new byte[in.length];

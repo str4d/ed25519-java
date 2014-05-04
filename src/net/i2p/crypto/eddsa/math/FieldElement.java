@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -7,10 +8,10 @@ import java.math.BigInteger;
  * @author str4d
  *
  */
-public class FieldElement {
+public class FieldElement implements Serializable {
+    private static final long serialVersionUID = 4890398908392808L;
     private final Field f;
-
-    public final BigInteger bi;
+    protected final BigInteger bi;
 
     public FieldElement(Field f, BigInteger bi) {
         this.f = f;
@@ -78,6 +79,7 @@ public class FieldElement {
     public FieldElement divide(FieldElement val) {
         return divide(val.bi);
     }
+
     public FieldElement divide(BigInteger val) {
         return new FieldElement(f, bi.divide(val).mod(f.getQ()));
     }

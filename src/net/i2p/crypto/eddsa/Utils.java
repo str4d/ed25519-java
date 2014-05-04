@@ -93,10 +93,10 @@ public class Utils {
      * Get the i'th bit of a byte array.
      * @param h the byte array.
      * @param i the bit index.
-     * @return the value of the i'th bit in h.
+     * @return 0 or 1, the value of the i'th bit in h
      */
     public static int bit(byte[] h, int i) {
-        return h[i/8] >> (i%8) & 1;
+        return (h[i/8] >> (i%8)) & 1;
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -8,7 +9,8 @@ import java.math.BigInteger;
  * @author str4d
  *
  */
-public class Curve {
+public class Curve implements Serializable {
+    private static final long serialVersionUID = 4578920872509827L;
     private final Field f;
     private final FieldElement d;
     private final FieldElement d2;
@@ -79,27 +81,5 @@ public class Curve {
         if (precompute)
             ge.precompute();
         return ge;
-    }
-
-    /**
-     * Verify that a point is on the curve.
-     * @param P The point to check.
-     * @return true if the point lies on the curve.
-     */
-    public boolean isOnCurve(GroupElement P) {
-        switch (P.repr) {
-        case P2:
-        case P3:
-            FieldElement recip = P.Z.invert();
-            FieldElement x = P.X.multiply(recip);
-            FieldElement y = P.Y.multiply(recip);
-            FieldElement xx = x.square();
-            FieldElement yy = y.square();
-            FieldElement dxxyy = d.multiply(xx).multiply(yy);
-            return fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(fromBigInteger(Constants.ZERO));
-
-        default:
-            return isOnCurve(P.toP2());
-        }
     }
 }

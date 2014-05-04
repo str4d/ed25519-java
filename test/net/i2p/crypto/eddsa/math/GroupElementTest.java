@@ -386,17 +386,17 @@ public class GroupElementTest {
      */
     @Test
     public void testIsOnCurve() {
-        assertThat(curve.isOnCurve(P2_ZERO),
+        assertThat(P2_ZERO.isOnCurve(curve),
                 is(true));
-        assertThat(curve.isOnCurve(GroupElement.p2(curve, ZERO, ZERO, ONE)),
+        assertThat(GroupElement.p2(curve, ZERO, ZERO, ONE).isOnCurve(curve),
                 is(false));
-        assertThat(curve.isOnCurve(GroupElement.p2(curve, ONE, ONE, ONE)),
+        assertThat(GroupElement.p2(curve, ONE, ONE, ONE).isOnCurve(curve),
                 is(false));
-        assertThat(curve.isOnCurve(GroupElement.p2(curve, TEN, ZERO, ONE)),
+        assertThat(GroupElement.p2(curve, TEN, ZERO, ONE).isOnCurve(curve),
                 is(false));
-        assertThat(curve.isOnCurve(GroupElement.p2(curve, ONE, TEN, ONE)),
+        assertThat(GroupElement.p2(curve, ONE, TEN, ONE).isOnCurve(curve),
                 is(false));
-        assertThat(curve.isOnCurve(GroupElement.p2(curve, PKR[0], PKR[1], ONE)),
+        assertThat(GroupElement.p2(curve, PKR[0], PKR[1], ONE).isOnCurve(curve),
                 is(true));
     }
 

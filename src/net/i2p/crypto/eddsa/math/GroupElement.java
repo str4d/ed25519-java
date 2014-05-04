@@ -1,5 +1,7 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
+
 import net.i2p.crypto.eddsa.Utils;
 
 /**
@@ -7,13 +9,20 @@ import net.i2p.crypto.eddsa.Utils;
  * @author str4d
  *
  */
-public class GroupElement {
+public class GroupElement implements Serializable {
+    private static final long serialVersionUID = 2395879087349587L;
+
     public enum Representation {
-        P2,      // Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z
-        P3,      // Extended: (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT
-        P1P1,    // Completed: ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T
-        PRECOMP, // Precomputed (Duif): (y+x,y-x,2dxy)
-        CACHED   // Cached: (Y+X,Y-X,Z,2dT)
+        /** Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z */
+        P2,
+        /** Extended: (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT */
+        P3,
+        /** Completed: ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T */
+        P1P1,
+        /** Precomputed (Duif): (y+x,y-x,2dxy) */
+        PRECOMP,
+        /** Cached: (Y+X,Y-X,Z,2dT) */
+        CACHED
     }
 
     public static GroupElement p2(Curve curve, FieldElement X,
@@ -123,10 +132,6 @@ public class GroupElement {
         }
     }
 
-    public GroupElement clone() {
-        return new GroupElement(curve, repr, X, Y, Z, T);
-    }
-
     public GroupElement toP2() {
         return toRep(Representation.P2);
     }
@@ -182,9 +187,9 @@ public class GroupElement {
         precmp = new GroupElement[32][8];
         dblPrecmp = new GroupElement[8];
 
-        GroupElement Bi = clone();
+        GroupElement Bi = this;
         for (int i = 0; i < 32; i++) {
-            GroupElement Bij = Bi.clone();
+            GroupElement Bij = Bi;
             for (int j = 0; j < 8; j++) {
                 FieldElement recip = Bij.Z.invert();
                 FieldElement x = Bij.X.multiply(recip);
@@ -197,7 +202,7 @@ public class GroupElement {
             }
         }
 
-        Bi = clone();
+        Bi = this;
         for (int i = 0; i < 8; i++) {
             FieldElement recip = Bi.Z.invert();
             FieldElement x = Bi.X.multiply(recip);
@@ -238,7 +243,7 @@ public class GroupElement {
      * @param q the PRECOMP representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
      */
-    public GroupElement madd(GroupElement q) {
+    private GroupElement madd(GroupElement q) {
         if (this.repr != Representation.P3)
             throw new UnsupportedOperationException();
         if (q.repr != Representation.PRECOMP)
@@ -261,7 +266,7 @@ public class GroupElement {
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
      */
-    public GroupElement msub(GroupElement q) {
+    private GroupElement msub(GroupElement q) {
         if (this.repr != Representation.P3)
             throw new UnsupportedOperationException();
         if (q.repr != Representation.PRECOMP)
@@ -364,18 +369,21 @@ public class GroupElement {
      * @param b in {0, 1}
      * @return
      */
-    public GroupElement cmov(GroupElement u, int b) {
+    protected GroupElement cmov(GroupElement u, int b) {
         return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
     }
 
     /**
      * Look up 16^i r_i B in the precomputed table.
      * No secret array indices, no secret branching.
+     *
+     * Must have previously precomputed.
+     *
      * @param pos = i/2 for i in {0, 2, 4,..., 62}
      * @param b = r_i
      * @return
      */
-    public GroupElement select(int pos, int b) {
+    protected GroupElement select(int pos, int b) {
         // Is r_i negative?
         int bnegative = Utils.negative(b);
         // |r_i|
@@ -479,6 +487,28 @@ public class GroupElement {
         }
 
         return r;
+    }
+
+    /**
+     * Verify that a point is on the curve.
+     * @param curve The curve to check.
+     * @return true if the point lies on the curve.
+     */
+    public boolean isOnCurve(Curve curve) {
+        switch (repr) {
+        case P2:
+        case P3:
+            FieldElement recip = Z.invert();
+            FieldElement x = X.multiply(recip);
+            FieldElement y = Y.multiply(recip);
+            FieldElement xx = x.square();
+            FieldElement yy = y.square();
+            FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
+            return curve.fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(curve.fromBigInteger(Constants.ZERO));
+
+        default:
+            return toP2().isOnCurve(curve);
+        }
     }
 
     @Override

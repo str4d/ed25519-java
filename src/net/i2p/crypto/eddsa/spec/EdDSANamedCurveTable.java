@@ -13,13 +13,16 @@ import net.i2p.crypto.eddsa.math.Field;
  *
  */
 public class EdDSANamedCurveTable {
+    public static final String CURVE_ED25519_SHA512 = "ed25519-sha-512";
+
     private static final Curve ed25519curve = new Curve(
             new Field(256, // b
                     new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819949"), // q
                     new LittleEndianEncoding()),
             new BigInteger("-4513249062541557337682894930092624173785641285191125241628941591882900924598840740")); // d
+
     private static final EdDSANamedCurveSpec ed25519sha512 = new EdDSANamedCurveSpec(
-            "ed25519-sha-512",
+            CURVE_ED25519_SHA512,
             ed25519curve,
             "SHA-512", // H
             new BigInteger("7237005577332262213973186563042994240857116359379907606001950938285454250989"), // l
@@ -35,7 +38,7 @@ public class EdDSANamedCurveTable {
     }
 
     static {
-        defineCurve("ed25519-sha-512", ed25519sha512);
+        defineCurve(CURVE_ED25519_SHA512, ed25519sha512);
     }
 
     public static EdDSANamedCurveSpec getByName(String name) {

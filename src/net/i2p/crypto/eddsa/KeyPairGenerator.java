@@ -15,8 +15,11 @@ import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
+/**
+ *  Default strength is 256
+ */
 public class KeyPairGenerator extends KeyPairGeneratorSpi {
-    private int strength = 256;
+    private static final int DEFAULT_STRENGTH = 256;
     private EdDSAParameterSpec edParams;
     private SecureRandom random;
     private boolean initialized;
@@ -26,10 +29,9 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
     static {
         edParameters = new Hashtable<Integer, AlgorithmParameterSpec>();
 
-        edParameters.put(Integer.valueOf(256), new EdDSAGenParameterSpec("ed25519-sha-512"));
+        edParameters.put(Integer.valueOf(DEFAULT_STRENGTH), new EdDSAGenParameterSpec(EdDSANamedCurveTable.CURVE_ED25519_SHA512));
     }
 
-    @Override
     public void initialize(int strength, SecureRandom random) {
         AlgorithmParameterSpec edParams = edParameters.get(Integer.valueOf(strength));
         if (edParams == null)
@@ -54,10 +56,9 @@ public class KeyPairGenerator extends KeyPairGeneratorSpi {
         initialized = true;
     }
 
-    @Override
     public KeyPair generateKeyPair() {
         if (!initialized)
-            initialize(strength, new SecureRandom());
+            initialize(DEFAULT_STRENGTH, new SecureRandom());
 
         byte[] seed = new byte[edParams.getCurve().getField().getb()/8];
         random.nextBytes(seed);
