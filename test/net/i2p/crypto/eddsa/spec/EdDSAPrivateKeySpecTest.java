@@ -2,7 +2,7 @@ package net.i2p.crypto.eddsa.spec;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.TestUtils;
 
 import org.junit.Test;
 
@@ -11,8 +11,8 @@ import org.junit.Test;
  *
  */
 public class EdDSAPrivateKeySpecTest {
-    static final byte[] ZERO_SEED = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] ZERO_PK = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+    static final byte[] ZERO_SEED = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] ZERO_PK = TestUtils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
 
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
 

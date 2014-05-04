@@ -50,17 +50,44 @@ public class GroupElement implements Serializable {
         return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
     }
 
-    protected final Curve curve;
-    protected final Representation repr;
-    protected final FieldElement X;
-    protected final FieldElement Y;
-    protected final FieldElement Z;
-    protected final FieldElement T;
-
-    // Precomputed table for scalarMultiply, filled if necessary
-    protected GroupElement[][] precmp;
-    // Precomputed table for doubleScalarMultiplyVariableTime
-    protected GroupElement[] dblPrecmp;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final Curve curve;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final Representation repr;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement X;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement Y;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement Z;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement T;
+    /**
+     * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
+     * filled if necessary.
+     *
+     * Variable is package private only so that tests run.
+     */
+    GroupElement[][] precmp;
+    /**
+     * Precomputed table for {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
+     * filled if necessary.
+     *
+     * Variable is package private only so that tests run.
+     */
+    GroupElement[] dblPrecmp;
 
     public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
             FieldElement Z, FieldElement T) {
@@ -373,13 +400,46 @@ public class GroupElement implements Serializable {
     }
 
     /**
+     * Convert a to radix 16.
+     *
+     * Method is package private only so that tests run.
+     *
+     * @param a = a[0]+256*a[1]+...+256^31 a[31]
+     * @return
+     */
+    static byte[] toRadix16(byte[] a) {
+        byte[] e = new byte[64];
+        int i;
+        // Radix 16 notation
+        for (i = 0; i < 32; i++) {
+            e[2*i+0] = (byte) ((a[i] >> 0) & 15);
+            e[2*i+1] = (byte) ((a[i] >> 4) & 15);
+        }
+        /* each e[i] is between 0 and 15 */
+        /* e[63] is between 0 and 7 */
+        int carry = 0;
+        for (i = 0; i < 63; i++) {
+            e[i] += carry;
+            carry = e[i] + 8;
+            carry >>= 4;
+        e[i] -= carry << 4;
+        }
+        e[63] += carry;
+        /* each e[i] is between -8 and 8 */
+        return e;
+    }
+
+    /**
      * Replace this with u if b == 1.
      * Replace this with this if b == 0.
+     *
+     * Method is package private only so that tests run.
+     *
      * @param u
      * @param b in {0, 1}
      * @return
      */
-    protected GroupElement cmov(GroupElement u, int b) {
+    GroupElement cmov(GroupElement u, int b) {
         return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
     }
 
@@ -389,11 +449,13 @@ public class GroupElement implements Serializable {
      *
      * Must have previously precomputed.
      *
+     * Method is package private only so that tests run.
+     *
      * @param pos = i/2 for i in {0, 2, 4,..., 62}
      * @param b = r_i
      * @return
      */
-    protected GroupElement select(int pos, int b) {
+    GroupElement select(int pos, int b) {
         // Is r_i negative?
         int bnegative = Utils.negative(b);
         // |r_i|
@@ -429,7 +491,7 @@ public class GroupElement implements Serializable {
         GroupElement t;
         int i;
 
-        byte[] e = Utils.toRadix16(a);
+        byte[] e = toRadix16(a);
 
         GroupElement h = curve.getZero(Representation.P3);
         synchronized(this) {
@@ -454,6 +516,49 @@ public class GroupElement implements Serializable {
     }
 
     /**
+     * I don't really know what this method does.
+     *
+     * Method is package private only so that tests run.
+     *
+     * @param a
+     * @return
+     */
+    static byte[] slide(byte[] a) {
+        byte[] r = new byte[256];
+        int i;
+        int b;
+        int k;
+
+        for (i = 0;i < 256;++i) {
+            r[i] = (byte) (1 & (a[i >> 3] >> (i & 7)));
+        }
+
+        for (i = 0;i < 256;++i) {
+            if (r[i] != 0) {
+                for (b = 1; b <= 6 && i + b < 256; ++b) {
+                    if (r[i + b] != 0) {
+                        if (r[i] + (r[i + b] << b) <= 15) {
+                            r[i] += r[i + b] << b; r[i + b] = 0;
+                        } else if (r[i] - (r[i + b] << b) >= -15) {
+                            r[i] -= r[i + b] << b;
+                            for (k = i + b; k < 256; ++k) {
+                                if (r[k] == 0) {
+                                    r[k] = 1;
+                                    break;
+                                }
+                                r[k] = 0;
+                            }
+                        } else
+                            break;
+                    }
+                }
+            }
+        }
+
+        return r;
+    }
+
+    /**
      * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
      * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
      *
@@ -465,8 +570,8 @@ public class GroupElement implements Serializable {
      * @return
      */
     public GroupElement doubleScalarMultiplyVariableTime(GroupElement A, byte[] a, byte[] b) {
-        byte[] aslide = Utils.slide(a);
-        byte[] bslide = Utils.slide(b);
+        byte[] aslide = slide(a);
+        byte[] bslide = slide(b);
 
         GroupElement r = curve.getZero(Representation.P2);
 

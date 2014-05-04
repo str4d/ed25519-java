@@ -11,7 +11,10 @@ import java.math.BigInteger;
 public class FieldElement implements Serializable {
     private static final long serialVersionUID = 4890398908392808L;
     private final Field f;
-    protected final BigInteger bi;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final BigInteger bi;
 
     public FieldElement(Field f, BigInteger bi) {
         this.f = f;
