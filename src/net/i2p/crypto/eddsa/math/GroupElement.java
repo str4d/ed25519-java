@@ -490,6 +490,15 @@ public class GroupElement implements Serializable {
     }
 
     /**
+     * Verify that a point is on its curve.
+     * @param P The point to check.
+     * @return true if the point lies on its curve.
+     */
+    public boolean isOnCurve() {
+        return isOnCurve(curve);
+    }
+
+    /**
      * Verify that a point is on the curve.
      * @param curve The curve to check.
      * @return true if the point lies on the curve.
