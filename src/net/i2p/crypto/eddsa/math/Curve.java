@@ -79,7 +79,7 @@ public class Curve implements Serializable {
         FieldElement Y = fromBigInteger(y);
         GroupElement ge = GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
         if (precompute)
-            ge.precompute();
+            ge.precompute(true);
         return ge;
     }
 }

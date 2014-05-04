@@ -165,7 +165,7 @@ public class EdDSAEngine extends Signature {
 
         // R = SB - H(Rbar,Abar,M)A
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
-                ((EdDSAPublicKey) key).getA().negate(), h, Sbyte);
+                ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
 
         byte[] Rcalc = R.toByteArray();
         int result = 1;

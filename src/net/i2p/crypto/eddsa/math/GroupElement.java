@@ -182,28 +182,36 @@ public class GroupElement implements Serializable {
     /**
      * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
+     *
+     * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
      */
-    public synchronized void precompute() {
-        if (precmp != null)
-            return;
-        precmp = new GroupElement[32][8];
-        dblPrecmp = new GroupElement[8];
+    public synchronized void precompute(boolean precomputeSingle) {
+        GroupElement Bi;
 
-        GroupElement Bi = this;
-        for (int i = 0; i < 32; i++) {
-            GroupElement Bij = Bi;
-            for (int j = 0; j < 8; j++) {
-                FieldElement recip = Bij.Z.invert();
-                FieldElement x = Bij.X.multiply(recip);
-                FieldElement y = Bij.Y.multiply(recip);
-                precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
-                Bij = Bij.add(Bi.toCached()).toP3();
-            }
-            for (int k = 0; k < 8; k++) {
-                Bi = Bi.add(Bi.toCached()).toP3();
+        if (precomputeSingle && precmp == null) {
+            // Precomputation for single scalar multiplication.
+            precmp = new GroupElement[32][8];
+            Bi = this;
+            for (int i = 0; i < 32; i++) {
+                GroupElement Bij = Bi;
+                for (int j = 0; j < 8; j++) {
+                    FieldElement recip = Bij.Z.invert();
+                    FieldElement x = Bij.X.multiply(recip);
+                    FieldElement y = Bij.Y.multiply(recip);
+                    precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+                    Bij = Bij.add(Bi.toCached()).toP3();
+                }
+                for (int k = 0; k < 8; k++) {
+                    Bi = Bi.add(Bi.toCached()).toP3();
+                }
             }
         }
 
+        // Precomputation for double scalar multiplication.
+        // P,3P,5P,7P,9P,11P,13P,15P
+        if (dblPrecmp != null)
+            return;
+        dblPrecmp = new GroupElement[8];
         Bi = this;
         for (int i = 0; i < 8; i++) {
             FieldElement recip = Bi.Z.invert();
@@ -448,26 +456,17 @@ public class GroupElement implements Serializable {
     /**
      * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
      * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
+     *
+     * A must have been previously precomputed.
+     *
      * @param A in P3 representation.
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @param b = b[0]+256*b[1]+...+256^31 b[31]
      * @return
      */
     public GroupElement doubleScalarMultiplyVariableTime(GroupElement A, byte[] a, byte[] b) {
-        GroupElement[] Ai = new GroupElement[8]; // A,3A,5A,7A,9A,11A,13A,15A
-
         byte[] aslide = Utils.slide(a);
         byte[] bslide = Utils.slide(b);
-
-        Ai[0] = A.toCached();
-        GroupElement A2 = A.dbl().toP3();
-        Ai[1] = A2.add(Ai[0]).toP3().toCached();
-        Ai[2] = A2.add(Ai[1]).toP3().toCached();
-        Ai[3] = A2.add(Ai[2]).toP3().toCached();
-        Ai[4] = A2.add(Ai[3]).toP3().toCached();
-        Ai[5] = A2.add(Ai[4]).toP3().toCached();
-        Ai[6] = A2.add(Ai[5]).toP3().toCached();
-        Ai[7] = A2.add(Ai[6]).toP3().toCached();
 
         GroupElement r = curve.getZero(Representation.P2);
 
@@ -485,9 +484,9 @@ public class GroupElement implements Serializable {
                 GroupElement t = r.dbl();
 
                 if (aslide[i] > 0) {
-                    t = t.toP3().add(Ai[aslide[i]/2]);
+                    t = t.toP3().madd(A.dblPrecmp[aslide[i]/2]);
                 } else if(aslide[i] < 0) {
-                    t = t.toP3().sub(Ai[(-aslide[i])/2]);
+                    t = t.toP3().msub(A.dblPrecmp[(-aslide[i])/2]);
                 }
 
                 if (bslide[i] > 0) {
