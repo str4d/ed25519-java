@@ -22,6 +22,9 @@ public class EdDSAParameterSpec implements AlgorithmParameterSpec, Serializable 
     private final BigInteger l;
     private final GroupElement B;
 
+    /**
+     *  @throws IllegalArgumentException if hash algorithm is unsupported or length is wrong
+     */
     public EdDSAParameterSpec(Curve curve, String hashAlgo,
             BigInteger l, GroupElement B) {
         try {

@@ -405,14 +405,14 @@ public class GroupElement implements Serializable {
      * Method is package private only so that tests run.
      *
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
-     * @return
+     * @return 64 bytes, each between -8 and 7
      */
     static byte[] toRadix16(byte[] a) {
         byte[] e = new byte[64];
         int i;
         // Radix 16 notation
         for (i = 0; i < 32; i++) {
-            e[2*i+0] = (byte) ((a[i] >> 0) & 15);
+            e[2*i+0] = (byte) (a[i] & 15);
             e[2*i+1] = (byte) ((a[i] >> 4) & 15);
         }
         /* each e[i] is between 0 and 15 */
@@ -422,10 +422,10 @@ public class GroupElement implements Serializable {
             e[i] += carry;
             carry = e[i] + 8;
             carry >>= 4;
-        e[i] -= carry << 4;
+            e[i] -= carry << 4;
         }
         e[63] += carry;
-        /* each e[i] is between -8 and 8 */
+        /* each e[i] is between -8 and 7 */
         return e;
     }
 
@@ -442,12 +442,11 @@ public class GroupElement implements Serializable {
      */
     GroupElement cmov(GroupElement u, int b) {
         GroupElement ret = null;
-        int i;
-        for (i = 0; i < b; i++) {
+        for (int i = 0; i < b; i++) {
             // Only for b == 1
             ret = u;
         }
-        for (i = 0; i < 1-b; i++) {
+        for (int i = 0; i < 1-b; i++) {
             // Only for b == 0
             ret = this;
         }
@@ -457,6 +456,7 @@ public class GroupElement implements Serializable {
     /**
      * Look up 16^i r_i B in the precomputed table.
      * No secret array indices, no secret branching.
+     * Constant time.
      *
      * Must have previously precomputed.
      *
@@ -492,6 +492,7 @@ public class GroupElement implements Serializable {
      * h = a * Bb where a = a[0]+256*a[1]+...+256^31 a[31] and
      * B is this point. If its lookup table has not been precomputed, it
      * will be at the start of the method (and cached for later calls). 
+     * Constant time.
      *
      * Preconditions: (TODO: Check this applies here)
      *   a[31] <= 127
@@ -531,28 +532,27 @@ public class GroupElement implements Serializable {
      *
      * Method is package private only so that tests run.
      *
-     * @param a
-     * @return
+     * @param a 32 bytes
+     * @return 256 bytes
      */
     static byte[] slide(byte[] a) {
         byte[] r = new byte[256];
-        int i;
-        int b;
-        int k;
 
-        for (i = 0;i < 256;++i) {
+        // put each bit of 'a' into a separate byte, 0 or 1
+        for (int i = 0; i < 256; ++i) {
             r[i] = (byte) (1 & (a[i >> 3] >> (i & 7)));
         }
 
-        for (i = 0;i < 256;++i) {
+        for (int i = 0; i < 256; ++i) {
             if (r[i] != 0) {
-                for (b = 1; b <= 6 && i + b < 256; ++b) {
+                for (int b = 1; b <= 6 && i + b < 256; ++b) {
                     if (r[i + b] != 0) {
                         if (r[i] + (r[i + b] << b) <= 15) {
-                            r[i] += r[i + b] << b; r[i + b] = 0;
+                            r[i] += r[i + b] << b;
+                            r[i + b] = 0;
                         } else if (r[i] - (r[i + b] << b) >= -15) {
                             r[i] -= r[i + b] << b;
-                            for (k = i + b; k < 256; ++k) {
+                            for (int k = i + b; k < 256; ++k) {
                                 if (r[k] == 0) {
                                     r[k] = 1;
                                     break;
