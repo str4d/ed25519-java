@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
 
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
@@ -82,7 +83,7 @@ public class EdDSAEngineTest {
         byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
         sgr.update(message);
 
-        exception.expect(IllegalArgumentException.class);
+        exception.expect(SignatureException.class);
         exception.expectMessage("signature length is wrong");
         sgr.verify(new byte[] {0});
     }
