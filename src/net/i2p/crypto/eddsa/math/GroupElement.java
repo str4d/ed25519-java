@@ -430,17 +430,28 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * Replace this with u if b == 1.
-     * Replace this with this if b == 0.
+     * Constant-time conditional move.
+     * Replaces this with u if b == 1.
+     * Replaces this with this if b == 0.
      *
      * Method is package private only so that tests run.
      *
      * @param u
      * @param b in {0, 1}
-     * @return
+     * @return u if b == 1; this if b == 0; null otherwise.
      */
     GroupElement cmov(GroupElement u, int b) {
-        return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
+        GroupElement ret = null;
+        int i;
+        for (i = 0; i < b; i++) {
+            // Only for b == 1
+            ret = u;
+        }
+        for (i = 0; i < 1-b; i++) {
+            // Only for b == 0
+            ret = this;
+        }
+        return ret;
     }
 
     /**
