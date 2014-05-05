@@ -115,19 +115,6 @@ public class FieldElement implements Serializable {
         return pow(e.bi);
     }
 
-    /**
-     * Replace this with other if b == 1.
-     * Replace this with this if b == 0.
-     * @param other
-     * @param b in {0, 1}
-     * @return
-     */
-    public FieldElement cmov(FieldElement other, int b) {
-        BigInteger x = bi.xor(other.bi);
-        x = x.and(BigInteger.valueOf(-b));
-        return new FieldElement(f, bi.xor(x));
-    }
-
     @Override
     public int hashCode() {
         return bi.hashCode();

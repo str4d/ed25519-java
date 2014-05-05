@@ -146,19 +146,6 @@ public class FieldElementTest {
     }
 
     /**
-     * Test method for {@link FieldElement#cmov(FieldElement, int)}.
-     */
-    @Test
-    public void testCmov() {
-        assertThat(ZERO.cmov(ONE, 0), is(equalTo(ZERO)));
-        assertThat(ZERO.cmov(ONE, 1), is(equalTo(ONE)));
-        FieldElement five = new FieldElement(ed25519Field, Constants.FIVE);
-        FieldElement notfive = new FieldElement(ed25519Field, BigInteger.valueOf(321));
-        assertThat(five.cmov(notfive, 0), is(five));
-        assertThat(five.cmov(notfive, 1), is(notfive));
-    }
-
-    /**
      * Test method for {@link FieldElement#equals(java.lang.Object)}.
      */
     @Test
