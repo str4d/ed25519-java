@@ -10,7 +10,12 @@ public class Utils {
      * @return 1 if b and c are equal, 0 otherwise.
      */
     public static int equal(int b, int c) {
-        return b == c ? 1 : 0;
+        int result = 0;
+        int xor = b ^ c;
+        for (int i = 0; i < 8; i++) {
+            result |= xor >> i;
+        }
+        return (result ^ 0x01) & 0x01;
     }
 
     /**
