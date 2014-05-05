@@ -257,6 +257,7 @@ public class GroupElement implements Serializable {
     public GroupElement dbl() {
         switch (repr) {
         case P2:
+        case P3: // Ignore T for P3 representation
             FieldElement XX, YY, B, A, AA, Yn, Zn;
             XX = X.square();
             YY = Y.square();
@@ -266,8 +267,6 @@ public class GroupElement implements Serializable {
             Yn = YY.add(XX);
             Zn = YY.subtract(XX);
             return p1p1(curve, AA.subtract(Yn), Yn, Zn, B.subtract(Zn));
-        case P3:
-            return toP2().dbl();
         default:
             throw new UnsupportedOperationException();
         }
