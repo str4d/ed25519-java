@@ -14,12 +14,12 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
  */
 public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
     private static final long serialVersionUID = 23495873459878957L;
-    private final byte[] seed;
-    private final byte[] h;
-    private final BigInteger a;
-    private final GroupElement A;
-    private final byte[] Abyte;
-    private final EdDSAParameterSpec edDsaSpec;
+    private transient final byte[] seed;
+    private transient final byte[] h;
+    private transient final BigInteger a;
+    private transient final GroupElement A;
+    private transient final byte[] Abyte;
+    private transient final EdDSAParameterSpec edDsaSpec;
 
     public EdDSAPrivateKey(EdDSAPrivateKeySpec spec) {
         this.seed = spec.getSeed();
