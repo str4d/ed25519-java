@@ -92,7 +92,7 @@ public class FieldElement implements Serializable {
     }
 
     public FieldElement square() {
-        return modPow(Constants.TWO, f.getQ());
+        return multiply(this);
     }
 
     public FieldElement squareAndDouble() {
