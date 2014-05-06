@@ -96,7 +96,8 @@ public class FieldElement implements Serializable {
     }
 
     public FieldElement squareAndDouble() {
-        return square().multiply(new FieldElement(f, Constants.TWO));
+        FieldElement sq = square();
+        return sq.add(sq);
     }
 
     public FieldElement invert() {
