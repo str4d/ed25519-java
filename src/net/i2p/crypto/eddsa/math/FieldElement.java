@@ -101,7 +101,9 @@ public class FieldElement implements Serializable {
     }
 
     public FieldElement invert() {
-        return modPow(f.getQm2(), f.getQ());
+        // Euler's theorem
+        //return modPow(f.getQm2(), f.getQ());
+        return new FieldElement(f, bi.modInverse(f.getQ()));
     }
 
     public FieldElement modPow(BigInteger e, BigInteger m) {
