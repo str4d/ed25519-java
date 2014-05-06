@@ -117,7 +117,7 @@ public class GroupElement implements Serializable {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getField().getQm5().divide(Constants.EIGHT));
+        x = x.pow(curve.getField().getQm5d8());
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);

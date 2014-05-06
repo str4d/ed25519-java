@@ -44,7 +44,7 @@ public class FieldElement implements Serializable {
     }
 
     public boolean isNonZero() {
-        return bi.compareTo(BigInteger.ZERO) != 0;
+        return !bi.equals(BigInteger.ZERO);
     }
 
     /**
@@ -128,7 +128,7 @@ public class FieldElement implements Serializable {
         if (!(obj instanceof FieldElement))
             return false;
         FieldElement fe = (FieldElement) obj;
-        return bi.equals(fe.bi);
+        return f.equals(fe.f) && bi.equals(fe.bi);
     }
 
     @Override

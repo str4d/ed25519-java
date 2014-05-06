@@ -17,13 +17,9 @@ public class Field implements Serializable {
      */
     private final BigInteger qm2;
     /**
-     * q-5
+     * (q-5) / 8
      */
-    private final BigInteger qm5;
-    /**
-     * q+3
-     */
-    private final BigInteger qp3;
+    private final BigInteger qm5d8;
     /**
      * Mask where only the first b-1 bits are set.
      */
@@ -34,8 +30,7 @@ public class Field implements Serializable {
         this.b = b;
         this.q = q;
         this.qm2 = q.subtract(Constants.TWO);
-        this.qm5 = q.subtract(Constants.FIVE);
-        this.qp3 = q.add(Constants.THREE);
+        this.qm5d8 = q.subtract(Constants.FIVE).divide(Constants.EIGHT);
         this.mask = Constants.ONE.shiftLeft(b-1).subtract(Constants.ONE);
         this.enc = enc;
     }
@@ -52,12 +47,8 @@ public class Field implements Serializable {
         return qm2;
     }
 
-    public BigInteger getQm5() {
-        return qm5;
-    }
-
-    public BigInteger getQp3() {
-        return qp3;
+    public BigInteger getQm5d8() {
+        return qm5d8;
     }
 
     public BigInteger getMask() {
@@ -66,5 +57,18 @@ public class Field implements Serializable {
 
     public Encoding getEncoding(){
         return enc;
+    }
+
+    @Override
+    public int hashCode() {
+        return q.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Field))
+            return false;
+        Field f = (Field) obj;
+        return b == f.b && q.equals(f.q);
     }
 }
