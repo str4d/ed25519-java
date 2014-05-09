@@ -11,6 +11,22 @@ The JUnit4 tests require the Hamcrest library `hamcrest-all.jar`.
 
 This code is released to the public domain and can be used for any purpose.
 
+Code comparison
+---------------
+
+For ease of following, here are the main methods in ref10 and their equivalents in this codebase:
+
+| EdDSA Operation | ref10 function | Java function |
+| --------------- | -------------- | ------------- |
+| Generate keypair | `crypto_sign_keypair` | `EdDSAPrivateKeySpec` constructor |
+| Sign message | `crypto_sign` | `EdDSAEngine.engineSign` |
+| Verify signature | `crypto_sign_open` | `EdDSAEngine.engineVerify` |
+
+| EdDSA point arithmetic | ref10 function | Java function |
+| ---------------------- | -------------- | ------------- |
+| Scalar multipication: `R = b * B` | `ge_scalarmult_base` | `GroupElement.scalarMultiply` |
+| Double scalar multiplication: `R = a * A + b * B` | `ge_double_scalarmult_vartime` | `GroupElement.doubleScalarMultiplyVariableTime` |
+
 Credits
 -------
 
