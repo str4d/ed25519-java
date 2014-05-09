@@ -47,16 +47,8 @@ public class FieldElement implements Serializable {
         return !bi.equals(BigInteger.ZERO);
     }
 
-    /**
-     * From the Ed25519 paper:
-     * x is negative if the (b-1)-bit encoding of x is lexicographically larger
-     * than the (b-1)-bit encoding of -x. If q is an odd prime and the encoding
-     * is the little-endian representation of {0, 1,..., q-1} then the negative
-     * elements of F_q are {1, 3, 5,..., q-2}.
-     * @return
-     */
     public boolean isNegative() {
-        return bi.testBit(0);
+        return f.getEncoding().isNegative(bi);
     }
 
     public FieldElement add(FieldElement val) {

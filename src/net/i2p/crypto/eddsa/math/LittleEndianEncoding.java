@@ -36,4 +36,16 @@ public class LittleEndianEncoding implements Encoding, Serializable {
         }
         return new BigInteger(1, out);
     }
+
+    /**
+     * From the Ed25519 paper:
+     * x is negative if the (b-1)-bit encoding of x is lexicographically larger
+     * than the (b-1)-bit encoding of -x. If q is an odd prime and the encoding
+     * is the little-endian representation of {0, 1,..., q-1} then the negative
+     * elements of F_q are {1, 3, 5,..., q-2}.
+     * @return
+     */
+    public boolean isNegative(BigInteger x) {
+        return x.testBit(0);
+    }
 }
