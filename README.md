@@ -24,8 +24,8 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 
 | EdDSA point arithmetic | ref10 function | Java function |
 | ---------------------- | -------------- | ------------- |
-| Scalar multipication: `R = b * B` | `ge_scalarmult_base` | `GroupElement.scalarMultiply` |
-| Double scalar multiplication: `R = a * A + b * B` | `ge_double_scalarmult_vartime` | `GroupElement.doubleScalarMultiplyVariableTime` |
+| Scalar multipication: `R = b*B` | `ge_scalarmult_base` | `GroupElement.scalarMultiply` |
+| Double scalar multiplication: `R = a*A + b*B` | `ge_double_scalarmult_vartime` | `GroupElement.doubleScalarMultiplyVariableTime` |
 
 Credits
 -------

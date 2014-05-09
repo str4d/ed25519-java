@@ -488,7 +488,7 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * h = a * Bb where a = a[0]+256*a[1]+...+256^31 a[31] and
+     * h = a * B where a = a[0]+256*a[1]+...+256^31 a[31] and
      * B is this point. If its lookup table has not been precomputed, it
      * will be at the start of the method (and cached for later calls). 
      * Constant time.
