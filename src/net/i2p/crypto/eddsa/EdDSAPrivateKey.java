@@ -13,6 +13,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
  *
  */
 public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
+    private static final long serialVersionUID = 23495873459878957L;
     private transient final byte[] seed;
     private transient final byte[] h;
     private transient final BigInteger a;
@@ -29,23 +30,19 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
         this.edDsaSpec = spec.getParams();
     }
 
-    @Override
     public String getAlgorithm() {
         return "EdDSA";
     }
 
-    @Override
     public String getFormat() {
         return "PKCS#8";
     }
 
-    @Override
     public byte[] getEncoded() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
     public EdDSAParameterSpec getParams() {
         return edDsaSpec;
     }

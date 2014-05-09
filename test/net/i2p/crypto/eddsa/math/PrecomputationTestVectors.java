@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 
-import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.TestUtils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
@@ -36,19 +36,19 @@ public class PrecomputationTestVectors {
                     while (ypxStr.length() < 64)
                         ypxStr = "0" + ypxStr;
                     FieldElement ypx = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(ypxStr)));
+                            TestUtils.hexToBytes(ypxStr)));
                     line = file.readLine();
                     String ymxStr = line.substring(6, line.indexOf('L'));
                     while (ymxStr.length() < 64)
                         ymxStr = "0" + ymxStr;
                     FieldElement ymx = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(ymxStr)));
+                            TestUtils.hexToBytes(ymxStr)));
                     line = file.readLine();
                     String xy2dStr = line.substring(6, line.indexOf('L'));
                     while (xy2dStr.length() < 64)
                         xy2dStr = "0" + xy2dStr;
                     FieldElement xy2d = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(xy2dStr)));
+                            TestUtils.hexToBytes(xy2dStr)));
                     precmp[row][col] = GroupElement.precomp(curve,
                             ypx, ymx, xy2d);
                 }
@@ -79,19 +79,19 @@ public class PrecomputationTestVectors {
                     while (ypxStr.length() < 64)
                         ypxStr = "0" + ypxStr;
                     FieldElement ypx = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(ypxStr)));
+                            TestUtils.hexToBytes(ypxStr)));
                     line = file.readLine();
                     String ymxStr = line.substring(6, line.indexOf('L'));
                     while (ymxStr.length() < 64)
                         ymxStr = "0" + ymxStr;
                     FieldElement ymx = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(ymxStr)));
+                            TestUtils.hexToBytes(ymxStr)));
                     line = file.readLine();
                     String xy2dStr = line.substring(6, line.indexOf('L'));
                     while (xy2dStr.length() < 64)
                         xy2dStr = "0" + xy2dStr;
                     FieldElement xy2d = curve.fromBigInteger(new BigInteger(
-                            Utils.hexToBytes(xy2dStr)));
+                            TestUtils.hexToBytes(xy2dStr)));
                     dblPrecmp[row] = GroupElement.precomp(curve,
                             ypx, ymx, xy2d);
                 }

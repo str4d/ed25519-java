@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -7,10 +8,13 @@ import java.math.BigInteger;
  * @author str4d
  *
  */
-public class FieldElement {
+public class FieldElement implements Serializable {
+    private static final long serialVersionUID = 4890398908392808L;
     private final Field f;
-
-    public final BigInteger bi;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final BigInteger bi;
 
     public FieldElement(Field f, BigInteger bi) {
         this.f = f;
@@ -40,19 +44,11 @@ public class FieldElement {
     }
 
     public boolean isNonZero() {
-        return bi.compareTo(BigInteger.ZERO) != 0;
+        return !bi.equals(BigInteger.ZERO);
     }
 
-    /**
-     * From the Ed25519 paper:
-     * x is negative if the (b-1)-bit encoding of x is lexicographically larger
-     * than the (b-1)-bit encoding of -x. If q is an odd prime and the encoding
-     * is the little-endian representation of {0, 1,..., q-1} then the negative
-     * elements of F_q are {1, 3, 5,..., q-2}.
-     * @return
-     */
     public boolean isNegative() {
-        return bi.testBit(0);
+        return f.getEncoding().isNegative(bi);
     }
 
     public FieldElement add(FieldElement val) {
@@ -78,6 +74,7 @@ public class FieldElement {
     public FieldElement divide(FieldElement val) {
         return divide(val.bi);
     }
+
     public FieldElement divide(BigInteger val) {
         return new FieldElement(f, bi.divide(val).mod(f.getQ()));
     }
@@ -87,15 +84,18 @@ public class FieldElement {
     }
 
     public FieldElement square() {
-        return modPow(BigInteger.valueOf(2), f.getQ());
+        return multiply(this);
     }
 
     public FieldElement squareAndDouble() {
-        return square().multiply(new FieldElement(f, Constants.TWO));
+        FieldElement sq = square();
+        return sq.add(sq);
     }
 
     public FieldElement invert() {
-        return modPow(f.getQm2(), f.getQ());
+        // Euler's theorem
+        //return modPow(f.getQm2(), f.getQ());
+        return new FieldElement(f, bi.modInverse(f.getQ()));
     }
 
     public FieldElement modPow(BigInteger e, BigInteger m) {
@@ -110,19 +110,6 @@ public class FieldElement {
         return pow(e.bi);
     }
 
-    /**
-     * Replace this with other if b == 1.
-     * Replace this with this if b == 0.
-     * @param other
-     * @param b in {0, 1}
-     * @return
-     */
-    public FieldElement cmov(FieldElement other, int b) {
-        BigInteger x = bi.xor(other.bi);
-        x = x.and(BigInteger.valueOf(-b));
-        return new FieldElement(f, bi.xor(x));
-    }
-
     @Override
     public int hashCode() {
         return bi.hashCode();
@@ -133,7 +120,7 @@ public class FieldElement {
         if (!(obj instanceof FieldElement))
             return false;
         FieldElement fe = (FieldElement) obj;
-        return bi.equals(fe.bi);
+        return f.equals(fe.f) && bi.equals(fe.bi);
     }
 
     @Override

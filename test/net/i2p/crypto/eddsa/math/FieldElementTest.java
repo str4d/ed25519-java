@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 
-import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.TestUtils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
@@ -16,9 +16,9 @@ import org.junit.Test;
  *
  */
 public class FieldElementTest {
-    static final byte[] BYTES_ZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_TEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ZERO = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ONE = TestUtils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_TEN = TestUtils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
 
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
     static final Field ed25519Field = ed25519.getCurve().getField();
@@ -143,19 +143,6 @@ public class FieldElementTest {
     @Test
     public void testModPow() {
         fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link FieldElement#cmov(FieldElement, int)}.
-     */
-    @Test
-    public void testCmov() {
-        assertThat(ZERO.cmov(ONE, 0), is(equalTo(ZERO)));
-        assertThat(ZERO.cmov(ONE, 1), is(equalTo(ONE)));
-        FieldElement five = new FieldElement(ed25519Field, Constants.FIVE);
-        FieldElement notfive = new FieldElement(ed25519Field, BigInteger.valueOf(321));
-        assertThat(five.cmov(notfive, 0), is(five));
-        assertThat(five.cmov(notfive, 1), is(notfive));
     }
 
     /**

@@ -8,17 +8,23 @@ import java.security.spec.AlgorithmParameterSpec;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
 
+import java.io.Serializable;
+
 /**
  * Parameter specification for an EdDSA algorithm.
  * @author str4d
  *
  */
-public class EdDSAParameterSpec implements AlgorithmParameterSpec {
+public class EdDSAParameterSpec implements AlgorithmParameterSpec, Serializable {
+    private static final long serialVersionUID = 8274987108472012L;
     private final Curve curve;
     private final String hashAlgo;
     private final BigInteger l;
     private final GroupElement B;
 
+    /**
+     *  @throws IllegalArgumentException if hash algorithm is unsupported or length is wrong
+     */
     public EdDSAParameterSpec(Curve curve, String hashAlgo,
             BigInteger l, GroupElement B) {
         try {

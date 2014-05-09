@@ -137,7 +137,8 @@ public class EdDSAEngine extends Signature {
         FieldElement S = curve.fromBigInteger(leEnc.decode(digest.digest(message)).multiply(a).add(rBI).mod(l));
 
         // R+S
-        ByteBuffer out = ByteBuffer.allocate(64);
+        int b = curve.getField().getb();
+        ByteBuffer out = ByteBuffer.allocate(b/4);
         out.put(Rbyte).put(S.toByteArray());
         return out.array();
     }
@@ -147,13 +148,10 @@ public class EdDSAEngine extends Signature {
         Curve curve = key.getParams().getCurve();
         int b = curve.getField().getb();
         if (sigBytes.length != b/4)
-            throw new IllegalArgumentException("signature length is wrong");
+            throw new SignatureException("signature length is wrong");
 
-        byte[] Rbyte = Arrays.copyOfRange(sigBytes, 0, b/8);
-        byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
-
-        // If we get to here, Rbyte is valid
-        digest.update(Rbyte);
+        // R is first b/8 bytes of sigBytes, S is second b/8 bytes
+        digest.update(sigBytes, 0, b/8);
         digest.update(((EdDSAPublicKey) key).getAbyte());
         // h = H(Rbar,Abar,M)
         byte[] message = baos.toByteArray();
@@ -163,14 +161,15 @@ public class EdDSAEngine extends Signature {
         LittleEndianEncoding leEnc = new LittleEndianEncoding();
         h = leEnc.encode(leEnc.decode(h).mod(key.getParams().getL()), b/8);
 
+        byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
         // R = SB - H(Rbar,Abar,M)A
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
-                ((EdDSAPublicKey) key).getA().negate(), h, Sbyte);
+                ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
 
         byte[] Rcalc = R.toByteArray();
         int result = 1;
         for (int i = 0; i < Rcalc.length; i++) {
-            result &= Utils.equal(Rcalc[i], Rbyte[i]);
+            result &= Utils.equal(Rcalc[i], sigBytes[i]);
         }
         return result == 1;
     }

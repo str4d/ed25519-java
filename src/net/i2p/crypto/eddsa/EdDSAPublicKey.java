@@ -12,39 +12,42 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
  *
  */
 public class EdDSAPublicKey implements EdDSAKey, PublicKey {
-    private transient final GroupElement A;
-    private transient final byte[] Abyte;
-    private transient final EdDSAParameterSpec edDsaSpec;
+    private static final long serialVersionUID = 9837459837498475L;
+    private final GroupElement A;
+    private final GroupElement Aneg;
+    private final byte[] Abyte;
+    private final EdDSAParameterSpec edDsaSpec;
 
     public EdDSAPublicKey(EdDSAPublicKeySpec spec) {
         this.A = spec.getA();
+        this.Aneg = spec.getNegativeA();
         this.Abyte = this.A.toByteArray();
         this.edDsaSpec = spec.getParams();
     }
 
-    @Override
     public String getAlgorithm() {
         return "EdDSA";
     }
 
-    @Override
     public String getFormat() {
         return "X.509";
     }
 
-    @Override
     public byte[] getEncoded() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
     public EdDSAParameterSpec getParams() {
         return edDsaSpec;
     }
 
     public GroupElement getA() {
         return A;
+    }
+
+    public GroupElement getNegativeA() {
+        return Aneg;
     }
 
     public byte[] getAbyte() {

@@ -20,6 +20,9 @@ public class EdDSAPrivateKeySpec implements KeySpec {
     private final GroupElement A;
     private final EdDSAParameterSpec spec;
 
+    /**
+     *  @throws IllegalArgumentException if hash algorithm is unsupported
+     */
     public EdDSAPrivateKeySpec(byte[] seed, EdDSAParameterSpec spec) {
         this.spec = spec;
         this.seed = seed;

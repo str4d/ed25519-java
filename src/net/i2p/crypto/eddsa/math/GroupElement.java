@@ -1,5 +1,7 @@
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
+
 import net.i2p.crypto.eddsa.Utils;
 
 /**
@@ -7,13 +9,20 @@ import net.i2p.crypto.eddsa.Utils;
  * @author str4d
  *
  */
-public class GroupElement {
+public class GroupElement implements Serializable {
+    private static final long serialVersionUID = 2395879087349587L;
+
     public enum Representation {
-        P2,      // Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z
-        P3,      // Extended: (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT
-        P1P1,    // Completed: ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T
-        PRECOMP, // Precomputed (Duif): (y+x,y-x,2dxy)
-        CACHED   // Cached: (Y+X,Y-X,Z,2dT)
+        /** Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z */
+        P2,
+        /** Extended: (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT */
+        P3,
+        /** Completed: ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T */
+        P1P1,
+        /** Precomputed (Duif): (y+x,y-x,2dxy) */
+        PRECOMP,
+        /** Cached: (Y+X,Y-X,Z,2dT) */
+        CACHED
     }
 
     public static GroupElement p2(Curve curve, FieldElement X,
@@ -41,17 +50,44 @@ public class GroupElement {
         return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
     }
 
-    protected final Curve curve;
-    protected final Representation repr;
-    protected final FieldElement X;
-    protected final FieldElement Y;
-    protected final FieldElement Z;
-    protected final FieldElement T;
-
-    // Precomputed table for scalarMultiply, filled if necessary
-    protected GroupElement[][] precmp;
-    // Precomputed table for doubleScalarMultiplyVariableTime
-    protected GroupElement[] dblPrecmp;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final Curve curve;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final Representation repr;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement X;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement Y;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement Z;
+    /**
+     * Variable is package private only so that tests run.
+     */
+    final FieldElement T;
+    /**
+     * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
+     * filled if necessary.
+     *
+     * Variable is package private only so that tests run.
+     */
+    GroupElement[][] precmp;
+    /**
+     * Precomputed table for {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
+     * filled if necessary.
+     *
+     * Variable is package private only so that tests run.
+     */
+    GroupElement[] dblPrecmp;
 
     public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
             FieldElement Z, FieldElement T) {
@@ -81,7 +117,7 @@ public class GroupElement {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getField().getQm5().divide(Constants.EIGHT));
+        x = x.pow(curve.getField().getQm5d8());
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);
@@ -121,10 +157,6 @@ public class GroupElement {
         default:
             return toP2().toByteArray();
         }
-    }
-
-    public GroupElement clone() {
-        return new GroupElement(curve, repr, X, Y, Z, T);
     }
 
     public GroupElement toP2() {
@@ -177,27 +209,37 @@ public class GroupElement {
     /**
      * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
+     *
+     * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
      */
-    public void precompute() {
-        precmp = new GroupElement[32][8];
-        dblPrecmp = new GroupElement[8];
+    public synchronized void precompute(boolean precomputeSingle) {
+        GroupElement Bi;
 
-        GroupElement Bi = clone();
-        for (int i = 0; i < 32; i++) {
-            GroupElement Bij = Bi.clone();
-            for (int j = 0; j < 8; j++) {
-                FieldElement recip = Bij.Z.invert();
-                FieldElement x = Bij.X.multiply(recip);
-                FieldElement y = Bij.Y.multiply(recip);
-                precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
-                Bij = Bij.add(Bi.toCached()).toP3();
-            }
-            for (int k = 0; k < 8; k++) {
-                Bi = Bi.add(Bi.toCached()).toP3();
+        if (precomputeSingle && precmp == null) {
+            // Precomputation for single scalar multiplication.
+            precmp = new GroupElement[32][8];
+            Bi = this;
+            for (int i = 0; i < 32; i++) {
+                GroupElement Bij = Bi;
+                for (int j = 0; j < 8; j++) {
+                    FieldElement recip = Bij.Z.invert();
+                    FieldElement x = Bij.X.multiply(recip);
+                    FieldElement y = Bij.Y.multiply(recip);
+                    precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+                    Bij = Bij.add(Bi.toCached()).toP3();
+                }
+                for (int k = 0; k < 8; k++) {
+                    Bi = Bi.add(Bi.toCached()).toP3();
+                }
             }
         }
 
-        Bi = clone();
+        // Precomputation for double scalar multiplication.
+        // P,3P,5P,7P,9P,11P,13P,15P
+        if (dblPrecmp != null)
+            return;
+        dblPrecmp = new GroupElement[8];
+        Bi = this;
         for (int i = 0; i < 8; i++) {
             FieldElement recip = Bi.Z.invert();
             FieldElement x = Bi.X.multiply(recip);
@@ -215,6 +257,7 @@ public class GroupElement {
     public GroupElement dbl() {
         switch (repr) {
         case P2:
+        case P3: // Ignore T for P3 representation
             FieldElement XX, YY, B, A, AA, Yn, Zn;
             XX = X.square();
             YY = Y.square();
@@ -224,8 +267,6 @@ public class GroupElement {
             Yn = YY.add(XX);
             Zn = YY.subtract(XX);
             return p1p1(curve, AA.subtract(Yn), Yn, Zn, B.subtract(Zn));
-        case P3:
-            return toP2().dbl();
         default:
             throw new UnsupportedOperationException();
         }
@@ -238,7 +279,7 @@ public class GroupElement {
      * @param q the PRECOMP representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
      */
-    public GroupElement madd(GroupElement q) {
+    private GroupElement madd(GroupElement q) {
         if (this.repr != Representation.P3)
             throw new UnsupportedOperationException();
         if (q.repr != Representation.PRECOMP)
@@ -261,7 +302,7 @@ public class GroupElement {
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
      */
-    public GroupElement msub(GroupElement q) {
+    private GroupElement msub(GroupElement q) {
         if (this.repr != Representation.P3)
             throw new UnsupportedOperationException();
         if (q.repr != Representation.PRECOMP)
@@ -348,34 +389,105 @@ public class GroupElement {
                 return false;
             }
         }
-        FieldElement recip1 = Z.invert();
-        FieldElement x1 = X.multiply(recip1);
-        FieldElement y1 = Y.multiply(recip1);
-        FieldElement recip2 = ge.Z.invert();
-        FieldElement x2 = ge.X.multiply(recip2);
-        FieldElement y2 = ge.Y.multiply(recip2);
-        return x1.equals(x2) && y1.equals(y2);
+        switch (this.repr) {
+        case P2:
+        case P3:
+            FieldElement recip1 = Z.invert();
+            FieldElement x1 = X.multiply(recip1);
+            FieldElement y1 = Y.multiply(recip1);
+            FieldElement recip2 = ge.Z.invert();
+            FieldElement x2 = ge.X.multiply(recip2);
+            FieldElement y2 = ge.Y.multiply(recip2);
+            return x1.equals(x2) && y1.equals(y2);
+        case P1P1:
+            return toP2().equals(ge);
+        case PRECOMP:
+            // Compare directly, PRECOMP is derived directly from x and y
+            return X.equals(ge.X) && Y.equals(ge.Y) && Z.equals(ge.Z);
+        case CACHED:
+            // (Y+X)/Z = y+x etc.
+            FieldElement recip3 = Z.invert();
+            FieldElement x3 = X.multiply(recip3);
+            FieldElement y3 = Y.multiply(recip3);
+            FieldElement t3 = T.multiply(recip3);
+            FieldElement recip4 = ge.Z.invert();
+            FieldElement x4 = ge.X.multiply(recip4);
+            FieldElement y4 = ge.Y.multiply(recip4);
+            FieldElement t4 = ge.T.multiply(recip4);
+            return x3.equals(x4) && y3.equals(y4) && t3.equals(t4);
+        default:
+            return false;
+        }
     }
 
     /**
-     * Replace this with u if b == 1.
-     * Replace this with this if b == 0.
+     * Convert a to radix 16.
+     *
+     * Method is package private only so that tests run.
+     *
+     * @param a = a[0]+256*a[1]+...+256^31 a[31]
+     * @return 64 bytes, each between -8 and 7
+     */
+    static byte[] toRadix16(byte[] a) {
+        byte[] e = new byte[64];
+        int i;
+        // Radix 16 notation
+        for (i = 0; i < 32; i++) {
+            e[2*i+0] = (byte) (a[i] & 15);
+            e[2*i+1] = (byte) ((a[i] >> 4) & 15);
+        }
+        /* each e[i] is between 0 and 15 */
+        /* e[63] is between 0 and 7 */
+        int carry = 0;
+        for (i = 0; i < 63; i++) {
+            e[i] += carry;
+            carry = e[i] + 8;
+            carry >>= 4;
+            e[i] -= carry << 4;
+        }
+        e[63] += carry;
+        /* each e[i] is between -8 and 7 */
+        return e;
+    }
+
+    /**
+     * Constant-time conditional move.
+     * Replaces this with u if b == 1.
+     * Replaces this with this if b == 0.
+     *
+     * Method is package private only so that tests run.
+     *
      * @param u
      * @param b in {0, 1}
-     * @return
+     * @return u if b == 1; this if b == 0; null otherwise.
      */
-    public GroupElement cmov(GroupElement u, int b) {
-        return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
+    GroupElement cmov(GroupElement u, int b) {
+        GroupElement ret = null;
+        for (int i = 0; i < b; i++) {
+            // Only for b == 1
+            ret = u;
+        }
+        for (int i = 0; i < 1-b; i++) {
+            // Only for b == 0
+            ret = this;
+        }
+        return ret;
     }
 
     /**
      * Look up 16^i r_i B in the precomputed table.
      * No secret array indices, no secret branching.
+     * Constant time.
+     *
+     * Must have previously precomputed.
+     *
+     * Method is package private only so that tests run.
+     *
      * @param pos = i/2 for i in {0, 2, 4,..., 62}
      * @param b = r_i
      * @return
      */
-    public GroupElement select(int pos, int b) {
+    GroupElement select(int pos, int b) {
         // Is r_i negative?
         int bnegative = Utils.negative(b);
         // |r_i|
@@ -398,9 +510,10 @@ public class GroupElement {
     }
 
     /**
-     * h = a * Bb where a = a[0]+256*a[1]+...+256^31 a[31] and
+     * h = a * B where a = a[0]+256*a[1]+...+256^31 a[31] and
      * B is this point. If its lookup table has not been precomputed, it
      * will be at the start of the method (and cached for later calls). 
+     * Constant time.
      *
      * Preconditions: (TODO: Check this applies here)
      *   a[31] <= 127
@@ -411,47 +524,86 @@ public class GroupElement {
         GroupElement t;
         int i;
 
-        byte[] e = Utils.toRadix16(a);
+        byte[] e = toRadix16(a);
 
         GroupElement h = curve.getZero(Representation.P3);
-        for (i = 1; i < 64; i += 2) {
-            t = select(i/2, e[i]);
-            h = h.madd(t).toP3();
-        }
+        synchronized(this) {
+            // TODO: Get opinion from a crypto professional.
+            // This should in practice never be necessary, the only point that
+            // this should get called on is EdDSA's B.
+            //precompute();
+            for (i = 1; i < 64; i += 2) {
+                t = select(i/2, e[i]);
+                h = h.madd(t).toP3();
+            }
 
-        h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
+            h = h.dbl().toP2().dbl().toP2().dbl().toP2().dbl().toP3();
 
-        for (i = 0; i < 64; i += 2) {
-            t = select(i/2, e[i]);
-            h = h.madd(t).toP3();
+            for (i = 0; i < 64; i += 2) {
+                t = select(i/2, e[i]);
+                h = h.madd(t).toP3();
+            }
         }
 
         return h;
     }
 
     /**
+     * I don't really know what this method does.
+     *
+     * Method is package private only so that tests run.
+     *
+     * @param a 32 bytes
+     * @return 256 bytes
+     */
+    static byte[] slide(byte[] a) {
+        byte[] r = new byte[256];
+
+        // put each bit of 'a' into a separate byte, 0 or 1
+        for (int i = 0; i < 256; ++i) {
+            r[i] = (byte) (1 & (a[i >> 3] >> (i & 7)));
+        }
+
+        for (int i = 0; i < 256; ++i) {
+            if (r[i] != 0) {
+                for (int b = 1; b <= 6 && i + b < 256; ++b) {
+                    if (r[i + b] != 0) {
+                        if (r[i] + (r[i + b] << b) <= 15) {
+                            r[i] += r[i + b] << b;
+                            r[i + b] = 0;
+                        } else if (r[i] - (r[i + b] << b) >= -15) {
+                            r[i] -= r[i + b] << b;
+                            for (int k = i + b; k < 256; ++k) {
+                                if (r[k] == 0) {
+                                    r[k] = 1;
+                                    break;
+                                }
+                                r[k] = 0;
+                            }
+                        } else
+                            break;
+                    }
+                }
+            }
+        }
+
+        return r;
+    }
+
+    /**
      * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
      * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
+     *
+     * A must have been previously precomputed.
+     *
      * @param A in P3 representation.
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @param b = b[0]+256*b[1]+...+256^31 b[31]
      * @return
      */
     public GroupElement doubleScalarMultiplyVariableTime(GroupElement A, byte[] a, byte[] b) {
-        GroupElement[] Ai = new GroupElement[8]; // A,3A,5A,7A,9A,11A,13A,15A
-
-        byte[] aslide = Utils.slide(a);
-        byte[] bslide = Utils.slide(b);
-
-        Ai[0] = A.toCached();
-        GroupElement A2 = A.dbl().toP3();
-        Ai[1] = A2.add(Ai[0]).toP3().toCached();
-        Ai[2] = A2.add(Ai[1]).toP3().toCached();
-        Ai[3] = A2.add(Ai[2]).toP3().toCached();
-        Ai[4] = A2.add(Ai[3]).toP3().toCached();
-        Ai[5] = A2.add(Ai[4]).toP3().toCached();
-        Ai[6] = A2.add(Ai[5]).toP3().toCached();
-        Ai[7] = A2.add(Ai[6]).toP3().toCached();
+        byte[] aslide = slide(a);
+        byte[] bslide = slide(b);
 
         GroupElement r = curve.getZero(Representation.P2);
 
@@ -460,25 +612,62 @@ public class GroupElement {
             if (aslide[i] != 0 || bslide[i] != 0) break;
         }
 
-        for (; i >= 0; --i) {
-            GroupElement t = r.dbl();
+        synchronized(this) {
+            // TODO: Get opinion from a crypto professional.
+            // This should in practice never be necessary, the only point that
+            // this should get called on is EdDSA's B.
+            //precompute();
+            for (; i >= 0; --i) {
+                GroupElement t = r.dbl();
 
-            if (aslide[i] > 0) {
-                t = t.toP3().add(Ai[aslide[i]/2]);
-            } else if(aslide[i] < 0) {
-                t = t.toP3().sub(Ai[(-aslide[i])/2]);
+                if (aslide[i] > 0) {
+                    t = t.toP3().madd(A.dblPrecmp[aslide[i]/2]);
+                } else if(aslide[i] < 0) {
+                    t = t.toP3().msub(A.dblPrecmp[(-aslide[i])/2]);
+                }
+
+                if (bslide[i] > 0) {
+                    t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
+                } else if(bslide[i] < 0) {
+                    t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
+                }
+
+                r = t.toP2();
             }
-
-            if (bslide[i] > 0) {
-                t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
-            } else if(bslide[i] < 0) {
-                t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
-            }
-
-            r = t.toP2();
         }
 
         return r;
+    }
+
+    /**
+     * Verify that a point is on its curve.
+     * @param P The point to check.
+     * @return true if the point lies on its curve.
+     */
+    public boolean isOnCurve() {
+        return isOnCurve(curve);
+    }
+
+    /**
+     * Verify that a point is on the curve.
+     * @param curve The curve to check.
+     * @return true if the point lies on the curve.
+     */
+    public boolean isOnCurve(Curve curve) {
+        switch (repr) {
+        case P2:
+        case P3:
+            FieldElement recip = Z.invert();
+            FieldElement x = X.multiply(recip);
+            FieldElement y = Y.multiply(recip);
+            FieldElement xx = x.square();
+            FieldElement yy = y.square();
+            FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
+            return curve.fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(curve.fromBigInteger(Constants.ZERO));
+
+        default:
+            return toP2().isOnCurve(curve);
+        }
     }
 
     @Override

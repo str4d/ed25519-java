@@ -16,7 +16,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
  *
  */
 public class KeyFactory extends KeyFactorySpi {
-    @Override
+
     protected PrivateKey engineGeneratePrivate(KeySpec keySpec)
             throws InvalidKeySpecException {
         if (keySpec instanceof EdDSAPrivateKeySpec) {
@@ -25,7 +25,6 @@ public class KeyFactory extends KeyFactorySpi {
         throw new InvalidKeySpecException("key spec not recognised");
     }
 
-    @Override
     protected PublicKey engineGeneratePublic(KeySpec keySpec)
             throws InvalidKeySpecException {
         if (keySpec instanceof EdDSAPublicKeySpec) {
@@ -35,7 +34,6 @@ public class KeyFactory extends KeyFactorySpi {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     protected <T extends KeySpec> T engineGetKeySpec(Key key, Class<T> keySpec)
             throws InvalidKeySpecException {
         if (keySpec.isAssignableFrom(EdDSAPublicKeySpec.class) && key instanceof EdDSAPublicKey) {
@@ -52,7 +50,6 @@ public class KeyFactory extends KeyFactorySpi {
         throw new InvalidKeySpecException("not implemented yet " + key + " " + keySpec);
     }
 
-    @Override
     protected Key engineTranslateKey(Key key) throws InvalidKeyException {
         throw new InvalidKeyException("No other EdDSA key providers known");
     }

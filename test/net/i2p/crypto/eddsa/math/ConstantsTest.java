@@ -71,7 +71,7 @@ public class ConstantsTest {
     @Test
     public void testB() {
         GroupElement B = ed25519.getB();
-        assertThat(curve.isOnCurve(B), is(true));
+        assertThat(B.isOnCurve(curve), is(true));
         assertThat(B.scalarMultiply(new LittleEndianEncoding().encode(ed25519.getL(), curve.getField().getb()/8)), is(equalTo(P3_ZERO)));
     }
 }

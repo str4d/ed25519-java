@@ -19,10 +19,10 @@ public class Ed25519TestVectors {
         public TestTuple(String line) {
             caseNum = ++numCases;
             String[] x = line.split(":");
-            seed = Utils.hexToBytes(x[0].substring(0, 64));
-            pk = Utils.hexToBytes(x[1]);
-            message = Utils.hexToBytes(x[2]);
-            sig = Utils.hexToBytes(x[3].substring(0, 128));
+            seed = TestUtils.hexToBytes(x[0].substring(0, 64));
+            pk = TestUtils.hexToBytes(x[1]);
+            message = TestUtils.hexToBytes(x[2]);
+            sig = TestUtils.hexToBytes(x[3].substring(0, 128));
         }
     }
 

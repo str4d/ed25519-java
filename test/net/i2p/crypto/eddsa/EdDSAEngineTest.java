@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
 
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
@@ -23,9 +24,9 @@ import org.junit.rules.ExpectedException;
  *
  */
 public class EdDSAEngineTest {
-    static final byte[] ZERO_SEED = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] ZERO_PK = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
-    static final byte[] ZERO_MSG_SIG = Utils.hexToBytes("94825896c7075c31bcb81f06dba2bdcd9dcf16e79288d4b9f87c248215c8468d475f429f3de3b4a2cf67fe17077ae19686020364d6d4fa7a0174bab4a123ba0f");
+    static final byte[] ZERO_SEED = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] ZERO_PK = TestUtils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+    static final byte[] ZERO_MSG_SIG = TestUtils.hexToBytes("94825896c7075c31bcb81f06dba2bdcd9dcf16e79288d4b9f87c248215c8468d475f429f3de3b4a2cf67fe17077ae19686020364d6d4fa7a0174bab4a123ba0f");
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -82,7 +83,7 @@ public class EdDSAEngineTest {
         byte[] message = "This is a secret message".getBytes(Charset.forName("UTF-8"));
         sgr.update(message);
 
-        exception.expect(IllegalArgumentException.class);
+        exception.expect(SignatureException.class);
         exception.expectMessage("signature length is wrong");
         sgr.verify(new byte[] {0});
     }
