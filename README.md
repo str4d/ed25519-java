@@ -25,7 +25,7 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 | EdDSA point arithmetic | ref10 function | Java function |
 | ---------------------- | -------------- | ------------- |
 | `R = b * B` | `ge_scalarmult_base` | `GroupElement.scalarMultiply` |
-| `R = a * A + b * B` | `ge_double_scalarmult_vartime` | `GroupElement.doubleScalarMultiplyVariableTime` |
+| `R = a*A + b*B` | `ge_double_scalarmult_vartime` | `GroupElement.doubleScalarMultiplyVariableTime` |
 | `R = 2 * P` | `ge_p2_dbl` | `GroupElement.dbl` |
 | `R = P + Q` | `ge_madd`, `ge_add` | `GroupElement.madd`, `GroupElement.add` |
 | `R = P - Q` | `ge_msub`, `ge_sub` | `GroupElement.msub`, `GroupElement.sub` |
