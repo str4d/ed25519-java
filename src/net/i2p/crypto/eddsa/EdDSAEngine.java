@@ -165,7 +165,8 @@ public class EdDSAEngine extends Signature {
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
                 ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
 
-        // variable time
+        // Variable time. This should be okay, because there are no secret
+        // values used anywhere in verification.
         byte[] Rcalc = R.toByteArray();
         for (int i = 0; i < Rcalc.length; i++) {
             if (Rcalc[i] != sigBytes[i])
