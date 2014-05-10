@@ -393,12 +393,14 @@ public class GroupElement implements Serializable {
         switch (this.repr) {
         case P2:
         case P3:
-            FieldElement recip1 = Z.invert();
-            FieldElement x1 = X.multiply(recip1);
-            FieldElement y1 = Y.multiply(recip1);
-            FieldElement recip2 = ge.Z.invert();
-            FieldElement x2 = ge.X.multiply(recip2);
-            FieldElement y2 = ge.Y.multiply(recip2);
+            // Try easy way first
+            if (Z.equals(ge.Z))
+                return X.equals(ge.X) && Y.equals(ge.Y);
+            // X1/Z1 = X2/Z2 --> X1*Z2 = X2*Z1
+            FieldElement x1 = X.multiply(ge.Z);
+            FieldElement y1 = Y.multiply(ge.Z);
+            FieldElement x2 = ge.X.multiply(Z);
+            FieldElement y2 = ge.Y.multiply(Z);
             return x1.equals(x2) && y1.equals(y2);
         case P1P1:
             return toP2().equals(ge);
@@ -406,15 +408,16 @@ public class GroupElement implements Serializable {
             // Compare directly, PRECOMP is derived directly from x and y
             return X.equals(ge.X) && Y.equals(ge.Y) && Z.equals(ge.Z);
         case CACHED:
+            // Try easy way first
+            if (Z.equals(ge.Z))
+                return X.equals(ge.X) && Y.equals(ge.Y) && T.equals(ge.T);
             // (Y+X)/Z = y+x etc.
-            FieldElement recip3 = Z.invert();
-            FieldElement x3 = X.multiply(recip3);
-            FieldElement y3 = Y.multiply(recip3);
-            FieldElement t3 = T.multiply(recip3);
-            FieldElement recip4 = ge.Z.invert();
-            FieldElement x4 = ge.X.multiply(recip4);
-            FieldElement y4 = ge.Y.multiply(recip4);
-            FieldElement t4 = ge.T.multiply(recip4);
+            FieldElement x3 = X.multiply(ge.Z);
+            FieldElement y3 = Y.multiply(ge.Z);
+            FieldElement t3 = T.multiply(ge.Z);
+            FieldElement x4 = ge.X.multiply(Z);
+            FieldElement y4 = ge.Y.multiply(Z);
+            FieldElement t4 = ge.T.multiply(Z);
             return x3.equals(x4) && y3.equals(y4) && t3.equals(t4);
         default:
             return false;
