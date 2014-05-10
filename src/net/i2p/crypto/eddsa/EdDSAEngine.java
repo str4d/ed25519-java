@@ -166,12 +166,13 @@ public class EdDSAEngine extends Signature {
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
                 ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
 
+        // variable time
         byte[] Rcalc = R.toByteArray();
-        int result = 1;
         for (int i = 0; i < Rcalc.length; i++) {
-            result &= Utils.equal(Rcalc[i], sigBytes[i]);
+            if (Rcalc[i] != sigBytes[i])
+                return false;
         }
-        return result == 1;
+        return true;
     }
 
     /**
