@@ -15,6 +15,7 @@ public class Curve implements Serializable {
     private final FieldElement d;
     private final FieldElement d2;
     private final FieldElement I;
+    private final FieldElement one;
 
     private final GroupElement zeroP2;
     private final GroupElement zeroP3;
@@ -23,11 +24,11 @@ public class Curve implements Serializable {
     public Curve(Field f, BigInteger d) {
         this.f = f;
         this.d = fromBigInteger(d);
-        this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
+        this.d2 = this.d.add(this.d);
         this.I = fromBigInteger(Constants.TWO).modPow(f.getQ().subtract(Constants.ONE).divide(Constants.FOUR), f.getQ());
 
         FieldElement zero = fromBigInteger(Constants.ZERO);
-        FieldElement one = fromBigInteger(Constants.ONE);
+        one = fromBigInteger(Constants.ONE);
         zeroP2 = GroupElement.p2(this, zero, one, one);
         zeroP3 = createPoint(Constants.ZERO, Constants.ONE);
         zeroPrecomp = GroupElement.precomp(this, one, one, zero);
@@ -47,6 +48,10 @@ public class Curve implements Serializable {
 
     public FieldElement getI() {
         return I;
+    }
+
+    public FieldElement getOne() {
+        return one;
     }
 
     public GroupElement getZero(GroupElement.Representation repr) {
@@ -77,7 +82,7 @@ public class Curve implements Serializable {
     public GroupElement createPoint(BigInteger x, BigInteger y, boolean precompute) {
         FieldElement X = fromBigInteger(x);
         FieldElement Y = fromBigInteger(y);
-        GroupElement ge = GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
+        GroupElement ge = GroupElement.p3(this, X, Y, one, X.multiply(Y));
         if (precompute)
             ge.precompute(true);
         return ge;

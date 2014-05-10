@@ -140,7 +140,7 @@ public class GroupElement implements Serializable {
         repr = Representation.P3;
         X = x;
         Y = y;
-        Z = curve.fromBigInteger(Constants.ONE);
+        Z = curve.getOne();
         T = X.multiply(Y);
     }
 
@@ -372,10 +372,11 @@ public class GroupElement implements Serializable {
         return curve.getZero(Representation.P3).sub(toCached()).toP3();
     }
 
-    //@Override
-    //public int hashCode() {
-    // TODO
-    //}
+    @Override
+    public int hashCode() {
+        // TODO
+        return 42;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -663,7 +664,7 @@ public class GroupElement implements Serializable {
             FieldElement xx = x.square();
             FieldElement yy = y.square();
             FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
-            return curve.fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(curve.fromBigInteger(Constants.ZERO));
+            return curve.getOne().add(dxxyy).add(xx).equals(yy);
 
         default:
             return toP2().isOnCurve(curve);

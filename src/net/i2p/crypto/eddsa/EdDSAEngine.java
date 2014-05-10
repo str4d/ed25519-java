@@ -25,6 +25,7 @@ public class EdDSAEngine extends Signature {
     private MessageDigest digest;
     private final ByteArrayOutputStream baos;
     private EdDSAKey key;
+    private static final LittleEndianEncoding leEnc = new LittleEndianEncoding();
 
     /**
      * No specific hash requested, allows any EdDSA key.
@@ -113,7 +114,6 @@ public class EdDSAEngine extends Signature {
         Curve curve = key.getParams().getCurve();
         BigInteger l = key.getParams().getL();
         BigInteger a = ((EdDSAPrivateKey) key).geta();
-        LittleEndianEncoding leEnc = new LittleEndianEncoding();
 
         byte[] message = baos.toByteArray();
         // r = H(h_b,...,h_2b-1,M)
@@ -158,7 +158,6 @@ public class EdDSAEngine extends Signature {
         byte[] h = digest.digest(message);
 
         // h mod l
-        LittleEndianEncoding leEnc = new LittleEndianEncoding();
         h = leEnc.encode(leEnc.decode(h).mod(key.getParams().getL()), b/8);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
