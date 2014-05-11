@@ -38,21 +38,21 @@ public class ConstantsTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testq() {
         FieldElement q = curve.getField().getQ();
         assertThat(TWO.modPow(q.subtractOne(), q), is(equalTo(ONE)));
         assertThat(q.mod(curve.getField().four), is(equalTo(ONE)));
     }
 
-    /*@Test
+    @Test
     public void testl() {
         int b = curve.getField().getb();
         BigInteger l = ed25519.getL();
         assertThat(TWO.modPow(l.subtract(BigInteger.ONE), l), is(equalTo(ONE)));
         assertThat(l, is(greaterThanOrEqualTo(BigInteger.valueOf(2).pow(b-4))));
         assertThat(l, is(lessThanOrEqualTo(BigInteger.valueOf(2).pow(b-3))));
-    }*/
+    }
 
     @Test
     public void testd() {
@@ -65,7 +65,7 @@ public class ConstantsTest {
     public void testI() {
         FieldElement q = curve.getField().getQ();
         assertThat(curve.getField().getI().modPow(curve.getField().two, q), is(equalTo(q.subtractOne())));
-    }
+    }*/
 
     @Test
     public void testB() {

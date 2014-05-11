@@ -14,7 +14,7 @@ import net.i2p.crypto.eddsa.math.FieldElement;
 public class BigIntegerFieldElement extends FieldElement implements Serializable {
     private static final long serialVersionUID = 4890398908392808L;
     /**
-     * Variable is package private only so that tests run.
+     * Variable is package private for encoding.
      */
     final BigInteger bi;
 
@@ -23,26 +23,15 @@ public class BigIntegerFieldElement extends FieldElement implements Serializable
         this.bi = bi;
     }
 
-    /**
-     * Encode a FieldElement in its (b-1)-bit encoding.
-     * @return the (b-1)-bit encoding of this FieldElement.
-     */
-    public byte[] toByteArray() {
-        return f.getEncoding().encode(this);
-    }
-
     public boolean isNonZero() {
         return !bi.equals(BigInteger.ZERO);
-    }
-
-    public boolean isNegative() {
-        return f.getEncoding().isNegative(this);
     }
 
     public FieldElement add(FieldElement val) {
         return new BigIntegerFieldElement(f, bi.add(((BigIntegerFieldElement)val).bi)).mod(f.getQ());
     }
 
+    @Override
     public FieldElement addOne() {
         return new BigIntegerFieldElement(f, bi.add(BigInteger.ONE)).mod(f.getQ());
     }
@@ -51,6 +40,7 @@ public class BigIntegerFieldElement extends FieldElement implements Serializable
         return new BigIntegerFieldElement(f, bi.subtract(((BigIntegerFieldElement)val).bi)).mod(f.getQ());
     }
 
+    @Override
     public FieldElement subtractOne() {
         return new BigIntegerFieldElement(f, bi.subtract(BigInteger.ONE)).mod(f.getQ());
     }
@@ -59,6 +49,7 @@ public class BigIntegerFieldElement extends FieldElement implements Serializable
         return f.getQ().subtract(this);
     }
 
+    @Override
     public FieldElement divide(FieldElement val) {
         return divide(((BigIntegerFieldElement)val).bi);
     }

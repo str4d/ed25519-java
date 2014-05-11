@@ -11,23 +11,33 @@ public abstract class FieldElement {
      * Encode a FieldElement in its (b-1)-bit encoding.
      * @return the (b-1)-bit encoding of this FieldElement.
      */
-    public abstract byte[] toByteArray();
+    public byte[] toByteArray() {
+        return f.getEncoding().encode(this);
+    }
 
     public abstract boolean isNonZero();
 
-    public abstract boolean isNegative();
+    public boolean isNegative() {
+        return f.getEncoding().isNegative(this);
+    }
 
     public abstract FieldElement add(FieldElement val);
 
-    public abstract FieldElement addOne();
+    public FieldElement addOne() {
+        return add(f.one);
+    }
 
     public abstract FieldElement subtract(FieldElement val);
 
-    public abstract FieldElement subtractOne();
+    public FieldElement subtractOne() {
+        return subtract(f.one);
+    }
 
     public abstract FieldElement negate();
 
-    public abstract FieldElement divide(FieldElement val);
+    public FieldElement divide(FieldElement val) {
+        return multiply(val.invert());
+    }
 
     public abstract FieldElement multiply(FieldElement val);
 
@@ -36,10 +46,6 @@ public abstract class FieldElement {
     public abstract FieldElement squareAndDouble();
 
     public abstract FieldElement invert();
-
-    public abstract FieldElement mod(FieldElement m);
-
-    public abstract FieldElement modPow(FieldElement e, FieldElement m);
 
     public abstract FieldElement pow(FieldElement e);
 }
