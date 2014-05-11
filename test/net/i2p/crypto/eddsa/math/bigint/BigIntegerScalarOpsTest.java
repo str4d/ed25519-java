@@ -47,7 +47,19 @@ public class BigIntegerScalarOpsTest {
      */
     @Test
     public void testMultiplyAndAdd() {
-        fail("Not yet implemented");
+        ScalarOps sc = new BigIntegerScalarOps(ed25519Field,
+                new BigInteger("5"));
+        assertThat(sc.multiplyAndAdd(new byte[] {7}, new byte[] {2}, new byte[] {5}),
+                is(equalTo(Utils.hexToBytes("0400000000000000000000000000000000000000000000000000000000000000"))));
+
+        ScalarOps sc2 = new BigIntegerScalarOps(ed25519Field,
+                new BigInteger("7237005577332262213973186563042994240857116359379907606001950938285454250989"));
+        // Example from test case 1
+        byte[] h = Utils.hexToBytes("86eabc8e4c96193d290504e7c600df6cf8d8256131ec2c138a3e7e162e525404");
+        byte[] a = Utils.hexToBytes("307c83864f2833cb427a2ef1c00a013cfdff2768d980c0a3a520f006904de94f");
+        byte[] r = Utils.hexToBytes("f38907308c893deaf244787db4af53682249107418afc2edc58f75ac58a07404");
+        byte[] S = Utils.hexToBytes("5fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b");
+        assertThat(sc2.multiplyAndAdd(h, a, r), is(equalTo(S)));
     }
 
 }
