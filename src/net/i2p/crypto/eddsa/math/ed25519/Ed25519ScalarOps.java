@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import net.i2p.crypto.eddsa.math.ScalarOps;
 
 public class Ed25519ScalarOps implements ScalarOps {
+    private static final BigInteger n2097151 = BigInteger.valueOf(2097151);
+
     private BigInteger load_3(byte[] in, int offset) {
         BigInteger result = new BigInteger(1, new byte[] {in[offset]});
         result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
@@ -28,8 +30,6 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where l = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] reduce(byte[] s) {
-        BigInteger n2097151 = BigInteger.valueOf(2097151);
-
         long s0 = n2097151.and(load_3(s, 0)).longValue();
         long s1 = n2097151.and(load_4(s, 2).shiftRight(5)).longValue();
         long s2 = n2097151.and(load_3(s, 5).shiftRight(2)).longValue();
@@ -284,8 +284,6 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where l = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] multiplyAndAdd(byte[] a, byte[] b, byte[] c) {
-        BigInteger n2097151 = BigInteger.valueOf(2097151);
-
         long a0 = n2097151.and(load_3(a, 0)).longValue();;
         long a1 = n2097151.and(load_4(a, 2).shiftRight(5)).longValue();
         long a2 = n2097151.and(load_3(a, 5).shiftRight(2)).longValue();
