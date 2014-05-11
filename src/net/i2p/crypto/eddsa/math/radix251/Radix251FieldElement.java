@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math.radix251;
 
+import net.i2p.crypto.eddsa.TestUtils;
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.FieldElement;
 
@@ -946,5 +947,25 @@ public class Radix251FieldElement extends FieldElement {
 
         // z_252_3 = z_252_2*z1
         return multiply(t0);
+    }
+
+    @Override
+    public int hashCode() {
+        return t.hashCode(); // TODO should this be something else?
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Radix251FieldElement))
+            return false;
+        Radix251FieldElement fe = (Radix251FieldElement) obj;
+        // XXX why does direct byte[] comparison fail?
+        // TODO should this be constant time?
+        return TestUtils.getHex(toByteArray()).equals(TestUtils.getHex(fe.toByteArray()));
+    }
+
+    @Override
+    public String toString() {
+        return "[Radix251FieldElement val="+TestUtils.getHex(toByteArray())+"]";
     }
 }

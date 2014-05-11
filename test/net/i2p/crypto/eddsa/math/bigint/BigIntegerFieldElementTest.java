@@ -8,9 +8,6 @@ import java.math.BigInteger;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.FieldElement;
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
-
 import org.junit.Test;
 
 /**
@@ -22,8 +19,10 @@ public class BigIntegerFieldElementTest {
     static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_TEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000");
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
-    static final Field ed25519Field = ed25519.getCurve().getField();
+    static final Field ed25519Field = new Field(
+            256, // b
+            Utils.hexToBytes("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), // q
+            new BigIntegerLittleEndianEncoding());
 
     static final FieldElement ZERO = new BigIntegerFieldElement(ed25519Field, BigInteger.ZERO);
     static final FieldElement ONE = new BigIntegerFieldElement(ed25519Field, BigInteger.ONE);
