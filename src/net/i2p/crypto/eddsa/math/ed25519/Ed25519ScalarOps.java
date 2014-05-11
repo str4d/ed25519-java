@@ -1,20 +1,21 @@
 package net.i2p.crypto.eddsa.math.ed25519;
 
+import java.math.BigInteger;
 import net.i2p.crypto.eddsa.math.ScalarOps;
 
 public class Ed25519ScalarOps implements ScalarOps {
-    private long load_3(byte[] in, int offset) {
-        long result = in[offset];
-        result |= in[offset + 1] << 8;
-        result |= in[offset + 2] << 16;
+    private BigInteger load_3(byte[] in, int offset) {
+        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
+        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
+        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
         return result;
     }
 
-    private long load_4(byte[] in, int offset) {
-        long result = in[offset];
-        result |= in[offset + 1] << 8;
-        result |= in[offset + 2] << 16;
-        result |= in[offset + 3] << 24;
+    private BigInteger load_4(byte[] in, int offset) {
+        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
+        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
+        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
+        result = result.or(new BigInteger(1, new byte[] {in[offset+3]}).shiftLeft(24));
         return result;
     }
 
@@ -27,30 +28,31 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where l = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] reduce(byte[] s) {
-        long s0 = 2097151 & load_3(s, 0);
-        long s1 = 2097151 & (load_4(s, 2) >> 5);
-        long s2 = 2097151 & (load_3(s, 5) >> 2);
-        long s3 = 2097151 & (load_4(s, 7) >> 7);
-        long s4 = 2097151 & (load_4(s, 10) >> 4);
-        long s5 = 2097151 & (load_3(s, 13) >> 1);
-        long s6 = 2097151 & (load_4(s, 15) >> 6);
-        long s7 = 2097151 & (load_3(s, 18) >> 3);
-        long s8 = 2097151 & load_3(s, 21);
-        long s9 = 2097151 & (load_4(s, 23) >> 5);
-        long s10 = 2097151 & (load_3(s, 26) >> 2);
-        long s11 = 2097151 & (load_4(s, 28) >> 7);
-        long s12 = 2097151 & (load_4(s, 31) >> 4);
-        long s13 = 2097151 & (load_3(s, 34) >> 1);
-        long s14 = 2097151 & (load_4(s, 36) >> 6);
-        long s15 = 2097151 & (load_3(s, 39) >> 3);
-        long s16 = 2097151 & load_3(s, 42);
-        long s17 = 2097151 & (load_4(s, 44) >> 5);
-        long s18 = 2097151 & (load_3(s, 47) >> 2);
-        long s19 = 2097151 & (load_4(s, 49) >> 7);
-        long s20 = 2097151 & (load_4(s, 52) >> 4);
-        long s21 = 2097151 & (load_3(s, 55) >> 1);
-        long s22 = 2097151 & (load_4(s, 57) >> 6);
-        long s23 = (load_4(s, 60) >> 3);
+        BigInteger num = BigInteger.valueOf(2097151);
+        long s0 = num.and(load_3(s, 0)).longValue();
+        long s1 = num.and(load_4(s, 2).shiftRight(5)).longValue();
+        long s2 = num.and(load_3(s, 5).shiftRight(2)).longValue();
+        long s3 = num.and(load_4(s, 7).shiftRight(7)).longValue();
+        long s4 = num.and(load_4(s, 10).shiftRight(4)).longValue();
+        long s5 = num.and(load_3(s, 13).shiftRight(1)).longValue();
+        long s6 = num.and(load_4(s, 15).shiftRight(6)).longValue();
+        long s7 = num.and(load_3(s, 18).shiftRight(3)).longValue();
+        long s8 = num.and(load_3(s, 21)).longValue();
+        long s9 = num.and(load_4(s, 23).shiftRight(5)).longValue();
+        long s10 = num.and(load_3(s, 26).shiftRight(2)).longValue();
+        long s11 = num.and(load_4(s, 28).shiftRight(7)).longValue();
+        long s12 = num.and(load_4(s, 31).shiftRight(4)).longValue();
+        long s13 = num.and(load_3(s, 34).shiftRight(1)).longValue();
+        long s14 = num.and(load_4(s, 36).shiftRight(6)).longValue();
+        long s15 = num.and(load_3(s, 39).shiftRight(3)).longValue();
+        long s16 = num.and(load_3(s, 42)).longValue();
+        long s17 = num.and(load_4(s, 44).shiftRight(5)).longValue();
+        long s18 = num.and(load_3(s, 47).shiftRight(2)).longValue();
+        long s19 = num.and(load_4(s, 49).shiftRight(7)).longValue();
+        long s20 = num.and(load_4(s, 52).shiftRight(4)).longValue();
+        long s21 = num.and(load_3(s, 55).shiftRight(1)).longValue();
+        long s22 = num.and(load_4(s, 57).shiftRight(6)).longValue();
+        long s23 = (load_4(s, 60).shiftRight(3)).longValue();
         long carry0;
         long carry1;
         long carry2;
