@@ -1,9 +1,8 @@
 package net.i2p.crypto.eddsa.spec;
 
-import java.math.BigInteger;
-
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
+import net.i2p.crypto.eddsa.math.ScalarOps;
 
 /**
  * EdDSA Curve specification that can also be referred to by name.
@@ -14,8 +13,8 @@ public class EdDSANamedCurveSpec extends EdDSAParameterSpec {
     private final String name;
 
     public EdDSANamedCurveSpec(String name, Curve curve,
-            String hashAlgo, BigInteger l, GroupElement B) {
-        super(curve, hashAlgo, l, B);
+            String hashAlgo, ScalarOps sc, GroupElement B) {
+        super(curve, hashAlgo, sc, B);
         this.name = name;
     }
 

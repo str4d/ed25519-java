@@ -10,7 +10,7 @@ import org.junit.Test;
  *
  */
 public class UtilsTest {
-    static final byte[] BYTES_PKR = TestUtils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+    static final byte[] BYTES_PKR = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
 
     /**
      * Test method for {@link net.i2p.crypto.eddsa.Utils#equal(int, int)}.

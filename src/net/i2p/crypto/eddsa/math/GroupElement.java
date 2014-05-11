@@ -101,7 +101,7 @@ public class GroupElement implements Serializable {
 
     public GroupElement(Curve curve, byte[] s) {
         FieldElement x, y, yy, u, v, v3, vxx, check;
-        y = curve.fromByteArray(s);
+        y = curve.getField().fromByteArray(s);
         yy = y.square();
 
         // u = y^2-1	
@@ -129,7 +129,7 @@ public class GroupElement implements Serializable {
 
             if (check.isNonZero())
                 throw new IllegalArgumentException("not a valid GroupElement");
-            x = x.multiply(curve.getI());
+            x = x.multiply(curve.getField().getI());
         }
 
         if ((x.isNegative() ? 1 : 0) != Utils.bit(s, curve.getField().getb()-1)) {
@@ -140,7 +140,7 @@ public class GroupElement implements Serializable {
         repr = Representation.P3;
         X = x;
         Y = y;
-        Z = curve.getOne();
+        Z = curve.getField().one;
         T = X.multiply(Y);
     }
 
@@ -667,7 +667,7 @@ public class GroupElement implements Serializable {
             FieldElement xx = x.square();
             FieldElement yy = y.square();
             FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
-            return curve.getOne().add(dxxyy).add(xx).equals(yy);
+            return curve.getField().one.add(dxxyy).add(xx).equals(yy);
 
         default:
             return toP2().isOnCurve(curve);

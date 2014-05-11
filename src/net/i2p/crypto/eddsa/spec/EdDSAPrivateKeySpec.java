@@ -1,13 +1,11 @@
 package net.i2p.crypto.eddsa.spec;
 
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
 import net.i2p.crypto.eddsa.math.GroupElement;
-import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
 
 /**
  * @author str4d
@@ -16,7 +14,7 @@ import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
 public class EdDSAPrivateKeySpec implements KeySpec {
     private final byte[] seed;
     private final byte[] h;
-    private final BigInteger a;
+    private final byte[] a;
     private final GroupElement A;
     private final EdDSAParameterSpec spec;
 
@@ -43,16 +41,15 @@ public class EdDSAPrivateKeySpec implements KeySpec {
             h[0] &= 248;
             h[(b/8)-1] &= 63;
             h[(b/8)-1] |= 64;
-            byte[] abyte = Arrays.copyOfRange(h, 0, b/8);
-            a = new LittleEndianEncoding().decode(abyte);
+            a = Arrays.copyOfRange(h, 0, b/8);
 
-            A = spec.getB().scalarMultiply(abyte);
+            A = spec.getB().scalarMultiply(a);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Unsupported hash algorithm");
         }
     }
 
-    public EdDSAPrivateKeySpec(byte[] seed, byte[] h, BigInteger a, GroupElement A, EdDSAParameterSpec spec) {
+    public EdDSAPrivateKeySpec(byte[] seed, byte[] h, byte[] a, GroupElement A, EdDSAParameterSpec spec) {
         this.seed = seed;
         this.h = h;
         this.a = a;
@@ -68,7 +65,7 @@ public class EdDSAPrivateKeySpec implements KeySpec {
         return h;
     }
 
-    public BigInteger geta() {
+    public byte[] geta() {
         return a;
     }
 
