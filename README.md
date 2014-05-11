@@ -1,9 +1,13 @@
 ed25519-java
 ============
 
-This is an implementation of Ed25519 in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see http://ed25519.cr.yp.to/software.html). Internally, it uses BigIntegers for calculation.
+This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see http://ed25519.cr.yp.to/software.html).
 
-There are no guarantees that this is secure for use. Tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input) are passing, but this has not yet been audited by a professional cryptographer. In particular, this implementation is unlikely to have the constant-time properties of ref10 (for now).
+There are two internal implementations:
+* A port of the radix-2^51 operations in ref10 - fast and constant-time, but only useful for Ed25519.
+* A generic version using BigIntegers for calculation - a bit slower and not constant-time, but compatible with any EdDSA parameter specification.
+
+There are no guarantees that this is secure for use. Tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input) are passing, but this has not yet been audited by a professional cryptographer. In particular, the constant-time properties of ref10 may not have been completely retained (although this is the eventual goal for the Ed25519-specific implementation).
 
 The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
 
