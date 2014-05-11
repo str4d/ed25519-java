@@ -1,13 +1,12 @@
 package net.i2p.crypto.eddsa.spec;
 
-import java.math.BigInteger;
 import java.util.Hashtable;
 
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.bigint.BigIntegerLittleEndianEncoding;
-import net.i2p.crypto.eddsa.math.bigint.BigIntegerScalarOps;
+import net.i2p.crypto.eddsa.math.ed25519.Ed25519ScalarOps;
 
 /**
  * The named EdDSA curves.
@@ -29,8 +28,7 @@ public class EdDSANamedCurveTable {
             CURVE_ED25519_SHA512,
             ed25519curve,
             "SHA-512", // H
-            new BigIntegerScalarOps(ed25519field,
-                    new BigInteger("7237005577332262213973186563042994240857116359379907606001950938285454250989")), // l
+            new Ed25519ScalarOps(), // l
             ed25519curve.createPoint( // B
                     Utils.hexToBytes("5866666666666666666666666666666666666666666666666666666666666666"),
                     true)); // Precompute tables for B
