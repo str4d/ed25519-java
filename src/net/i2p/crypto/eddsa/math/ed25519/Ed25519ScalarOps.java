@@ -1,24 +1,21 @@
 package net.i2p.crypto.eddsa.math.ed25519;
 
-import java.math.BigInteger;
 import net.i2p.crypto.eddsa.math.ScalarOps;
 
 public class Ed25519ScalarOps implements ScalarOps {
-    private static final BigInteger n2097151 = BigInteger.valueOf(2097151);
-
-    private BigInteger load_3(byte[] in, int offset) {
-        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
-        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
+    private static long load_3(byte[] in, int offset) {
+        int result = in[offset++] & 0xff;
+        result |= (in[offset++] & 0xff) << 8;
+        result |= (in[offset] & 0xff) << 16;
         return result;
     }
 
-    private BigInteger load_4(byte[] in, int offset) {
-        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
-        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+3]}).shiftLeft(24));
-        return result;
+    private static long load_4(byte[] in, int offset) {
+        int result = in[offset++] & 0xff;
+        result |= (in[offset++] & 0xff) << 8;
+        result |= (in[offset++] & 0xff) << 16;
+        result |= in[offset] << 24;
+        return ((long)result) & 0xffffffffL;
     }
 
     /**
@@ -30,30 +27,30 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where l = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] reduce(byte[] s) {
-        long s0 = n2097151.and(load_3(s, 0)).longValue();
-        long s1 = n2097151.and(load_4(s, 2).shiftRight(5)).longValue();
-        long s2 = n2097151.and(load_3(s, 5).shiftRight(2)).longValue();
-        long s3 = n2097151.and(load_4(s, 7).shiftRight(7)).longValue();
-        long s4 = n2097151.and(load_4(s, 10).shiftRight(4)).longValue();
-        long s5 = n2097151.and(load_3(s, 13).shiftRight(1)).longValue();
-        long s6 = n2097151.and(load_4(s, 15).shiftRight(6)).longValue();
-        long s7 = n2097151.and(load_3(s, 18).shiftRight(3)).longValue();
-        long s8 = n2097151.and(load_3(s, 21)).longValue();
-        long s9 = n2097151.and(load_4(s, 23).shiftRight(5)).longValue();
-        long s10 = n2097151.and(load_3(s, 26).shiftRight(2)).longValue();
-        long s11 = n2097151.and(load_4(s, 28).shiftRight(7)).longValue();
-        long s12 = n2097151.and(load_4(s, 31).shiftRight(4)).longValue();
-        long s13 = n2097151.and(load_3(s, 34).shiftRight(1)).longValue();
-        long s14 = n2097151.and(load_4(s, 36).shiftRight(6)).longValue();
-        long s15 = n2097151.and(load_3(s, 39).shiftRight(3)).longValue();
-        long s16 = n2097151.and(load_3(s, 42)).longValue();
-        long s17 = n2097151.and(load_4(s, 44).shiftRight(5)).longValue();
-        long s18 = n2097151.and(load_3(s, 47).shiftRight(2)).longValue();
-        long s19 = n2097151.and(load_4(s, 49).shiftRight(7)).longValue();
-        long s20 = n2097151.and(load_4(s, 52).shiftRight(4)).longValue();
-        long s21 = n2097151.and(load_3(s, 55).shiftRight(1)).longValue();
-        long s22 = n2097151.and(load_4(s, 57).shiftRight(6)).longValue();
-        long s23 = (load_4(s, 60).shiftRight(3)).longValue();
+        long s0 = 2097151 & load_3(s, 0);
+        long s1 = 2097151 & (load_4(s, 2) >> 5);
+        long s2 = 2097151 & (load_3(s, 5) >> 2);
+        long s3 = 2097151 & (load_4(s, 7) >> 7);
+        long s4 = 2097151 & (load_4(s, 10) >> 4);
+        long s5 = 2097151 & (load_3(s, 13) >> 1);
+        long s6 = 2097151 & (load_4(s, 15) >> 6);
+        long s7 = 2097151 & (load_3(s, 18) >> 3);
+        long s8 = 2097151 & load_3(s, 21);
+        long s9 = 2097151 & (load_4(s, 23) >> 5);
+        long s10 = 2097151 & (load_3(s, 26) >> 2);
+        long s11 = 2097151 & (load_4(s, 28) >> 7);
+        long s12 = 2097151 & (load_4(s, 31) >> 4);
+        long s13 = 2097151 & (load_3(s, 34) >> 1);
+        long s14 = 2097151 & (load_4(s, 36) >> 6);
+        long s15 = 2097151 & (load_3(s, 39) >> 3);
+        long s16 = 2097151 & load_3(s, 42);
+        long s17 = 2097151 & (load_4(s, 44) >> 5);
+        long s18 = 2097151 & (load_3(s, 47) >> 2);
+        long s19 = 2097151 & (load_4(s, 49) >> 7);
+        long s20 = 2097151 & (load_4(s, 52) >> 4);
+        long s21 = 2097151 & (load_3(s, 55) >> 1);
+        long s22 = 2097151 & (load_4(s, 57) >> 6);
+        long s23 = (load_4(s, 60) >> 3);
         long carry0;
         long carry1;
         long carry2;
@@ -284,42 +281,42 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where l = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] multiplyAndAdd(byte[] a, byte[] b, byte[] c) {
-        long a0 = n2097151.and(load_3(a, 0)).longValue();;
-        long a1 = n2097151.and(load_4(a, 2).shiftRight(5)).longValue();
-        long a2 = n2097151.and(load_3(a, 5).shiftRight(2)).longValue();
-        long a3 = n2097151.and(load_4(a, 7).shiftRight(7)).longValue();
-        long a4 = n2097151.and(load_4(a, 10).shiftRight(4)).longValue();
-        long a5 = n2097151.and(load_3(a, 13).shiftRight(1)).longValue();
-        long a6 = n2097151.and(load_4(a, 15).shiftRight(6)).longValue();
-        long a7 = n2097151.and(load_3(a, 18).shiftRight(3)).longValue();
-        long a8 = n2097151.and(load_3(a, 21)).longValue();
-        long a9 = n2097151.and(load_4(a, 23).shiftRight(5)).longValue();
-        long a10 = n2097151.and(load_3(a, 26).shiftRight(2)).longValue();
-        long a11 = (load_4(a, 28).shiftRight(7)).longValue();
-        long b0 = n2097151.and(load_3(b, 0)).longValue();;
-        long b1 = n2097151.and(load_4(b, 2).shiftRight(5)).longValue();
-        long b2 = n2097151.and(load_3(b, 5).shiftRight(2)).longValue();
-        long b3 = n2097151.and(load_4(b, 7).shiftRight(7)).longValue();
-        long b4 = n2097151.and(load_4(b, 10).shiftRight(4)).longValue();
-        long b5 = n2097151.and(load_3(b, 13).shiftRight(1)).longValue();
-        long b6 = n2097151.and(load_4(b, 15).shiftRight(6)).longValue();
-        long b7 = n2097151.and(load_3(b, 18).shiftRight(3)).longValue();
-        long b8 = n2097151.and(load_3(b, 21)).longValue();
-        long b9 = n2097151.and(load_4(b, 23).shiftRight(5)).longValue();
-        long b10 = n2097151.and(load_3(b, 26).shiftRight(2)).longValue();
-        long b11 = (load_4(b, 28).shiftRight(7)).longValue();
-        long c0 = n2097151.and(load_3(c, 0)).longValue();;
-        long c1 = n2097151.and(load_4(c, 2).shiftRight(5)).longValue();
-        long c2 = n2097151.and(load_3(c, 5).shiftRight(2)).longValue();
-        long c3 = n2097151.and(load_4(c, 7).shiftRight(7)).longValue();
-        long c4 = n2097151.and(load_4(c, 10).shiftRight(4)).longValue();
-        long c5 = n2097151.and(load_3(c, 13).shiftRight(1)).longValue();
-        long c6 = n2097151.and(load_4(c, 15).shiftRight(6)).longValue();
-        long c7 = n2097151.and(load_3(c, 18).shiftRight(3)).longValue();
-        long c8 = n2097151.and(load_3(c, 21)).longValue();
-        long c9 = n2097151.and(load_4(c, 23).shiftRight(5)).longValue();
-        long c10 = n2097151.and(load_3(c, 26).shiftRight(2)).longValue();
-        long c11 = (load_4(c, 28).shiftRight(7)).longValue();
+        long a0 = 2097151 & load_3(a, 0);
+        long a1 = 2097151 & (load_4(a, 2) >> 5);
+        long a2 = 2097151 & (load_3(a, 5) >> 2);
+        long a3 = 2097151 & (load_4(a, 7) >> 7);
+        long a4 = 2097151 & (load_4(a, 10) >> 4);
+        long a5 = 2097151 & (load_3(a, 13) >> 1);
+        long a6 = 2097151 & (load_4(a, 15) >> 6);
+        long a7 = 2097151 & (load_3(a, 18) >> 3);
+        long a8 = 2097151 & load_3(a, 21);
+        long a9 = 2097151 & (load_4(a, 23) >> 5);
+        long a10 = 2097151 & (load_3(a, 26) >> 2);
+        long a11 = (load_4(a, 28) >> 7);
+        long b0 = 2097151 & load_3(b, 0);
+        long b1 = 2097151 & (load_4(b, 2) >> 5);
+        long b2 = 2097151 & (load_3(b, 5) >> 2);
+        long b3 = 2097151 & (load_4(b, 7) >> 7);
+        long b4 = 2097151 & (load_4(b, 10) >> 4);
+        long b5 = 2097151 & (load_3(b, 13) >> 1);
+        long b6 = 2097151 & (load_4(b, 15) >> 6);
+        long b7 = 2097151 & (load_3(b, 18) >> 3);
+        long b8 = 2097151 & load_3(b, 21);
+        long b9 = 2097151 & (load_4(b, 23) >> 5);
+        long b10 = 2097151 & (load_3(b, 26) >> 2);
+        long b11 = (load_4(b, 28) >> 7);
+        long c0 = 2097151 & load_3(c, 0);
+        long c1 = 2097151 & (load_4(c, 2) >> 5);
+        long c2 = 2097151 & (load_3(c, 5) >> 2);
+        long c3 = 2097151 & (load_4(c, 7) >> 7);
+        long c4 = 2097151 & (load_4(c, 10) >> 4);
+        long c5 = 2097151 & (load_3(c, 13) >> 1);
+        long c6 = 2097151 & (load_4(c, 15) >> 6);
+        long c7 = 2097151 & (load_3(c, 18) >> 3);
+        long c8 = 2097151 & load_3(c, 21);
+        long c9 = 2097151 & (load_4(c, 23) >> 5);
+        long c10 = 2097151 & (load_3(c, 26) >> 2);
+        long c11 = (load_4(c, 28) >> 7);
         long s0;
         long s1;
         long s2;

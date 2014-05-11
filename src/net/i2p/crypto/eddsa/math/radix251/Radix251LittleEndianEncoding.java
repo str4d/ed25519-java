@@ -1,7 +1,5 @@
 package net.i2p.crypto.eddsa.math.radix251;
 
-import java.math.BigInteger;
-
 import net.i2p.crypto.eddsa.math.Encoding;
 import net.i2p.crypto.eddsa.math.FieldElement;
 
@@ -125,37 +123,35 @@ public class Radix251LittleEndianEncoding extends Encoding {
         return s;
     }
 
-    private BigInteger load_3(byte[] in, int offset) {
-        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
-        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
+    private static long load_3(byte[] in, int offset) {
+        int result = in[offset++] & 0xff;
+        result |= (in[offset++] & 0xff) << 8;
+        result |= (in[offset] & 0xff) << 16;
         return result;
     }
 
-    private BigInteger load_4(byte[] in, int offset) {
-        BigInteger result = new BigInteger(1, new byte[] {in[offset]});
-        result = result.or(new BigInteger(1, new byte[] {in[offset+1]}).shiftLeft(8));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+2]}).shiftLeft(16));
-        result = result.or(new BigInteger(1, new byte[] {in[offset+3]}).shiftLeft(24));
-        return result;
+    private static long load_4(byte[] in, int offset) {
+        int result = in[offset++] & 0xff;
+        result |= (in[offset++] & 0xff) << 8;
+        result |= (in[offset++] & 0xff) << 16;
+        result |= in[offset] << 24;
+        return ((long)result) & 0xffffffffL;
     }
-
-    private static final BigInteger n8388607 = BigInteger.valueOf(8388607);
 
     /**
      * Ignores top bit.
      */
     public FieldElement decode(byte[] in) {
-        long h0 = load_4(in, 0).longValue();
-        long h1 = load_3(in, 4).shiftLeft(6).longValue();
-        long h2 = load_3(in, 7).shiftLeft(5).longValue();
-        long h3 = load_3(in, 10).shiftLeft(3).longValue();
-        long h4 = load_3(in, 13).shiftLeft(2).longValue();
-        long h5 = load_4(in, 16).longValue();
-        long h6 = load_3(in, 20).shiftLeft(7).longValue();
-        long h7 = load_3(in, 23).shiftLeft(5).longValue();
-        long h8 = load_3(in, 26).shiftLeft(4).longValue();
-        long h9 = load_3(in, 29).and(n8388607).shiftLeft(2).longValue();
+        long h0 = load_4(in, 0);
+        long h1 = load_3(in, 4) << 6;
+        long h2 = load_3(in, 7) << 5;
+        long h3 = load_3(in, 10) << 3;
+        long h4 = load_3(in, 13) << 2;
+        long h5 = load_4(in, 16);
+        long h6 = load_3(in, 20) << 7;
+        long h7 = load_3(in, 23) << 5;
+        long h8 = load_3(in, 26) << 4;
+        long h9 = (load_3(in, 29) & 8388607) << 2;
         long carry0;
         long carry1;
         long carry2;
