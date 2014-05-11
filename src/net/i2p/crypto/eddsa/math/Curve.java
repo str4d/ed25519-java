@@ -13,15 +13,17 @@ public class Curve implements Serializable {
     private final Field f;
     private final FieldElement d;
     private final FieldElement d2;
+    private final FieldElement I;
 
     private final GroupElement zeroP2;
     private final GroupElement zeroP3;
     private final GroupElement zeroPrecomp;
 
-    public Curve(Field f, byte[] d) {
+    public Curve(Field f, byte[] d, FieldElement I) {
         this.f = f;
         this.d = f.fromByteArray(d);
         this.d2 = this.d.add(this.d);
+        this.I = I;
 
         FieldElement zero = f.zero;
         FieldElement one = f.one;
@@ -40,6 +42,10 @@ public class Curve implements Serializable {
 
     public FieldElement get2D() {
         return d2;
+    }
+
+    public FieldElement getI() {
+        return I;
     }
 
     public GroupElement getZero(GroupElement.Representation repr) {

@@ -28,7 +28,6 @@ public class Field implements Serializable {
      */
     private final FieldElement qm5d8;
     private final Encoding enc;
-    private final FieldElement I;
 
     public Field(int b, byte[] q, Encoding enc) {
         this.b = b;
@@ -48,7 +47,6 @@ public class Field implements Serializable {
         // Precompute values
         qm2 = this.q.subtract(two);
         qm5d8 = this.q.subtract(five).divide(eight);
-        I = two.pow(this.q.subtract(one).divide(four));
     }
 
     public FieldElement fromByteArray(byte[] x) {
@@ -73,10 +71,6 @@ public class Field implements Serializable {
 
     public Encoding getEncoding(){
         return enc;
-    }
-
-    public FieldElement getI() {
-        return I;
     }
 
     @Override

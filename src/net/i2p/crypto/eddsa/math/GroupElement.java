@@ -117,7 +117,7 @@ public class GroupElement implements Serializable {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getField().getQm5d8());
+        x = x.pow22523();
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);
@@ -129,7 +129,7 @@ public class GroupElement implements Serializable {
 
             if (check.isNonZero())
                 throw new IllegalArgumentException("not a valid GroupElement");
-            x = x.multiply(curve.getField().getI());
+            x = x.multiply(curve.getI());
         }
 
         if ((x.isNegative() ? 1 : 0) != Utils.bit(s, curve.getField().getb()-1)) {

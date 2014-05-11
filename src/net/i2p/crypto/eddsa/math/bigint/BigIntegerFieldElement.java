@@ -89,6 +89,10 @@ public class BigIntegerFieldElement extends FieldElement implements Serializable
         return modPow(e, f.getQ());
     }
 
+    public FieldElement pow22523(){
+        return pow(f.getQm5d8());
+    }
+
     @Override
     public int hashCode() {
         return bi.hashCode();

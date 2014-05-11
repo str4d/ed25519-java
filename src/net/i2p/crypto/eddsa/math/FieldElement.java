@@ -47,5 +47,5 @@ public abstract class FieldElement {
 
     public abstract FieldElement invert();
 
-    public abstract FieldElement pow(FieldElement e);
+    public abstract FieldElement pow22523();
 }
