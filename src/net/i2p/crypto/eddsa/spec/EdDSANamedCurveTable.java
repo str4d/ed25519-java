@@ -5,9 +5,8 @@ import java.util.Hashtable;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.Field;
-import net.i2p.crypto.eddsa.math.bigint.BigIntegerFieldElement;
-import net.i2p.crypto.eddsa.math.bigint.BigIntegerLittleEndianEncoding;
 import net.i2p.crypto.eddsa.math.ed25519.Ed25519ScalarOps;
+import net.i2p.crypto.eddsa.math.radix251.Radix251LittleEndianEncoding;
 
 /**
  * The named EdDSA curves.
@@ -20,11 +19,11 @@ public class EdDSANamedCurveTable {
     private static final Field ed25519field = new Field(
                     256, // b
                     Utils.hexToBytes("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), // q
-                    new BigIntegerLittleEndianEncoding());
+                    new Radix251LittleEndianEncoding());
 
     private static final Curve ed25519curve = new Curve(ed25519field,
             Utils.hexToBytes("a3785913ca4deb75abd841414d0a700098e879777940c78c73fe6f2bee6c0352"), // d
-            ((BigIntegerFieldElement)ed25519field.two).pow(ed25519field.getQ().subtractOne().divide(ed25519field.four))); // I
+            ed25519field.fromByteArray(Utils.hexToBytes("b0a00e4a271beec478e42fad0618432fa7d7fb3d99004d2b0bdfc14f8024832b"))); // I
 
     private static final EdDSANamedCurveSpec ed25519sha512 = new EdDSANamedCurveSpec(
             CURVE_ED25519_SHA512,
