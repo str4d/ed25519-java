@@ -20,16 +20,18 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
         mask = BigInteger.ONE.shiftLeft(f.getb()-1).subtract(BigInteger.ONE);
     }
 
+    public byte[] encode(FieldElement x) {
+        return encode(((BigIntegerFieldElement)x).bi.and(mask));
+    }
+
     /**
      *  Convert x to little endian.
      *  Constant time.
      *
-     *  @param len must be big enough
-     *  @return array of length len
-     *  @throws ArrayIndexOutOfBoundsException if len not big enough
+     *  @return array of length b/8
      */
-    public byte[] encode(FieldElement x) {
-        byte[] in = ((BigIntegerFieldElement)x).bi.and(mask).toByteArray();
+    public byte[] encode(BigInteger x) {
+        byte[] in = x.toByteArray();
         byte[] out = new byte[f.getb()/8];
         for (int i = 0; i < in.length; i++) {
             out[i] = in[in.length-1-i];
@@ -40,24 +42,21 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
         return out;
     }
 
-    /**
-     *  Convert in to big endian
-     */
     public FieldElement decode(byte[] in) {
-        return decode(in, true);
+        if (in.length != f.getb()/8)
+            throw new IllegalArgumentException("Not a valid encoding");
+        return new BigIntegerFieldElement(f, toBigInteger(in).and(mask));
     }
 
     /**
      *  Convert in to big endian
      */
-    public FieldElement decode(byte[] in, boolean checkLength) {
-        if (checkLength && in.length != f.getb()/8)
-            throw new IllegalArgumentException("Not a valid encoding");
+    public BigInteger toBigInteger(byte[] in) {
         byte[] out = new byte[in.length];
         for (int i = 0; i < in.length; i++) {
             out[i] = in[in.length-1-i];
         }
-        return new BigIntegerFieldElement(f, new BigInteger(1, out).and(mask));
+        return new BigInteger(1, out);
     }
 
     /**
