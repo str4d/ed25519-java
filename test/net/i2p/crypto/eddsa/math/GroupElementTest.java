@@ -3,10 +3,8 @@ package net.i2p.crypto.eddsa.math;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.math.BigInteger;
-
 import net.i2p.crypto.eddsa.Ed25519TestVectors;
-import net.i2p.crypto.eddsa.TestUtils;
+import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
@@ -19,26 +17,26 @@ import org.junit.rules.ExpectedException;
  *
  */
 public class GroupElementTest {
-    static final byte[] BYTES_ZEROZERO = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_ONEONE = TestUtils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000080");
-    static final byte[] BYTES_TENZERO = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_ONETEN = TestUtils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
+    static final byte[] BYTES_ZEROZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ONEONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000080");
+    static final byte[] BYTES_TENZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ONETEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
 
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
     static final Curve curve = ed25519.getCurve();
 
-    static final FieldElement ZERO = curve.fromBigInteger(Constants.ZERO);
-    static final FieldElement ONE = curve.fromBigInteger(Constants.ONE);
-    static final FieldElement TWO = curve.fromBigInteger(Constants.TWO);
-    static final FieldElement TEN = curve.fromBigInteger(BigInteger.valueOf(10));
+    static final FieldElement ZERO = curve.getField().zero;
+    static final FieldElement ONE = curve.getField().one;
+    static final FieldElement TWO = curve.getField().two;
+    static final FieldElement TEN = curve.getField().fromByteArray(Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000000"));
 
     static final GroupElement P2_ZERO = GroupElement.p2(curve, ZERO, ONE, ONE);
 
     static final FieldElement[] PKR = new FieldElement[] {
-        curve.fromBigInteger(new BigInteger("9639205628789703341510410801487549615560488670885798085067615194958049462616")),
-        curve.fromBigInteger(new BigInteger("18930617471878267742194159801949745215346600387277955685031939302387136031291"))
+        curve.getField().fromByteArray(Utils.hexToBytes("5849722e338aced7b50c7f0e9328f9a10c847b08e40af5c5b0577b0fd8984f15")),
+        curve.getField().fromByteArray(Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29"))
         };
-    static final byte[] BYTES_PKR = TestUtils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
+    static final byte[] BYTES_PKR = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -277,14 +275,14 @@ public class GroupElementTest {
                 is(equalTo(P2_ZERO)));
     }
 
-    static final byte[] BYTES_ZERO = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_ONE = TestUtils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_42 = TestUtils.hexToBytes("2A00000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] BYTES_1234567890 = TestUtils.hexToBytes("D202964900000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_42 = Utils.hexToBytes("2A00000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] BYTES_1234567890 = Utils.hexToBytes("D202964900000000000000000000000000000000000000000000000000000000");
 
-    static final byte[] RADIX16_ZERO = TestUtils.hexToBytes("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] RADIX16_ONE = TestUtils.hexToBytes("01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-    static final byte[] RADIX16_42 = TestUtils.hexToBytes("FA030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] RADIX16_ZERO = Utils.hexToBytes("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] RADIX16_ONE = Utils.hexToBytes("01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] RADIX16_42 = Utils.hexToBytes("FA030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     /**
      * Test method for {@link net.i2p.crypto.eddsa.Utils#toRadix16(byte[])}.
@@ -356,11 +354,11 @@ public class GroupElementTest {
     @Test
     public void testScalarMultiplyByteArray() {
         // Little-endian
-        byte[] zero = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-        byte[] one = TestUtils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
-        byte[] two = TestUtils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
-        byte[] a = TestUtils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
-        GroupElement A = new GroupElement(curve, TestUtils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
+        byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+        byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+        byte[] a = Utils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
+        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
 
         assertThat("scalarMultiply(0) failed",
                 ed25519.getB().scalarMultiply(zero), is(equalTo(curve.getZero(GroupElement.Representation.P3))));
@@ -376,11 +374,11 @@ public class GroupElementTest {
     @Test
     public void testDoubleScalarMultiplyVariableTime() {
         // Little-endian
-        byte[] zero = TestUtils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
-        byte[] one = TestUtils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
-        byte[] two = TestUtils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
-        byte[] a = TestUtils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
-        GroupElement A = new GroupElement(curve, TestUtils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
+        byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] one = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+        byte[] two = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+        byte[] a = Utils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
+        GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
         GroupElement B = ed25519.getB();
         GroupElement geZero = curve.getZero(GroupElement.Representation.P3);
         geZero.precompute(false);

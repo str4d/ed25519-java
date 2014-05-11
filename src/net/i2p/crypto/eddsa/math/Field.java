@@ -1,7 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * An EdDSA finite field. Includes several pre-computed values.
@@ -10,49 +9,64 @@ import java.math.BigInteger;
  */
 public class Field implements Serializable {
     private static final long serialVersionUID = 8746587465875676L;
+
+    public final FieldElement zero;
+    public final FieldElement one;
+    public final FieldElement two;
+    public final FieldElement four;
+    public final FieldElement five;
+    public final FieldElement eight;
+
     private final int b;
-    private final BigInteger q;
+    private final FieldElement q;
     /**
      * q-2
      */
-    private final BigInteger qm2;
+    private final FieldElement qm2;
     /**
      * (q-5) / 8
      */
-    private final BigInteger qm5d8;
-    /**
-     * Mask where only the first b-1 bits are set.
-     */
-    private final BigInteger mask;
+    private final FieldElement qm5d8;
     private final Encoding enc;
 
-    public Field(int b, BigInteger q, Encoding enc) {
+    public Field(int b, byte[] q, Encoding enc) {
         this.b = b;
-        this.q = q;
-        this.qm2 = q.subtract(Constants.TWO);
-        this.qm5d8 = q.subtract(Constants.FIVE).divide(Constants.EIGHT);
-        this.mask = Constants.ONE.shiftLeft(b-1).subtract(Constants.ONE);
         this.enc = enc;
+        this.enc.setField(this);
+
+        this.q = fromByteArray(q);
+
+        // Set up constants
+        zero = fromByteArray(Constants.ZERO);
+        one = fromByteArray(Constants.ONE);
+        two = fromByteArray(Constants.TWO);
+        four = fromByteArray(Constants.FOUR);
+        five = fromByteArray(Constants.FIVE);
+        eight = fromByteArray(Constants.EIGHT);
+
+        // Precompute values
+        qm2 = this.q.subtract(two);
+        qm5d8 = this.q.subtract(five).divide(eight);
+    }
+
+    public FieldElement fromByteArray(byte[] x) {
+        return enc.decode(x);
     }
 
     public int getb() {
         return b;
     }
 
-    public BigInteger getQ() {
+    public FieldElement getQ() {
         return q;
     }
 
-    public BigInteger getQm2() {
+    public FieldElement getQm2() {
         return qm2;
     }
 
-    public BigInteger getQm5d8() {
+    public FieldElement getQm5d8() {
         return qm5d8;
-    }
-
-    public BigInteger getMask() {
-        return mask;
     }
 
     public Encoding getEncoding(){

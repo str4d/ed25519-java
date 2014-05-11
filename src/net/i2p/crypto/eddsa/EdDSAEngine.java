@@ -1,7 +1,6 @@
 package net.i2p.crypto.eddsa;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -13,9 +12,8 @@ import java.security.SignatureException;
 import java.util.Arrays;
 
 import net.i2p.crypto.eddsa.math.Curve;
-import net.i2p.crypto.eddsa.math.FieldElement;
 import net.i2p.crypto.eddsa.math.GroupElement;
-import net.i2p.crypto.eddsa.math.LittleEndianEncoding;
+import net.i2p.crypto.eddsa.math.ScalarOps;
 
 /**
  * @author str4d
@@ -111,21 +109,16 @@ public class EdDSAEngine extends Signature {
     @Override
     protected byte[] engineSign() throws SignatureException {
         Curve curve = key.getParams().getCurve();
-        BigInteger l = key.getParams().getL();
-        BigInteger a = ((EdDSAPrivateKey) key).geta();
-        LittleEndianEncoding leEnc = new LittleEndianEncoding();
+        ScalarOps sc = key.getParams().getScalarOps();
+        byte[] a = ((EdDSAPrivateKey) key).geta();
 
         byte[] message = baos.toByteArray();
         // r = H(h_b,...,h_2b-1,M)
         byte[] r = digest.digest(message);
-        // From the Ed25519 paper:
-        // Here we interpret 2b-bit strings in little-endian form as integers in
-        // {0, 1,..., 2^(2b)-1}.
-        BigInteger rBI = leEnc.decode(r);
 
         // r mod l
         // Reduces r from 64 bytes to 32 bytes
-        r = leEnc.encode(rBI.mod(l), curve.getField().getb()/8);
+        r = sc.reduce(r);
 
         // R = rB
         GroupElement R = key.getParams().getB().scalarMultiply(r);
@@ -134,12 +127,14 @@ public class EdDSAEngine extends Signature {
         // S = (r + H(Rbar,Abar,M)*a) mod l
         digest.update(Rbyte);
         digest.update(((EdDSAPrivateKey) key).getAbyte());
-        FieldElement S = curve.fromBigInteger(leEnc.decode(digest.digest(message)).multiply(a).add(rBI).mod(l));
+        byte[] h = digest.digest(message);
+        h = sc.reduce(h);
+        byte[] S = sc.multiplyAndAdd(h, a, r);
 
         // R+S
         int b = curve.getField().getb();
         ByteBuffer out = ByteBuffer.allocate(b/4);
-        out.put(Rbyte).put(S.toByteArray());
+        out.put(Rbyte).put(S);
         return out.array();
     }
 
@@ -158,20 +153,21 @@ public class EdDSAEngine extends Signature {
         byte[] h = digest.digest(message);
 
         // h mod l
-        LittleEndianEncoding leEnc = new LittleEndianEncoding();
-        h = leEnc.encode(leEnc.decode(h).mod(key.getParams().getL()), b/8);
+        h = key.getParams().getScalarOps().reduce(h);
 
         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
         // R = SB - H(Rbar,Abar,M)A
         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
                 ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
 
+        // Variable time. This should be okay, because there are no secret
+        // values used anywhere in verification.
         byte[] Rcalc = R.toByteArray();
-        int result = 1;
         for (int i = 0; i < Rcalc.length; i++) {
-            result &= Utils.equal(Rcalc[i], sigBytes[i]);
+            if (Rcalc[i] != sigBytes[i])
+                return false;
         }
-        return result == 1;
+        return true;
     }
 
     /**

@@ -1,7 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * A twisted Edwards curve.
@@ -20,16 +19,16 @@ public class Curve implements Serializable {
     private final GroupElement zeroP3;
     private final GroupElement zeroPrecomp;
 
-    public Curve(Field f, BigInteger d) {
+    public Curve(Field f, byte[] d, FieldElement I) {
         this.f = f;
-        this.d = fromBigInteger(d);
-        this.d2 = this.d.multiply(fromBigInteger(Constants.TWO));
-        this.I = fromBigInteger(Constants.TWO).modPow(f.getQ().subtract(Constants.ONE).divide(Constants.FOUR), f.getQ());
+        this.d = f.fromByteArray(d);
+        this.d2 = this.d.add(this.d);
+        this.I = I;
 
-        FieldElement zero = fromBigInteger(Constants.ZERO);
-        FieldElement one = fromBigInteger(Constants.ONE);
+        FieldElement zero = f.zero;
+        FieldElement one = f.one;
         zeroP2 = GroupElement.p2(this, zero, one, one);
-        zeroP3 = createPoint(Constants.ZERO, Constants.ONE);
+        zeroP3 = GroupElement.p3(this, zero, one, one, zero);
         zeroPrecomp = GroupElement.precomp(this, one, one, zero);
     }
 
@@ -62,22 +61,8 @@ public class Curve implements Serializable {
         }
     }
 
-    public FieldElement fromBigInteger(BigInteger x) {
-        return new FieldElement(f, x);
-    }
-
-    public FieldElement fromByteArray(byte[] x) {
-        return new FieldElement(f, x);
-    }
-
-    public GroupElement createPoint(BigInteger x, BigInteger y) {
-        return createPoint(x, y, false);
-    }
-
-    public GroupElement createPoint(BigInteger x, BigInteger y, boolean precompute) {
-        FieldElement X = fromBigInteger(x);
-        FieldElement Y = fromBigInteger(y);
-        GroupElement ge = GroupElement.p3(this, X, Y, fromBigInteger(Constants.ONE), X.multiply(Y));
+    public GroupElement createPoint(byte[] P, boolean precompute) {
+        GroupElement ge = new GroupElement(this, P);
         if (precompute)
             ge.precompute(true);
         return ge;

@@ -1,12 +1,12 @@
 package net.i2p.crypto.eddsa.math;
 
-import java.math.BigInteger;
+import net.i2p.crypto.eddsa.Utils;
 
 public class Constants {
-    public static final BigInteger ZERO = BigInteger.ZERO;
-    public static final BigInteger ONE = BigInteger.ONE;
-    public static final BigInteger TWO = BigInteger.valueOf(2);
-    public static final BigInteger FOUR = BigInteger.valueOf(4);
-    public static final BigInteger FIVE = BigInteger.valueOf(5);
-    public static final BigInteger EIGHT = BigInteger.valueOf(8);
+    public static final byte[] ZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+    public static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+    public static final byte[] TWO = Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000");
+    public static final byte[] FOUR = Utils.hexToBytes("0400000000000000000000000000000000000000000000000000000000000000");
+    public static final byte[] FIVE = Utils.hexToBytes("0500000000000000000000000000000000000000000000000000000000000000");
+    public static final byte[] EIGHT = Utils.hexToBytes("0800000000000000000000000000000000000000000000000000000000000000");
 }

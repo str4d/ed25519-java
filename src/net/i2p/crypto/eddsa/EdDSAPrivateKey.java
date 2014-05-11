@@ -1,6 +1,5 @@
 package net.i2p.crypto.eddsa;
 
-import java.math.BigInteger;
 import java.security.PrivateKey;
 
 import net.i2p.crypto.eddsa.math.GroupElement;
@@ -16,7 +15,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
     private static final long serialVersionUID = 23495873459878957L;
     private transient final byte[] seed;
     private transient final byte[] h;
-    private transient final BigInteger a;
+    private transient final byte[] a;
     private transient final GroupElement A;
     private transient final byte[] Abyte;
     private transient final EdDSAParameterSpec edDsaSpec;
@@ -55,7 +54,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
         return h;
     }
 
-    public BigInteger geta() {
+    public byte[] geta() {
         return a;
     }
 

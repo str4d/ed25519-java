@@ -101,7 +101,7 @@ public class GroupElement implements Serializable {
 
     public GroupElement(Curve curve, byte[] s) {
         FieldElement x, y, yy, u, v, v3, vxx, check;
-        y = curve.fromByteArray(s);
+        y = curve.getField().fromByteArray(s);
         yy = y.square();
 
         // u = y^2-1	
@@ -117,7 +117,7 @@ public class GroupElement implements Serializable {
         x = v3.square().multiply(v).multiply(u);	
 
         //  x = (uv^7)^((q-5)/8)
-        x = x.pow(curve.getField().getQm5d8());
+        x = x.pow22523();
 
         // x = uv^3(uv^7)^((q-5)/8)
         x = v3.multiply(u).multiply(x);
@@ -140,7 +140,7 @@ public class GroupElement implements Serializable {
         repr = Representation.P3;
         X = x;
         Y = y;
-        Z = curve.fromBigInteger(Constants.ONE);
+        Z = curve.getField().one;
         T = X.multiply(Y);
     }
 
@@ -372,10 +372,11 @@ public class GroupElement implements Serializable {
         return curve.getZero(Representation.P3).sub(toCached()).toP3();
     }
 
-    //@Override
-    //public int hashCode() {
-    // TODO
-    //}
+    @Override
+    public int hashCode() {
+        // TODO
+        return 42;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -392,12 +393,14 @@ public class GroupElement implements Serializable {
         switch (this.repr) {
         case P2:
         case P3:
-            FieldElement recip1 = Z.invert();
-            FieldElement x1 = X.multiply(recip1);
-            FieldElement y1 = Y.multiply(recip1);
-            FieldElement recip2 = ge.Z.invert();
-            FieldElement x2 = ge.X.multiply(recip2);
-            FieldElement y2 = ge.Y.multiply(recip2);
+            // Try easy way first
+            if (Z.equals(ge.Z))
+                return X.equals(ge.X) && Y.equals(ge.Y);
+            // X1/Z1 = X2/Z2 --> X1*Z2 = X2*Z1
+            FieldElement x1 = X.multiply(ge.Z);
+            FieldElement y1 = Y.multiply(ge.Z);
+            FieldElement x2 = ge.X.multiply(Z);
+            FieldElement y2 = ge.Y.multiply(Z);
             return x1.equals(x2) && y1.equals(y2);
         case P1P1:
             return toP2().equals(ge);
@@ -405,15 +408,16 @@ public class GroupElement implements Serializable {
             // Compare directly, PRECOMP is derived directly from x and y
             return X.equals(ge.X) && Y.equals(ge.Y) && Z.equals(ge.Z);
         case CACHED:
+            // Try easy way first
+            if (Z.equals(ge.Z))
+                return X.equals(ge.X) && Y.equals(ge.Y) && T.equals(ge.T);
             // (Y+X)/Z = y+x etc.
-            FieldElement recip3 = Z.invert();
-            FieldElement x3 = X.multiply(recip3);
-            FieldElement y3 = Y.multiply(recip3);
-            FieldElement t3 = T.multiply(recip3);
-            FieldElement recip4 = ge.Z.invert();
-            FieldElement x4 = ge.X.multiply(recip4);
-            FieldElement y4 = ge.Y.multiply(recip4);
-            FieldElement t4 = ge.T.multiply(recip4);
+            FieldElement x3 = X.multiply(ge.Z);
+            FieldElement y3 = Y.multiply(ge.Z);
+            FieldElement t3 = T.multiply(ge.Z);
+            FieldElement x4 = ge.X.multiply(Z);
+            FieldElement y4 = ge.Y.multiply(Z);
+            FieldElement t4 = ge.T.multiply(Z);
             return x3.equals(x4) && y3.equals(y4) && t3.equals(t4);
         default:
             return false;
@@ -663,7 +667,7 @@ public class GroupElement implements Serializable {
             FieldElement xx = x.square();
             FieldElement yy = y.square();
             FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
-            return curve.fromBigInteger(Constants.ONE).add(dxxyy).add(xx).subtract(yy).equals(curve.fromBigInteger(Constants.ZERO));
+            return curve.getField().one.add(dxxyy).add(xx).equals(yy);
 
         default:
             return toP2().isOnCurve(curve);
