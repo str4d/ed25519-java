@@ -1,4 +1,4 @@
-package net.i2p.crypto.eddsa.math.radix251;
+package net.i2p.crypto.eddsa.math.ed25519;
 
 import net.i2p.crypto.eddsa.TestUtils;
 import net.i2p.crypto.eddsa.math.Field;
@@ -9,13 +9,13 @@ import net.i2p.crypto.eddsa.math.FieldElement;
  * t[0]+2^26 t[1]+2^51 t[2]+2^77 t[3]+2^102 t[4]+...+2^230 t[9].
  * Bounds on each t[i] vary depending on context.
  */
-public class Radix251FieldElement extends FieldElement {
+public class Ed25519FieldElement extends FieldElement {
     /**
      * Variable is package private for encoding.
      */
     int[] t;
 
-    public Radix251FieldElement(Field f, int[] t) {
+    public Ed25519FieldElement(Field f, int[] t) {
         super(f);
         if (t.length != 10)
             throw new IllegalArgumentException("Invalid radix-2^51 representation");
@@ -45,7 +45,7 @@ public class Radix251FieldElement extends FieldElement {
      *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
      */
     public FieldElement add(FieldElement val) {
-        int[] g = ((Radix251FieldElement)val).t;
+        int[] g = ((Ed25519FieldElement)val).t;
         int f0 = t[0];
         int f1 = t[1];
         int f2 = t[2];
@@ -87,7 +87,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = h7;
         h[8] = h8;
         h[9] = h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
@@ -102,7 +102,7 @@ public class Radix251FieldElement extends FieldElement {
      *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
      **/
     public FieldElement subtract(FieldElement val) {
-        int[] g = ((Radix251FieldElement)val).t;
+        int[] g = ((Ed25519FieldElement)val).t;
         int f0 = t[0];
         int f1 = t[1];
         int f2 = t[2];
@@ -144,7 +144,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = h7;
         h[8] = h8;
         h[9] = h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
@@ -188,7 +188,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = h7;
         h[8] = h8;
         h[9] = h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
@@ -220,7 +220,7 @@ public class Radix251FieldElement extends FieldElement {
      * With tighter constraints on inputs can squeeze carries into int32.
      */
     public FieldElement multiply(FieldElement val) {
-        int[] g = ((Radix251FieldElement)val).t;
+        int[] g = ((Ed25519FieldElement)val).t;
         int f0 = t[0];
         int f1 = t[1];
         int f2 = t[2];
@@ -437,7 +437,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = (int) h7;
         h[8] = (int) h8;
         h[9] = (int) h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
@@ -450,7 +450,7 @@ public class Radix251FieldElement extends FieldElement {
      * Postconditions:
      *    |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
      *
-     * See {@link Radix251FieldElement#multiply(FieldElement)} for discussion
+     * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
      * of implementation strategy.
      */
     public FieldElement square() {
@@ -583,7 +583,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = (int) h7;
         h[8] = (int) h8;
         h[9] = (int) h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
@@ -596,7 +596,7 @@ public class Radix251FieldElement extends FieldElement {
      * Postconditions:
      *    |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
      *
-     * See {@link Radix251FieldElement#multiply(FieldElement)} for discussion
+     * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
      * of implementation strategy.
      */
     public FieldElement squareAndDouble() {
@@ -740,7 +740,7 @@ public class Radix251FieldElement extends FieldElement {
         h[7] = (int) h7;
         h[8] = (int) h8;
         h[9] = (int) h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     public FieldElement invert() {
@@ -956,9 +956,9 @@ public class Radix251FieldElement extends FieldElement {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Radix251FieldElement))
+        if (!(obj instanceof Ed25519FieldElement))
             return false;
-        Radix251FieldElement fe = (Radix251FieldElement) obj;
+        Ed25519FieldElement fe = (Ed25519FieldElement) obj;
         // XXX why does direct byte[] comparison fail?
         // TODO should this be constant time?
         return TestUtils.getHex(toByteArray()).equals(TestUtils.getHex(fe.toByteArray()));
@@ -966,6 +966,6 @@ public class Radix251FieldElement extends FieldElement {
 
     @Override
     public String toString() {
-        return "[Radix251FieldElement val="+TestUtils.getHex(toByteArray())+"]";
+        return "[Ed25519FieldElement val="+TestUtils.getHex(toByteArray())+"]";
     }
 }

@@ -1,9 +1,9 @@
-package net.i2p.crypto.eddsa.math.radix251;
+package net.i2p.crypto.eddsa.math.ed25519;
 
 import net.i2p.crypto.eddsa.math.Encoding;
 import net.i2p.crypto.eddsa.math.FieldElement;
 
-public class Radix251LittleEndianEncoding extends Encoding {
+public class Ed25519LittleEndianEncoding extends Encoding {
     /**
      * Preconditions:<br>
      *   |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.<br><br>
@@ -29,7 +29,7 @@ public class Radix251LittleEndianEncoding extends Encoding {
      *   so floor(2^(-255)(h + 19 2^(-25) h9 + 2^(-1))) = q.
      */
     public byte[] encode(FieldElement x) {
-        int[] h = ((Radix251FieldElement)x).t;
+        int[] h = ((Ed25519FieldElement)x).t;
         int h0 = h[0];
         int h1 = h[1];
         int h2 = h[2];
@@ -186,7 +186,7 @@ public class Radix251LittleEndianEncoding extends Encoding {
         h[7] = (int) h7;
         h[8] = (int) h8;
         h[9] = (int) h9;
-        return new Radix251FieldElement(f, h);
+        return new Ed25519FieldElement(f, h);
     }
 
     /**
