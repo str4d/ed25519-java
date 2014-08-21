@@ -5,8 +5,8 @@ import java.util.Hashtable;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.Field;
+import net.i2p.crypto.eddsa.math.ed25519.Ed25519LittleEndianEncoding;
 import net.i2p.crypto.eddsa.math.ed25519.Ed25519ScalarOps;
-import net.i2p.crypto.eddsa.math.radix251.Radix251LittleEndianEncoding;
 
 /**
  * The named EdDSA curves.
@@ -19,7 +19,7 @@ public class EdDSANamedCurveTable {
     private static final Field ed25519field = new Field(
                     256, // b
                     Utils.hexToBytes("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), // q
-                    new Radix251LittleEndianEncoding());
+                    new Ed25519LittleEndianEncoding());
 
     private static final Curve ed25519curve = new Curve(ed25519field,
             Utils.hexToBytes("a3785913ca4deb75abd841414d0a700098e879777940c78c73fe6f2bee6c0352"), // d
