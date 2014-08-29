@@ -1,6 +1,7 @@
 package net.i2p.crypto.eddsa.math.ed25519;
 
 import net.i2p.crypto.eddsa.TestUtils;
+import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.FieldElement;
 
@@ -26,11 +27,7 @@ public class Ed25519FieldElement extends FieldElement {
 
     public boolean isNonZero() {
         byte[] s = toByteArray();
-        int result = 0;
-        for (int i = 0; i < 32; i++) {
-            result |= s[i] ^ zero[i];
-        }
-        return result != 0;
+        return Utils.equal(s, zero) == 1;
     }
 
     /**

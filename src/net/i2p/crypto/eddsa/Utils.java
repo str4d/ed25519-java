@@ -19,6 +19,18 @@ public class Utils {
     }
 
     /**
+     * Constant-time byte[] comparison.
+     * @return 1 if b and c are equal, 0 otherwise.
+     */
+    public static int equal(byte[] b, byte[] c) {
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            result |= b[i] ^ c[i];
+        }
+        return ~equal(result, 0) & 0x01;
+    }
+
+    /**
      * Constant-time determine if byte is negative.
      * @param b the byte to check.
      * @return 1 if the byte is negative, 0 otherwise.
