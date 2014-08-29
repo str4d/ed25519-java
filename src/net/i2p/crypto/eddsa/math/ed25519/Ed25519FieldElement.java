@@ -1,6 +1,9 @@
 package net.i2p.crypto.eddsa.math.ed25519;
 
-import net.i2p.crypto.eddsa.TestUtils;
+import java.util.Arrays;
+
+import javax.xml.bind.DatatypeConverter;
+
 import net.i2p.crypto.eddsa.math.Field;
 import net.i2p.crypto.eddsa.math.FieldElement;
 
@@ -959,13 +962,12 @@ public class Ed25519FieldElement extends FieldElement {
         if (!(obj instanceof Ed25519FieldElement))
             return false;
         Ed25519FieldElement fe = (Ed25519FieldElement) obj;
-        // XXX why does direct byte[] comparison fail?
         // TODO should this be constant time?
-        return TestUtils.getHex(toByteArray()).equals(TestUtils.getHex(fe.toByteArray()));
+        return Arrays.equals(toByteArray(), fe.toByteArray());
     }
 
     @Override
     public String toString() {
-        return "[Ed25519FieldElement val="+TestUtils.getHex(toByteArray())+"]";
+        return "[Ed25519FieldElement val="+DatatypeConverter.printHexBinary(toByteArray())+"]";
     }
 }
