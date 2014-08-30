@@ -63,7 +63,7 @@ public class Utils {
         }
         return data;
     }
-    
+
     /**
      * Converts bytes to a hex string.
      * @param raw the byte[] to be converted.
