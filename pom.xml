@@ -6,6 +6,26 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ed25519-java</name>
 	<description>Implementation of EdDSA in Java</description>
+	<url>https://github.com/str4d/ed25519-java</url>
+	<licenses>
+		<license>
+			<name>Public Domain</name>
+			<url>http://en.wikipedia.org/wiki/Public_domain</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>str4d</id>
+			<name>str4d</name>
+			<email>str4d@i2pmail.org</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/str4d/ed25519-java.git</connection>
+		<developerConnection>scm:git:git@github.com:str4d/ed25519-java.git</developerConnection>
+		<url>https://github.com/str4d/ed25519-java</url>
+	</scm>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -53,4 +73,14 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<contributors>
+		<contributor>
+			<name>mbakkar</name>
+			<email>Mohamed.b.bakkar@gmail.com</email>
+		</contributor>
+		<contributor>
+			<name>Philippe Marchesseault</name>
+			<email>pmarches@gmail.com</email>
+		</contributor>
+	</contributors>
 </project>
