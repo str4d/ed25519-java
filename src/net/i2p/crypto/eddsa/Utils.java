@@ -46,7 +46,7 @@ public class Utils {
      * @return 0 or 1, the value of the i'th bit in h
      */
     public static int bit(byte[] h, int i) {
-        return (h[i/8] >> (i%8)) & 1;
+        return (h[i >> 3] >> (i & 7)) & 1;
     }
 
     /**
