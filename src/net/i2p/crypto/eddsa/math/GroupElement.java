@@ -1,8 +1,8 @@
 package net.i2p.crypto.eddsa.math;
 
-import java.io.Serializable;
-
 import net.i2p.crypto.eddsa.Utils;
+
+import java.io.Serializable;
 
 /**
  * A point (x,y) on an EdDSA curve.
@@ -12,6 +12,15 @@ import net.i2p.crypto.eddsa.Utils;
 public class GroupElement implements Serializable {
     private static final long serialVersionUID = 2395879087349587L;
 
+	/**
+	 * Available representations for a group element.
+	 *
+	 * P2: Projective representation (X:Y:Z).
+	 * P3: Extended projective representation (X:Y:Z:T).
+	 * P1P1: Completed representation ((X:Z), (Y:T)).
+	 * PRECOMP: Precomputed representation (Y+X, Y-X, 2dXY).
+	 * CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
+	 */
     public enum Representation {
         /** Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z */
         P2,
@@ -25,55 +34,127 @@ public class GroupElement implements Serializable {
         CACHED
     }
 
-    public static GroupElement p2(Curve curve, FieldElement X,
-            FieldElement Y, FieldElement Z) {
+	/**
+	 * Creates a new group element in P2 representation.
+	 *
+	 * @param curve The curve.
+	 * @param X The X coordinate.
+	 * @param Y The Y coordinate.
+	 * @param Z The Z coordinate.
+	 * @return The group element in P2 representation.
+	 */
+    public static GroupElement p2(
+			final Curve curve,
+			final FieldElement X,
+			final FieldElement Y,
+			final FieldElement Z) {
         return new GroupElement(curve, Representation.P2, X, Y, Z, null);
     }
 
-    public static GroupElement p3(Curve curve, FieldElement X,
-            FieldElement Y, FieldElement Z, FieldElement T) {
+	/**
+	 * Creates a new group element in P3 representation.
+	 *
+	 * @param curve The curve.
+	 * @param X The X coordinate.
+	 * @param Y The Y coordinate.
+	 * @param Z The Z coordinate.
+	 * @param T The T coordinate.
+	 * @return The group element in P3 representation.
+	 */
+    public static GroupElement p3(
+			final Curve curve,
+			final FieldElement X,
+			final FieldElement Y,
+			final FieldElement Z,
+			final FieldElement T) {
         return new GroupElement(curve, Representation.P3, X, Y, Z, T);
     }
 
-    public static GroupElement p1p1(Curve curve, FieldElement X,
-            FieldElement Y, FieldElement Z, FieldElement T) {
+	/**
+	 * Creates a new group element in P1P1 representation.
+	 *
+	 * @param curve The curve.
+	 * @param X The X coordinate.
+	 * @param Y The Y coordinate.
+	 * @param Z The Z coordinate.
+	 * @param T The T coordinate.
+	 * @return The group element in P1P1 representation.
+	 */
+	public static GroupElement p1p1(
+			final Curve curve,
+			final FieldElement X,
+			final FieldElement Y,
+			final FieldElement Z,
+			final FieldElement T) {
         return new GroupElement(curve, Representation.P1P1, X, Y, Z, T);
     }
 
-    public static GroupElement precomp(Curve curve, FieldElement ypx,
-            FieldElement ymx, FieldElement xy2d) {
-        return new GroupElement(curve, Representation.PRECOMP, ypx, ymx, xy2d, null);
+	/**
+	 * Creates a new group element in PRECOMP representation.
+	 *
+	 * @param curve The curve.
+	 * @param YpX The Y + X value.
+	 * @param YmX The Y - X value.
+	 * @param XY2d The 2 * d * X * Y value.
+	 * @return The group element in PRECOMP representation.
+	 */
+    public static GroupElement precomp(
+			final Curve curve,
+			final FieldElement YpX,
+			final FieldElement YmX,
+			final FieldElement XY2d) {
+        return new GroupElement(curve, Representation.PRECOMP, YpX, YmX, XY2d, null);
     }
 
-    public static GroupElement cached(Curve curve, FieldElement YpX,
-            FieldElement YmX, FieldElement Z, FieldElement T2d) {
+	/**
+	 * Creates a new group element in CACHED representation.
+	 *
+	 * @param curve The curve.
+	 * @param YpX The Y + X value.
+	 * @param YmX The Y - X value.
+	 * @param Z The Z coordinate.
+	 * @param T2d The 2 * d * T value.
+	 * @return The group element in CACHED representation.
+	 */
+    public static GroupElement cached(
+			final Curve curve,
+			final FieldElement YpX,
+			final FieldElement YmX,
+			final FieldElement Z,
+			final FieldElement T2d) {
         return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
     }
 
     /**
      * Variable is package private only so that tests run.
      */
-    final Curve curve;
+	private final Curve curve;
+
     /**
      * Variable is package private only so that tests run.
      */
-    final Representation repr;
+	private final Representation repr;
+
     /**
      * Variable is package private only so that tests run.
      */
-    final FieldElement X;
+	private final FieldElement X;
+
     /**
      * Variable is package private only so that tests run.
      */
-    final FieldElement Y;
+	private final FieldElement Y;
+
     /**
      * Variable is package private only so that tests run.
      */
-    final FieldElement Z;
+	private final FieldElement Z;
+
     /**
      * Variable is package private only so that tests run.
      */
-    final FieldElement T;
+	private final FieldElement T;
+
     /**
      * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
      * filled if necessary.
@@ -81,6 +162,7 @@ public class GroupElement implements Serializable {
      * Variable is package private only so that tests run.
      */
     GroupElement[][] precmp;
+
     /**
      * Precomputed table for {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
      * filled if necessary.
@@ -89,8 +171,23 @@ public class GroupElement implements Serializable {
      */
     GroupElement[] dblPrecmp;
 
-    public GroupElement(Curve curve, Representation repr, FieldElement X, FieldElement Y,
-            FieldElement Z, FieldElement T) {
+	/**
+	 * Creates a group element for a curve.
+	 *
+	 * @param curve The curve.
+	 * @param repr The representation used to represent the group element.
+	 * @param X The X coordinate.
+	 * @param Y The Y coordinate.
+	 * @param Z The Z coordinate.
+	 * @param T The T coordinate.
+	 */
+    public GroupElement(
+			final Curve curve,
+			final Representation repr,
+			final FieldElement X,
+			final FieldElement Y,
+			final FieldElement Z,
+			final FieldElement T) {
         this.curve = curve;
         this.repr = repr;
         this.X = X;
@@ -99,7 +196,22 @@ public class GroupElement implements Serializable {
         this.T = T;
     }
 
-    public GroupElement(Curve curve, byte[] s) {
+	/**
+	 * Creates a group element for a curve from a given encoded point.
+	 *
+	 * A point (x,y) is encoded by storing y in bit 0 to bit 254 and the sign of x in bit 255.
+	 * x is recovered in the following way:
+	 *
+	 * x = sign(x) * sqrt((y^2 - 1) / (d * y^2 + 1)) = sign(x) * sqrt(u / v) with u = y^2 - 1 and v = d * y^2 + 1.
+	 * Setting β = (u * v^3) * (u * v^7)^((q - 5) / 8) one has β^2 = +-(u / v).
+	 * If v * β = -u multiply β with i=sqrt(-1).
+	 * Set x := β.
+	 * If sign(x) != bit 255 of s then negate x.
+	 *
+	 * @param curve The curve.
+	 * @param s The encoded point.
+	 */
+    public GroupElement(final Curve curve, final byte[] s) {
         FieldElement x, y, yy, u, v, v3, vxx, check;
         y = curve.getField().fromByteArray(s);
         yy = y.square();
@@ -137,15 +249,20 @@ public class GroupElement implements Serializable {
         }
 
         this.curve = curve;
-        repr = Representation.P3;
-        X = x;
-        Y = y;
-        Z = curve.getField().one;
-        T = X.multiply(Y);
+		this.repr = Representation.P3;
+		this.X = x;
+		this.Y = y;
+		this.Z = curve.getField().one;
+		this.T = this.X.multiply(this.Y);
     }
 
+	/**
+	 * Converts the group element to an encoded point on the curve.
+	 *
+	 * @return The encoded point as byte array.
+	 */
     public byte[] toByteArray() {
-        switch (repr) {
+        switch (this.repr) {
         case P2:
         case P3:
             FieldElement recip = Z.invert();
@@ -159,6 +276,11 @@ public class GroupElement implements Serializable {
         }
     }
 
+	/**
+	 * Converts the group element to the specified representation.
+	 *
+	 * @return The group element in the specified representation.
+	 */
     public GroupElement toP2() {
         return toRep(Representation.P2);
     }
@@ -178,8 +300,9 @@ public class GroupElement implements Serializable {
      * - P3 -> CACHED (1 multiply, 1 add, 1 subtract)<br>
      * - P1P1 -> P2 (3 multiply)<br>
      * - P1P1 -> P3 (4 multiply)
-     * @param rep The Representation to convert to.
-     * @return A new GroupElement in the given Representation.
+	 *
+     * @param repr The representation to convert to.
+     * @return A new group element in the given representation.
      */
     private GroupElement toRep(Representation repr) {
         switch (this.repr) {
@@ -207,7 +330,12 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
+	 * P2: Projective representation (X:Y:Z).
+	 * P3: Extended projective representation (X:Y:Z:T).
+	 * P1P1: Completed representation ((X:Z), (Y:T)).
+	 * PRECOMP: Precomputed representation (Y+X, Y-X, 2dXY).
+	 * CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
+	 * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      *
      * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
