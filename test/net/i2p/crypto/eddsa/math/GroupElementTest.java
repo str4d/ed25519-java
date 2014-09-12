@@ -1,5 +1,6 @@
 package net.i2p.crypto.eddsa.math;
 
+import net.i2p.crypto.eddsa.Utils;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 

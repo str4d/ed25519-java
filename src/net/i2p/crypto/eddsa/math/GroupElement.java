@@ -8,6 +8,14 @@ import java.io.Serializable;
  * A point (x,y) on an EdDSA curve.
  * @author str4d
  *
+ * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
+ *
+ * Literature:
+ * [1] Daniel J. Bernstein, Niels Duif, Tanja Lange, Peter Schwabe and Bo-Yin Yang : High-speed high-security signatures
+ * [2] Huseyin Hisil, Kenneth Koon-Ho Wong, Gary Carter, Ed Dawson: Twisted Edwards Curves Revisited
+ * [3] Daniel J. Bernsteina, Tanja Lange: A complete set of addition laws for incomplete Edwards curves
+ * [4] Daniel J. Bernstein, Peter Birkner, Marc Joye, Tanja Lange and Christiane Peters: Twisted Edwards Curves
+ * [5] Christiane Pascale Peters: Curves, Codes, and Cryptography (PhD thesis)
  */
 public class GroupElement implements Serializable {
     private static final long serialVersionUID = 2395879087349587L;
@@ -15,18 +23,18 @@ public class GroupElement implements Serializable {
 	/**
 	 * Available representations for a group element.
 	 *
-	 * P2: Projective representation (X:Y:Z).
-	 * P3: Extended projective representation (X:Y:Z:T).
-	 * P1P1: Completed representation ((X:Z), (Y:T)).
-	 * PRECOMP: Precomputed representation (Y+X, Y-X, 2dXY).
+	 * P2: Projective representation (X:Y:Z) satisfying x=X/Z, y=Y/Z.
+	 * P3: Extended projective representation (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT.
+	 * P1P1: Completed representation ((X:Z), (Y:T)) satisfying x=X/Z, y=Y/T.
+	 * PRECOMP: Precomputed representation (y+x, y-x, 2dxy).
 	 * CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
 	 */
     public enum Representation {
-        /** Projective: (X:Y:Z) satisfying x=X/Z, y=Y/Z */
+        /** Projective (P^2): (X:Y:Z) satisfying x=X/Z, y=Y/Z */
         P2,
-        /** Extended: (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT */
+        /** Extended (P^3): (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT */
         P3,
-        /** Completed: ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T */
+        /** Completed (P x P): ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T */
         P1P1,
         /** Precomputed (Duif): (y+x,y-x,2dxy) */
         PRECOMP,
@@ -93,17 +101,17 @@ public class GroupElement implements Serializable {
 	 * Creates a new group element in PRECOMP representation.
 	 *
 	 * @param curve The curve.
-	 * @param YpX The Y + X value.
-	 * @param YmX The Y - X value.
-	 * @param XY2d The 2 * d * X * Y value.
+	 * @param ypx The y + x value.
+	 * @param ymx The y - x value.
+	 * @param xy2d The 2 * d * x * y value.
 	 * @return The group element in PRECOMP representation.
 	 */
     public static GroupElement precomp(
 			final Curve curve,
-			final FieldElement YpX,
-			final FieldElement YmX,
-			final FieldElement XY2d) {
-        return new GroupElement(curve, Representation.PRECOMP, YpX, YmX, XY2d, null);
+			final FieldElement ypx,
+			final FieldElement ymx,
+			final FieldElement xy2d) {
+        return new GroupElement(curve, Representation.PRECOMP, ypx, ymx, xy2d, null);
     }
 
 	/**
@@ -128,32 +136,32 @@ public class GroupElement implements Serializable {
     /**
      * Variable is package private only so that tests run.
      */
-	private final Curve curve;
+	final Curve curve;
 
     /**
      * Variable is package private only so that tests run.
      */
-	private final Representation repr;
+	final Representation repr;
 
     /**
      * Variable is package private only so that tests run.
      */
-	private final FieldElement X;
+	final FieldElement X;
 
     /**
      * Variable is package private only so that tests run.
      */
-	private final FieldElement Y;
+	final FieldElement Y;
 
     /**
      * Variable is package private only so that tests run.
      */
-	private final FieldElement Z;
+	final FieldElement Z;
 
     /**
      * Variable is package private only so that tests run.
      */
-	private final FieldElement T;
+	final FieldElement T;
 
     /**
      * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
@@ -277,85 +285,95 @@ public class GroupElement implements Serializable {
     }
 
 	/**
-	 * Converts the group element to the specified representation.
+	 * Converts the group element to the P2 representation.
 	 *
-	 * @return The group element in the specified representation.
+	 * @return The group element in the P2 representation.
 	 */
     public GroupElement toP2() {
         return toRep(Representation.P2);
     }
+
+	/**
+	 * Converts the group element to the P3 representation.
+	 *
+	 * @return The group element in the P3 representation.
+	 */
     public GroupElement toP3() {
         return toRep(Representation.P3);
     }
+
+	/**
+	 * Converts the group element to the CACHED representation.
+	 *
+	 * @return The group element in the CACHED representation.
+	 */
     public GroupElement toCached() {
         return toRep(Representation.CACHED);
     }
 
     /**
-     * Convert a GroupElement from one Representation to another.<br>
-     * r = p<br>
-     * <br>
-     * Supported conversions:<br>
-     * - P3 -> P2<br>
-     * - P3 -> CACHED (1 multiply, 1 add, 1 subtract)<br>
-     * - P1P1 -> P2 (3 multiply)<br>
+     * Convert a GroupElement from one Representation to another.
+	 * TODO-CR: Add additional conversion?
+     * r = p
+     *
+     * Supported conversions:
+     * - P3 -> P2
+     * - P3 -> CACHED (1 multiply, 1 add, 1 subtract)
+     * - P1P1 -> P2 (3 multiply)
      * - P1P1 -> P3 (4 multiply)
 	 *
      * @param repr The representation to convert to.
      * @return A new group element in the given representation.
      */
-    private GroupElement toRep(Representation repr) {
+    private GroupElement toRep(final Representation repr) {
         switch (this.repr) {
-        case P3:
-            switch (repr) {
-            case P2:
-                return p2(curve, X, Y, Z);
-            case CACHED:
-                return cached(curve, Y.add(X), Y.subtract(X), Z, T.multiply(curve.get2D()));
-            default:
-                throw new IllegalArgumentException();
-            }
-        case P1P1:
-            switch (repr) {
-            case P2:
-                return p2(curve, X.multiply(T), Y.multiply(Z), Z.multiply(T));
-            case P3:
-                return p3(curve, X.multiply(T), Y.multiply(Z), Z.multiply(T), X.multiply(Y));
-            default:
-                throw new IllegalArgumentException();
-            }
-        default:
-            throw new UnsupportedOperationException();
+			case P3:
+				switch (repr) {
+					case P2:
+						return p2(this.curve, this.X, this.Y, this.Z);
+					case CACHED:
+						return cached(this.curve, this.Y.add(this.X), this.Y.subtract(this.X), this.Z, this.T.multiply(this.curve.get2D()));
+					default:
+						throw new IllegalArgumentException();
+				}
+			case P1P1:
+				switch (repr) {
+					case P2:
+						return p2(this.curve, this.X.multiply(this.T), Y.multiply(this.Z), this.Z.multiply(this.T));
+					case P3:
+						return p3(this.curve, this.X.multiply(this.T), Y.multiply(this.Z), this.Z.multiply(this.T), this.X.multiply(this.Y));
+					default:
+						throw new IllegalArgumentException();
+				}
+			default:
+				throw new UnsupportedOperationException();
         }
     }
 
     /**
-	 * P2: Projective representation (X:Y:Z).
-	 * P3: Extended projective representation (X:Y:Z:T).
-	 * P1P1: Completed representation ((X:Z), (Y:T)).
-	 * PRECOMP: Precomputed representation (Y+X, Y-X, 2dXY).
-	 * CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
 	 * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      *
      * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
      */
-    public synchronized void precompute(boolean precomputeSingle) {
-        GroupElement Bi;
+    public synchronized void precompute(final boolean precomputeSingle) {
+		GroupElement Bi;
 
-        if (precomputeSingle && precmp == null) {
+        if (precomputeSingle && this.precmp == null) {
             // Precomputation for single scalar multiplication.
-            precmp = new GroupElement[32][8];
+			this.precmp = new GroupElement[32][8];
+			// TODO-CR BR: this == base point when the method is called?
             Bi = this;
             for (int i = 0; i < 32; i++) {
-                GroupElement Bij = Bi;
+				GroupElement Bij = Bi;
                 for (int j = 0; j < 8; j++) {
-                    FieldElement recip = Bij.Z.invert();
-                    FieldElement x = Bij.X.multiply(recip);
-                    FieldElement y = Bij.Y.multiply(recip);
-                    precmp[i][j] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+					final FieldElement recip = Bij.Z.invert();
+					final FieldElement x = Bij.X.multiply(recip);
+					final FieldElement y = Bij.Y.multiply(recip);
+					this.precmp[i][j] = precomp(this.curve, y.add(x), y.subtract(x), x.multiply(y).multiply(this.curve.get2D()));
                     Bij = Bij.add(Bi.toCached()).toP3();
                 }
+				// TODO-CR BR: why Bi := 256 * Bi and not like the paper suggests Bi := 16 * Bi?
                 for (int k = 0; k < 8; k++) {
                     Bi = Bi.add(Bi.toCached()).toP3();
                 }
@@ -364,37 +382,62 @@ public class GroupElement implements Serializable {
 
         // Precomputation for double scalar multiplication.
         // P,3P,5P,7P,9P,11P,13P,15P
-        if (dblPrecmp != null)
+        if (this.dblPrecmp != null)
             return;
-        dblPrecmp = new GroupElement[8];
+		this.dblPrecmp = new GroupElement[8];
         Bi = this;
         for (int i = 0; i < 8; i++) {
-            FieldElement recip = Bi.Z.invert();
-            FieldElement x = Bi.X.multiply(recip);
-            FieldElement y = Bi.Y.multiply(recip);
-            dblPrecmp[i] = precomp(curve, y.add(x), y.subtract(x), x.multiply(y).multiply(curve.get2D()));
+			final FieldElement recip = Bi.Z.invert();
+			final FieldElement x = Bi.X.multiply(recip);
+			final FieldElement y = Bi.Y.multiply(recip);
+			this.dblPrecmp[i] = precomp(this.curve, y.add(x), y.subtract(x), x.multiply(y).multiply(this.curve.get2D()));
             // Bi = edwards(B,edwards(B,Bi))
-            Bi = add(add(Bi.toCached()).toP3().toCached()).toP3();
+            Bi = this.add(this.add(Bi.toCached()).toP3().toCached()).toP3();
         }
     }
 
     /**
-     * r = 2 * p
+	 * Doubles a given group element p in P^2 or P^3 representation and returns the result in P x P representation.
+	 * r = 2 * p where p = (X : Y : Z) or p = (X : Y : Z : T)
+	 *
+	 * r in P x P representation:
+	 *
+	 * r = ((X' : Z'), (Y' : T')) where
+	 * X' = (X + Y)^2 - (Y^2 + X^2)
+	 * Y' = Y^2 + X^2
+	 * Z' = y^2 - X^2
+	 * T' = 2 * Z^2 - (y^2 - X^2)
+	 *
+	 * r converted from P x P to P^2 representation:
+	 *
+	 * r = (X'' : Y'' : Z'') where
+	 * X'' = X' * Z' = ((X + Y)^2 - Y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
+	 * Y'' = Y' * T' = (Y^2 + X^2) * (2 * Z^2 - (y^2 - X^2))
+	 * Z'' = Z' * T' = (y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
+	 *
+	 * Formula for the P^2 representation is in agreement with the formula given in [4] page 12 (with a = -1)
+	 * up to a common factor -1 which does not matter:
+	 *
+	 * B = (X + Y)^2; C = X^2; D = Y^2; E = -C = -X^2; F := E + D = Y^2 - X^2; H = Z^2; J = F − 2 * H;
+	 * X3 = (B − C − D) · J = X' * (-T');
+	 * Y3 = F · (E − D) = Z' * (-Y');
+	 * Z3 = F · J = Z' * (-T').
+	 *
      * @return The P1P1 representation
      */
     public GroupElement dbl() {
-        switch (repr) {
+        switch (this.repr) {
         case P2:
         case P3: // Ignore T for P3 representation
             FieldElement XX, YY, B, A, AA, Yn, Zn;
-            XX = X.square();
-            YY = Y.square();
-            B = Z.squareAndDouble();
-            A = X.add(Y);
+            XX = this.X.square();
+            YY = this.Y.square();
+            B = this.Z.squareAndDouble();
+            A = this.X.add(this.Y);
             AA = A.square();
             Yn = YY.add(XX);
             Zn = YY.subtract(XX);
-            return p1p1(curve, AA.subtract(Yn), Yn, Zn, B.subtract(Zn));
+            return p1p1(this.curve, AA.subtract(Yn), Yn, Zn, B.subtract(Zn));
         default:
             throw new UnsupportedOperationException();
         }
@@ -403,7 +446,39 @@ public class GroupElement implements Serializable {
     /**
      * GroupElement addition using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).<br>
-     * r = p + q
+	 * this must be in P^3 representation and q in PRECOMP representation.
+     * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
+	 *
+	 * r in P x P representation:
+	 *
+	 * r = ((X' : Z'), (Y' : T')) where
+	 * X' = (Y1 + X1) * q.X - (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)) * 1/Z2
+	 * Y' = (Y1 + X1) * q.X + (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)) * 1/Z2
+	 * Z' = 2 * Z1 + T1 * q.Z = 2 * Z1 + T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 + 2 * d * T1 * T2) * 1/Z2
+	 * T' = 2 * Z1 - T1 * q.Z = 2 * Z1 - T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 - 2 * d * T1 * T2) * 1/Z2
+	 *
+	 * Setting A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2 we get
+	 * X' = (B - A) * 1/Z2
+	 * Y' = (B + A) * 1/Z2
+	 * Z' = (D + C) * 1/Z2
+	 * T' = (D - C) * 1/Z2
+	 *
+	 * r converted from P x P to P^2 representation:
+	 *
+	 * r = (X'' : Y'' : Z'' : T'') where
+	 * X'' = X' * Z' = (B - A) * (D + C) * 1/Z2^2
+	 * Y'' = Y' * T' = (B + A) * (D - C) * 1/Z2^2
+	 * Z'' = Z' * T' = (D + C) * (D - C) * 1/Z2^2
+	 * T'' = X' * Y' = (B - A) * (B + A) * 1/Z2^2
+	 *
+	 * TODO-CR BR: Formula for the P^2 representation is not in agreement with the formula given in [2] page 6
+	 * TODO-CR BR: (the common factor 1/Z2^2 does not matter):
+	 * E = B - A, F = D - C, G = D + C, H = B + A
+	 * X3 = E * F = (B - A) * (D - C);
+	 * Y3 = G * H = (D + C) * (B + A);
+	 * Z3 = F * G = (D - C) * (D + C);
+	 * T3 = E * H = (B - A) * (B + A);
+	 *
      * @param q the PRECOMP representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
      */
@@ -414,19 +489,24 @@ public class GroupElement implements Serializable {
             throw new IllegalArgumentException();
 
         FieldElement YpX, YmX, A, B, C, D;
-        YpX = Y.add(X);
-        YmX = Y.subtract(X);
+        YpX = this.Y.add(this.X);
+        YmX = this.Y.subtract(this.X);
         A = YpX.multiply(q.X); // q->y+x
         B = YmX.multiply(q.Y); // q->y-x
-        C = q.Z.multiply(T); // q->2dxy
-        D = Z.add(Z);
-        return p1p1(curve, A.subtract(B), A.add(B), D.add(C), D.subtract(C));
+        C = q.Z.multiply(this.T); // q->2dxy
+        D = this.Z.add(this.Z);
+        return p1p1(this.curve, A.subtract(B), A.add(B), D.add(C), D.subtract(C));
     }
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).<br>
-     * r = p - q
+	 * this must be in P^3 representation and q in PRECOMP representation.
+	 * r = p - q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
+	 *
+	 * Negating q means negating the value of X2 and T2 (the latter is irrelevant here).
+	 * The formula is in accordance to the above addition.
+	 *
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
      */
@@ -437,20 +517,36 @@ public class GroupElement implements Serializable {
             throw new IllegalArgumentException();
 
         FieldElement YpX, YmX, A, B, C, D;
-        YpX = Y.add(X);
-        YmX = Y.subtract(X);
+        YpX = this.Y.add(this.X);
+        YmX = this.Y.subtract(this.X);
         A = YpX.multiply(q.Y); // q->y-x
         B = YmX.multiply(q.X); // q->y+x
-        C = q.Z.multiply(T); // q->2dxy
-        D = Z.add(Z);
-        return p1p1(curve, A.subtract(B), A.add(B), D.subtract(C), D.add(C));
+        C = q.Z.multiply(this.T); // q->2dxy
+        D = this.Z.add(this.Z);
+        return p1p1(this.curve, A.subtract(B), A.add(B), D.subtract(C), D.add(C));
     }
 
     /**
      * GroupElement addition using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).<br>
-     * r = p + q
-     * @param q the CACHED representation of the GroupElement to add.
+	 * this must be in P^3 representation and q in CACHED representation.
+	 * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z, q.T) = (Y2 + X2, Y2 - X2, Z2, 2 * d * T2)
+	 *
+	 * r in P x P representation:
+	 * X' = (Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)
+	 * Y' = (Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)
+	 * Z' = 2 * Z1 * Z2 + 2 * d * T1 * T2
+	 * T' = 2 * Z1 * T2 - 2 * d * T1 * T2
+	 *
+	 * Setting A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2 we get
+	 * X' = (B - A)
+	 * Y' = (B + A)
+	 * Z' = (D + C)
+	 * T' = (D - C)
+	 *
+	 * Same result as in madd() (up to a common factor which does not matter).
+	 *
+	 * @param q the CACHED representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
      */
     public GroupElement add(GroupElement q) {
@@ -460,20 +556,24 @@ public class GroupElement implements Serializable {
             throw new IllegalArgumentException();
 
         FieldElement YpX, YmX, A, B, C, ZZ, D;
-        YpX = Y.add(X);
-        YmX = Y.subtract(X);
+        YpX = this.Y.add(this.X);
+        YmX = this.Y.subtract(this.X);
         A = YpX.multiply(q.X); // q->Y+X
         B = YmX.multiply(q.Y); // q->Y-X
-        C = q.T.multiply(T); // q->2dT
-        ZZ = Z.multiply(q.Z);
+        C = q.T.multiply(this.T); // q->2dT
+        ZZ = this.Z.multiply(q.Z);
         D = ZZ.add(ZZ);
-        return p1p1(curve, A.subtract(B), A.add(B), D.add(C), D.subtract(C));
+        return p1p1(this.curve, A.subtract(B), A.add(B), D.add(C), D.subtract(C));
     }
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).<br>
      * r = p - q
+	 *
+	 * Negating q means negating the value of the coordinate X2 and T2.
+	 * The formula is in accordance to the above addition.
+	 *
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
      */
@@ -494,10 +594,16 @@ public class GroupElement implements Serializable {
         return p1p1(curve, A.subtract(B), A.add(B), D.subtract(C), D.add(C));
     }
 
+	/**
+	 * Negates this group element by subtracting it from the neutral group element.
+	 * TODO-CR BR: why not simply negate the coordinates X and T?
+	 *
+	 * @return The negative of this group element.
+	 */
     public GroupElement negate() {
         if (this.repr != Representation.P3)
             throw new UnsupportedOperationException();
-        return curve.getZero(Representation.P3).sub(toCached()).toP3();
+        return this.curve.getZero(Representation.P3).sub(toCached()).toP3();
     }
 
     @Override
@@ -506,6 +612,7 @@ public class GroupElement implements Serializable {
         return 42;
     }
 
+	// TODO-CR BR: Class FieldElement needs to override hashCode() and equals() too.
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof GroupElement))
@@ -519,36 +626,36 @@ public class GroupElement implements Serializable {
             }
         }
         switch (this.repr) {
-        case P2:
-        case P3:
-            // Try easy way first
-            if (Z.equals(ge.Z))
-                return X.equals(ge.X) && Y.equals(ge.Y);
-            // X1/Z1 = X2/Z2 --> X1*Z2 = X2*Z1
-            FieldElement x1 = X.multiply(ge.Z);
-            FieldElement y1 = Y.multiply(ge.Z);
-            FieldElement x2 = ge.X.multiply(Z);
-            FieldElement y2 = ge.Y.multiply(Z);
-            return x1.equals(x2) && y1.equals(y2);
-        case P1P1:
-            return toP2().equals(ge);
-        case PRECOMP:
-            // Compare directly, PRECOMP is derived directly from x and y
-            return X.equals(ge.X) && Y.equals(ge.Y) && Z.equals(ge.Z);
-        case CACHED:
-            // Try easy way first
-            if (Z.equals(ge.Z))
-                return X.equals(ge.X) && Y.equals(ge.Y) && T.equals(ge.T);
-            // (Y+X)/Z = y+x etc.
-            FieldElement x3 = X.multiply(ge.Z);
-            FieldElement y3 = Y.multiply(ge.Z);
-            FieldElement t3 = T.multiply(ge.Z);
-            FieldElement x4 = ge.X.multiply(Z);
-            FieldElement y4 = ge.Y.multiply(Z);
-            FieldElement t4 = ge.T.multiply(Z);
-            return x3.equals(x4) && y3.equals(y4) && t3.equals(t4);
-        default:
-            return false;
+			case P2:
+			case P3:
+				// Try easy way first
+				if (this.Z.equals(ge.Z))
+					return this.X.equals(ge.X) && this.Y.equals(ge.Y);
+				// X1/Z1 = X2/Z2 --> X1*Z2 = X2*Z1
+				final FieldElement x1 = this.X.multiply(ge.Z);
+				final FieldElement y1 = this.Y.multiply(ge.Z);
+				final FieldElement x2 = ge.X.multiply(this.Z);
+				final FieldElement y2 = ge.Y.multiply(this.Z);
+				return x1.equals(x2) && y1.equals(y2);
+			case P1P1:
+				return toP2().equals(ge);
+			case PRECOMP:
+				// Compare directly, PRECOMP is derived directly from x and y
+				return this.X.equals(ge.X) && this.Y.equals(ge.Y) && this.Z.equals(ge.Z);
+			case CACHED:
+				// Try easy way first
+				if (this.Z.equals(ge.Z))
+					return this.X.equals(ge.X) && this.Y.equals(ge.Y) && this.T.equals(ge.T);
+				// (Y+X)/Z = y+x etc.
+				final FieldElement x3 = this.X.multiply(ge.Z);
+				final FieldElement y3 = this.Y.multiply(ge.Z);
+				final FieldElement t3 = this.T.multiply(ge.Z);
+				final FieldElement x4 = ge.X.multiply(this.Z);
+				final FieldElement y4 = ge.Y.multiply(this.Z);
+				final FieldElement t4 = ge.T.multiply(this.Z);
+				return x3.equals(x4) && y3.equals(y4) && t3.equals(t4);
+			default:
+				return false;
         }
     }
 
@@ -560,8 +667,8 @@ public class GroupElement implements Serializable {
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @return 64 bytes, each between -8 and 7
      */
-    static byte[] toRadix16(byte[] a) {
-        byte[] e = new byte[64];
+    static byte[] toRadix16(final byte[] a) {
+        final byte[] e = new byte[64];
         int i;
         // Radix 16 notation
         for (i = 0; i < 32; i++) {
@@ -589,11 +696,11 @@ public class GroupElement implements Serializable {
      *
      * Method is package private only so that tests run.
      *
-     * @param u
+     * @param u The group element to return if b == 1.
      * @param b in {0, 1}
      * @return u if b == 1; this if b == 0; null otherwise.
      */
-    GroupElement cmov(GroupElement u, int b) {
+    GroupElement cmov(final GroupElement u, final int b) {
         GroupElement ret = null;
         for (int i = 0; i < b; i++) {
             // Only for b == 1
@@ -619,24 +726,24 @@ public class GroupElement implements Serializable {
      * @param b = r_i
      * @return the GroupElement
      */
-    GroupElement select(int pos, int b) {
+    GroupElement select(final int pos, final int b) {
         // Is r_i negative?
-        int bnegative = Utils.negative(b);
+		final int bnegative = Utils.negative(b);
         // |r_i|
-        int babs = b - (((-bnegative) & b) << 1);
+		final int babs = b - (((-bnegative) & b) << 1);
 
         // 16^i |r_i| B
-        GroupElement t = curve.getZero(Representation.PRECOMP)
-                .cmov(precmp[pos][0], Utils.equal(babs, 1))
-                .cmov(precmp[pos][1], Utils.equal(babs, 2))
-                .cmov(precmp[pos][2], Utils.equal(babs, 3))
-                .cmov(precmp[pos][3], Utils.equal(babs, 4))
-                .cmov(precmp[pos][4], Utils.equal(babs, 5))
-                .cmov(precmp[pos][5], Utils.equal(babs, 6))
-                .cmov(precmp[pos][6], Utils.equal(babs, 7))
-                .cmov(precmp[pos][7], Utils.equal(babs, 8));
+		final GroupElement t = this.curve.getZero(Representation.PRECOMP)
+                .cmov(this.precmp[pos][0], Utils.equal(babs, 1))
+                .cmov(this.precmp[pos][1], Utils.equal(babs, 2))
+                .cmov(this.precmp[pos][2], Utils.equal(babs, 3))
+                .cmov(this.precmp[pos][3], Utils.equal(babs, 4))
+                .cmov(this.precmp[pos][4], Utils.equal(babs, 5))
+                .cmov(this.precmp[pos][5], Utils.equal(babs, 6))
+                .cmov(this.precmp[pos][6], Utils.equal(babs, 7))
+                .cmov(this.precmp[pos][7], Utils.equal(babs, 8));
         // -16^i |r_i| B
-        GroupElement tminus = precomp(curve, t.Y, t.X, t.Z.negate());
+		final GroupElement tminus = precomp(curve, t.Y, t.X, t.Z.negate());
         // 16^i r_i B
         return t.cmov(tminus, bnegative);
     }
@@ -652,13 +759,13 @@ public class GroupElement implements Serializable {
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
      * @return the GroupElement
      */
-    public GroupElement scalarMultiply(byte[] a) {
+    public GroupElement scalarMultiply(final byte[] a) {
         GroupElement t;
         int i;
 
-        byte[] e = toRadix16(a);
+		final byte[] e = toRadix16(a);
 
-        GroupElement h = curve.getZero(Representation.P3);
+        GroupElement h = this.curve.getZero(Representation.P3);
         synchronized(this) {
             // TODO: Get opinion from a crypto professional.
             // This should in practice never be necessary, the only point that
@@ -688,7 +795,7 @@ public class GroupElement implements Serializable {
      * @param a 32 bytes
      * @return 256 bytes
      */
-    static byte[] slide(byte[] a) {
+    static byte[] slide(final byte[] a) {
         byte[] r = new byte[256];
 
         // put each bit of 'a' into a separate byte, 0 or 1
@@ -733,11 +840,11 @@ public class GroupElement implements Serializable {
      * @param b = b[0]+256*b[1]+...+256^31 b[31]
      * @return the GroupElement
      */
-    public GroupElement doubleScalarMultiplyVariableTime(GroupElement A, byte[] a, byte[] b) {
-        byte[] aslide = slide(a);
-        byte[] bslide = slide(b);
+    public GroupElement doubleScalarMultiplyVariableTime(final GroupElement A, final byte[] a, final byte[] b) {
+		final byte[] aslide = slide(a);
+		final byte[] bslide = slide(b);
 
-        GroupElement r = curve.getZero(Representation.P2);
+        GroupElement r = this.curve.getZero(Representation.P2);
 
         int i;
         for (i = 255; i >= 0; --i) {
@@ -759,9 +866,9 @@ public class GroupElement implements Serializable {
                 }
 
                 if (bslide[i] > 0) {
-                    t = t.toP3().madd(dblPrecmp[bslide[i]/2]);
+                    t = t.toP3().madd(this.dblPrecmp[bslide[i]/2]);
                 } else if(bslide[i] < 0) {
-                    t = t.toP3().msub(dblPrecmp[(-bslide[i])/2]);
+                    t = t.toP3().msub(this.dblPrecmp[(-bslide[i])/2]);
                 }
 
                 r = t.toP2();
