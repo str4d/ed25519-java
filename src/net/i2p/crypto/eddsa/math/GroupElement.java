@@ -373,7 +373,7 @@ public class GroupElement implements Serializable {
 					this.precmp[i][j] = precomp(this.curve, y.add(x), y.subtract(x), x.multiply(y).multiply(this.curve.get2D()));
                     Bij = Bij.add(Bi.toCached()).toP3();
                 }
-				// TODO-CR BR: why Bi := 256 * Bi and not like the paper suggests Bi := 16 * Bi?
+				// Only every second summand is precomputed (16^2 = 256)
                 for (int k = 0; k < 8; k++) {
                     Bi = Bi.add(Bi.toCached()).toP3();
                 }
