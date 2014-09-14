@@ -2,6 +2,11 @@ package net.i2p.crypto.eddsa.math.ed25519;
 
 import net.i2p.crypto.eddsa.math.*;
 
+/**
+ * Helper class for encoding/decoding from/to the 32 byte representation.
+ *
+ * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
+ */
 public class Ed25519LittleEndianEncoding extends Encoding {
     /**
 	 * Encodes a given field element in its 32 byte representation. This is done in two steps.
