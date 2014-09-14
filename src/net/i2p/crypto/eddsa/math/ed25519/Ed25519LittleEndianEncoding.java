@@ -11,17 +11,17 @@ public class Ed25519LittleEndianEncoding extends Encoding {
 	 * The idea for the modulo p reduction algorithm is as follows:
 	 * Assumption:
 	 * p = 2^255 - 19
-	 * h = h0 + 2^25 * h1 + 2^(26+25) * h2 + ... + 2^230 * h9 where 0 <= hi < 2^27 for all i=0,...,9.
-	 * h congruent r modulo p, i.e. h = r + q * p for some suitable 0 <= r < p and an integer q >= 0.
+	 * h = h0 + 2^25 * h1 + 2^(26+25) * h2 + ... + 2^230 * h9 where 0 <= |hi| < 2^27 for all i=0,...,9.
+	 * h congruent r modulo p, i.e. h = r + q * p for some suitable 0 <= r < p and an integer q.
 	 *
 	 * Then q = [2^-255 * (h + 19 * 2^-25 * h9 + 1/2)] where [x] = floor(x).
 	 *
 	 * Proof:
-	 * We begin with some very raw estimation for the upper bound of some expressions:
-	 * h < 2^230 * 2^30 = 2^260 ==> r + q * p < 2^260 ==> q < 2^10.
-	 * ==> a := 19^2 * 2^-255 * q < 1/4.
-	 * h - 2^230 * h9 = h0 + ... + 2^204 * h8 < 2^204 * 2^30 = 2^234.
-	 * ==> b := 19 * 2^-255 * (h - 2^230 * h9) < 1/4
+	 * We begin with some very raw estimation for the bounds of some expressions:
+	 * |h| < 2^230 * 2^30 = 2^260 ==> |r + q * p| < 2^260 ==> |q| < 2^10.
+	 * ==> -1/4 <= a := 19^2 * 2^-255 * q < 1/4.
+	 * |h - 2^230 * h9| = |h0 + ... + 2^204 * h8| < 2^204 * 2^30 = 2^234.
+	 * ==> -1/4 <= b := 19 * 2^-255 * (h - 2^230 * h9) < 1/4
 	 * Therefore 0 < 1/2 - a - b < 1.
 	 *
 	 * Set x := r + 19 * 2^-255 * r + 1/2 - a - b then
@@ -170,7 +170,6 @@ public class Ed25519LittleEndianEncoding extends Encoding {
         long carry9;
 
 		// Remember: 2^255 congruent 19 modulo p
-		// TODO-CR BR: all hi should be positive ?! if in == 2^254 then h9 will be -2^24.
         carry9 = (h9 + (long) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= carry9 << 25;
         carry1 = (h1 + (long) (1<<24)) >> 25; h2 += carry1; h1 -= carry1 << 25;
         carry3 = (h3 + (long) (1<<24)) >> 25; h4 += carry3; h3 -= carry3 << 25;
