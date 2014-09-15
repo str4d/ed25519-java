@@ -16,6 +16,7 @@ import java.io.Serializable;
  * [3] Daniel J. Bernsteina, Tanja Lange: A complete set of addition laws for incomplete Edwards curves
  * [4] Daniel J. Bernstein, Peter Birkner, Marc Joye, Tanja Lange and Christiane Peters: Twisted Edwards Curves
  * [5] Christiane Pascale Peters: Curves, Codes, and Cryptography (PhD thesis)
+ * [6] Daniel J. Bernstein, Peter Birkner, Tanja Lange and Christiane Peters: Optimizing double-base elliptic-curve single-scalar multiplication
  */
 public class GroupElement implements Serializable {
     private static final long serialVersionUID = 2395879087349587L;
@@ -789,6 +790,7 @@ public class GroupElement implements Serializable {
 
     /**
      * Calculates a sliding-windows base 2 representation for a given value a.
+	 * To learn more about it see [6] page 8.
 	 *
 	 * Output: r which satisfies
 	 * a = r0 * 2^0 + r1 * 2^1 + ... + r255 * 2^255 with ri in {-15, -13, -11, -9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9, 11, 13, 15}
