@@ -362,7 +362,7 @@ public class GroupElement implements Serializable {
         if (precomputeSingle && this.precmp == null) {
             // Precomputation for single scalar multiplication.
 			this.precmp = new GroupElement[32][8];
-			// TODO-CR BR: this == base point when the method is called?
+			// TODO-CR BR: check that this == base point when the method is called.
             Bi = this;
             for (int i = 0; i < 32; i++) {
 				GroupElement Bij = Bi;
@@ -788,24 +788,29 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * I don't really know what this method does.
+     * Calculates a sliding-windows base 2 representation for a given value a.
+	 *
+	 * Output: r which satisfies
+	 * a = r0 * 2^0 + r1 * 2^1 + ... + r255 * 2^255 with ri in {-15, -13, -11, -9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9, 11, 13, 15}
      *
      * Method is package private only so that tests run.
      *
-     * @param a 32 bytes
-     * @return 256 bytes
+	 * @param a = a[0]+256*a[1]+...+256^31 a[31].
+     * @return The byte array r in the above described form.
      */
     static byte[] slide(final byte[] a) {
         byte[] r = new byte[256];
 
-        // put each bit of 'a' into a separate byte, 0 or 1
+        // Put each bit of 'a' into a separate byte, 0 or 1
         for (int i = 0; i < 256; ++i) {
             r[i] = (byte) (1 & (a[i >> 3] >> (i & 7)));
         }
 
+		// Note: r[i] will always be odd.
         for (int i = 0; i < 256; ++i) {
             if (r[i] != 0) {
                 for (int b = 1; b <= 6 && i + b < 256; ++b) {
+					// Accumulate bits if possible
                     if (r[i + b] != 0) {
                         if (r[i] + (r[i + b] << b) <= 15) {
                             r[i] += r[i + b] << b;
@@ -841,6 +846,7 @@ public class GroupElement implements Serializable {
      * @return the GroupElement
      */
     public GroupElement doubleScalarMultiplyVariableTime(final GroupElement A, final byte[] a, final byte[] b) {
+		// TODO-CR BR: A check that this is the base point is needed.
 		final byte[] aslide = slide(a);
 		final byte[] bslide = slide(b);
 
@@ -852,6 +858,7 @@ public class GroupElement implements Serializable {
         }
 
         synchronized(this) {
+			// TODO-CR BR strange comment below.
             // TODO: Get opinion from a crypto professional.
             // This should in practice never be necessary, the only point that
             // this should get called on is EdDSA's B.
