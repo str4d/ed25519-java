@@ -12,8 +12,6 @@ import java.security.SecureRandom;
  */
 public class Ed25519LittleEndianEncodingTest {
 
-	// 2^255 - 19
-	private static final BigInteger q = new BigInteger("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed", 16);
 	private static final SecureRandom random = new SecureRandom();
 
 	@Test
@@ -49,7 +47,7 @@ public class Ed25519LittleEndianEncodingTest {
 			final byte[] bytes = MathUtils.getField().getEncoding().encode(fieldElement1);
 
 			// Assert:
-			Assert.assertThat(bytes, IsEqual.equalTo(MathUtils.toByteArray(b.mod(q))));
+			Assert.assertThat(bytes, IsEqual.equalTo(MathUtils.toByteArray(b.mod(MathUtils.getQ()))));
 		}
 	}
 
@@ -82,10 +80,26 @@ public class Ed25519LittleEndianEncodingTest {
 
 			// Act:
 			final Ed25519FieldElement f = (Ed25519FieldElement)MathUtils.getField().getEncoding().decode(bytes);
-			final BigInteger b2 = MathUtils.toBigInteger(f.t).mod(q);
+			final BigInteger b2 = MathUtils.toBigInteger(f.t).mod(MathUtils.getQ());
 
 			// Assert:
 			Assert.assertThat(b2, IsEqual.equalTo(b1));
+		}
+	}
+
+	@Test
+	public void isNegativeReturnsCorrectResult() {
+		for (int i=0; i<10000; i++) {
+			// Arrange:
+			final int[] t = new int[10];
+			for (int j=0; j<10; j++) {
+				t[j] = random.nextInt(1 << 28) - (1 << 27);
+			}
+			final boolean isNegative = MathUtils.toBigInteger(t).mod(MathUtils.getQ()).mod(new BigInteger("2")).equals(BigInteger.ONE);
+			final FieldElement f = new Ed25519FieldElement(MathUtils.getField(), t);
+
+			// Assert:
+			Assert.assertThat(MathUtils.getField().getEncoding().isNegative(f), IsEqual.equalTo(isNegative));
 		}
 	}
 }

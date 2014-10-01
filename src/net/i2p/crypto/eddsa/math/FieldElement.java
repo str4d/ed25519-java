@@ -4,6 +4,9 @@ public abstract class FieldElement {
     protected final Field f;
 
     public FieldElement(Field f) {
+		if (null == f) {
+			throw new IllegalArgumentException("field cannot be null");
+		}
         this.f = f;
     }
 

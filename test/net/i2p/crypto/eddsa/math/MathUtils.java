@@ -4,11 +4,20 @@ import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.ed25519.*;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 /**
  * Utility class to help with calculation.
  */
 public class MathUtils {
 	private static final int[] exponents = {0, 26, 26 + 25, 2*26 + 25, 2*26 + 2*25, 3*26 + 2*25, 3*26 + 3*25, 4*26 + 3*25, 4*26 + 4*25, 5*26 + 4*25};
+	private static final SecureRandom random = new SecureRandom();
+
+	/**
+	 * Gets q = 2^255 - 19 as BigInteger.
+	 */
+	public static BigInteger getQ() {
+		return new BigInteger("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed", 16);
+	}
 
 	/**
 	 * Gets the underlying finite field with q=2^255 - 19 elements.
@@ -55,6 +64,16 @@ public class MathUtils {
 	}
 
 	/**
+	 * Converts a field element to a BigInteger.
+	 *
+	 * @param f The field element.
+	 * @return The BigInteger.
+	 */
+	public static BigInteger toBigInteger(final FieldElement f) {
+		return toBigInteger(f.toByteArray());
+	}
+
+	/**
 	 * Converts a BigInteger to a little endian 32 byte representation.
 	 *
 	 * @param b The BigInteger.
@@ -74,5 +93,13 @@ public class MathUtils {
 		}
 
 		return bytes;
+	}
+
+	public static FieldElement getRandomFieldElement() {
+		final int[] t = new int[10];
+		for (int j=0; j<10; j++) {
+			t[j] = random.nextInt(1 << 25) - (1 << 24);
+		}
+		return new Ed25519FieldElement(MathUtils.getField(), t);
 	}
 }

@@ -32,7 +32,7 @@ public class Ed25519FieldElement extends FieldElement {
         this.t = t;
     }
 
-    private static final byte[] zero = new byte[32];
+    private static final byte[] ZERO = new byte[32];
 
 	/**
 	 * Gets a value indicating whether or not the field element is non-zero.
@@ -40,8 +40,8 @@ public class Ed25519FieldElement extends FieldElement {
 	 * @return 1 if it is non-zero, 0 otherwise.
 	 */
     public boolean isNonZero() {
-        byte[] s = toByteArray();
-        return Utils.equal(s, zero) == 1;
+        final byte[] s = toByteArray();
+        return Utils.equal(s, ZERO) == 0;
     }
 
     /**
