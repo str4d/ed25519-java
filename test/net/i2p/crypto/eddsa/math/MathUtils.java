@@ -3,11 +3,14 @@ package net.i2p.crypto.eddsa.math;
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.ed25519.*;
 import net.i2p.crypto.eddsa.spec.*;
+import org.hamcrest.core.IsEqual;
+import org.junit.*;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+
 /**
- * Utility class to help with calculation.
+ * Utility class to help with calculations.
  */
 public class MathUtils {
 	private static final int[] exponents = {0, 26, 26 + 25, 2*26 + 25, 2*26 + 2*25, 3*26 + 2*25, 3*26 + 3*25, 4*26 + 3*25, 4*26 + 4*25, 5*26 + 4*25};
@@ -121,7 +124,7 @@ public class MathUtils {
 		for (int j=0; j<10; j++) {
 			t[j] = random.nextInt(1 << 25) - (1 << 24);
 		}
-		return new Ed25519FieldElement(MathUtils.getField(), t);
+		return new Ed25519FieldElement(getField(), t);
 	}
 
 	// endregion
@@ -140,13 +143,45 @@ public class MathUtils {
 				random.nextBytes(bytes);
 				return new GroupElement(curve, bytes);
 			} catch (IllegalArgumentException e) {
-				// try another one
+				// Will fail in about 87.5%, so try again.
 			}
 		}
 	}
 
 	/**
+	 * Creates a group element from a byte array.
+	 * Bit 0 to 254 are the affine y-coordinate, bit 255 is the sign of the affine x-coordinate.
+	 *
+	 * @param bytes the byte array.
+	 * @return The group element.
+	 */
+	public static GroupElement toGroupElement(final byte[] bytes) {
+		final boolean shouldBeNegative = (bytes[31] >> 7) != 0;
+		bytes[31] &= 0x7f;
+		final BigInteger y = MathUtils.toBigInteger(bytes);
+
+		// x = sign(x) * sqrt((y^2 - 1) / (d * y^2 + 1))
+		final BigInteger u = y.multiply(y).subtract(BigInteger.ONE).mod(getQ());
+		final BigInteger v = d.multiply(y).multiply(y).add(BigInteger.ONE).mod(getQ());
+		final BigInteger tmp = u.multiply(v.pow(7)).modPow(BigInteger.ONE.shiftLeft(252).subtract(new BigInteger("3")), getQ()).mod(getQ());
+		BigInteger x = tmp.multiply(u).multiply(v.pow(3)).mod(getQ());
+		if (!v.multiply(x).multiply(x).subtract(u).mod(getQ()).equals(BigInteger.ZERO)) {
+			if (!v.multiply(x).multiply(x).add(u).mod(getQ()).equals(BigInteger.ZERO)) {
+				throw new IllegalArgumentException("not a valid GroupElement");
+			}
+			x = x.multiply(toBigInteger(curve.getI())).mod(getQ());
+		}
+		final boolean isNegative = x.mod(new BigInteger("2")).equals(BigInteger.ONE);
+		if ((shouldBeNegative && !isNegative) || (!shouldBeNegative && isNegative)) {
+			x = x.negate().mod(getQ());
+		}
+
+		return GroupElement.p3(curve, toFieldElement(x), toFieldElement(y), getField().ONE, toFieldElement(x.multiply(y).mod(getQ())));
+	}
+
+	/**
 	 * Converts a group element from one representation to another.
+	 * This method is a helper used to test various methods in GroupElement.
 	 *
 	 * @param g The group element.
 	 * @param repr The desired representation.
@@ -281,4 +316,61 @@ public class MathUtils {
 	public static GroupElement doubleGroupElement(final GroupElement g) {
 		return addGroupElements(g, g);
 	}
+
+	/**
+	 * Negates a group element.
+	 *
+	 * @param g The group element.
+	 * @return The negated group element.
+	 */
+	public static GroupElement negateGroupElement(final GroupElement g) {
+		if (g.getRepresentation() != GroupElement.Representation.P3) {
+			throw new IllegalArgumentException("g must have representation P3");
+		}
+
+		return GroupElement.p3(g.getCurve(), g.getX().negate(), g.getY(), g.getZ(), g.getT().negate());
+	}
+
+	// Start TODO BR: Remove when finished!
+	@Test
+	public void testMathUtils() {
+		final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
+		for (int i=0; i<1000; i++) {
+			final GroupElement g = getRandomGroupElement();
+
+			// Act:
+			final GroupElement h1 = addGroupElements(g, neutral);
+			final GroupElement h2 = addGroupElements(neutral, g);
+
+			// Assert:
+			Assert.assertThat(g, IsEqual.equalTo(h1));
+			Assert.assertThat(g, IsEqual.equalTo(h2));
+		}
+
+		for (int i=0; i<1000; i++) {
+			GroupElement g = getRandomGroupElement();
+
+			// P3 -> P2.
+			GroupElement h = toRepresentation(g, GroupElement.Representation.P2);
+			Assert.assertThat(h, IsEqual.equalTo(g));
+			// P3 -> P1P1.
+			h = toRepresentation(g, GroupElement.Representation.P1P1);
+			Assert.assertThat(g, IsEqual.equalTo(h));
+
+			// P3 -> CACHED.
+			h = toRepresentation(g, GroupElement.Representation.CACHED);
+			Assert.assertThat(h, IsEqual.equalTo(g));
+
+			// P3 -> P2 -> P3.
+			g = toRepresentation(g, GroupElement.Representation.P2);
+			h = toRepresentation(g, GroupElement.Representation.P3);
+			Assert.assertThat(g, IsEqual.equalTo(h));
+
+			// P3 -> P2 -> P1P1.
+			g = toRepresentation(g, GroupElement.Representation.P2);
+			h = toRepresentation(g, GroupElement.Representation.P1P1);
+			Assert.assertThat(g, IsEqual.equalTo(h));
+		}
+	}
+	// End TODO BR: Remove when finished!
 }
