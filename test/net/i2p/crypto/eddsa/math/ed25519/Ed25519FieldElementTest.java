@@ -31,6 +31,10 @@ public class Ed25519FieldElementTest {
 		new Ed25519FieldElement(null, new int[9]);
 	}
 
+	// endregion
+
+	// region isNonZero
+
 	@Test
 	public void isNonZeroReturnsFalseIfFieldElementIsZero() {
 		// Act:
@@ -39,8 +43,6 @@ public class Ed25519FieldElementTest {
 		// Assert:
 		Assert.assertThat(f.isNonZero(), IsEqual.equalTo(false));
 	}
-
-	// endregion
 
 	@Test
 	public void isNonZeroReturnsTrueIfFieldElementIsNonZero() {
@@ -52,6 +54,8 @@ public class Ed25519FieldElementTest {
 		// Assert:
 		Assert.assertThat(f.isNonZero(), IsEqual.equalTo(true));
 	}
+
+	// endregion
 
 	// region mod q arithmetic
 

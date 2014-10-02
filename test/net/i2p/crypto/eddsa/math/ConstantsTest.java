@@ -20,9 +20,9 @@ public class ConstantsTest {
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
     static final Curve curve = ed25519.getCurve();
 
-    static final FieldElement ZERO = curve.getField().zero;
-    static final FieldElement ONE = curve.getField().one;
-    static final FieldElement TWO = curve.getField().two;
+    static final FieldElement ZERO = curve.getField().ZERO;
+    static final FieldElement ONE = curve.getField().ONE;
+    static final FieldElement TWO = curve.getField().TWO;
 
     static final GroupElement P3_ZERO = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
 
@@ -42,7 +42,7 @@ public class ConstantsTest {
     public void testq() {
         FieldElement q = curve.getField().getQ();
         assertThat(TWO.modPow(q.subtractOne(), q), is(equalTo(ONE)));
-        assertThat(q.mod(curve.getField().four), is(equalTo(ONE)));
+        assertThat(q.mod(curve.getField().FOUR), is(equalTo(ONE)));
     }
 
     @Test
@@ -58,13 +58,13 @@ public class ConstantsTest {
     public void testd() {
         FieldElement q = curve.getField().getQ();
         FieldElement qm1 = q.subtractOne();
-        assertThat(curve.getD().modPow(qm1.divide(curve.getField().two), q), is(equalTo(qm1)));
+        assertThat(curve.getD().modPow(qm1.divide(curve.getField().TWO), q), is(equalTo(qm1)));
     }
 
     @Test
     public void testI() {
         FieldElement q = curve.getField().getQ();
-        assertThat(curve.getI().modPow(curve.getField().two, q), is(equalTo(q.subtractOne())));
+        assertThat(curve.getI().modPow(curve.getField().TWO, q), is(equalTo(q.subtractOne())));
     }*/
 
     @Test

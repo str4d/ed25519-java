@@ -248,7 +248,7 @@ public class Ed25519ScalarOps implements ScalarOps {
         carry10 = s10 >> 21; s11 += carry10; s10 -= carry10 << 21;
         carry11 = s11 >> 21; s12 += carry11; s11 -= carry11 << 21;
 
-		// TODO-CR BR: Is it really needed to do it two times? (it doesn't hurt, just a question).
+		// TODO-CR BR: Is it really needed to do it TWO times? (it doesn't hurt, just a question).
         s0 += s12 * 666643;
         s1 += s12 * 470296;
         s2 += s12 * 654183;

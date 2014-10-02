@@ -27,13 +27,13 @@ public abstract class FieldElement {
     public abstract FieldElement add(FieldElement val);
 
     public FieldElement addOne() {
-        return add(f.one);
+        return add(f.ONE);
     }
 
     public abstract FieldElement subtract(FieldElement val);
 
     public FieldElement subtractOne() {
-        return subtract(f.one);
+        return subtract(f.ONE);
     }
 
     public abstract FieldElement negate();

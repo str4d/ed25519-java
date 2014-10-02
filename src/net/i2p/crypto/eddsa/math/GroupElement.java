@@ -261,9 +261,67 @@ public class GroupElement implements Serializable {
 		this.repr = Representation.P3;
 		this.X = x;
 		this.Y = y;
-		this.Z = curve.getField().one;
+		this.Z = curve.getField().ONE;
 		this.T = this.X.multiply(this.Y);
     }
+
+	/**
+	 * Gets the curve of the group element.
+	 *
+	 * @return The curve.
+	 */
+	public Curve getCurve() {
+		return this.curve;
+	}
+
+	/**
+	 * Gets the representation of the group element.
+	 *
+	 * @return The representation.
+	 */
+	public Representation getRepresentation() {
+		return this.repr;
+	}
+
+	/**
+	 * Gets the X value of the group element.
+	 * This is for most representation the projective X coordinate.
+	 *
+	 * @return The X value.
+	 */
+	public FieldElement getX() {
+		return this.X;
+	}
+
+	/**
+	 * Gets the Y value of the group element.
+	 * This is for most representation the projective Y coordinate.
+	 *
+	 * @return The Y value.
+	 */
+	public FieldElement getY() {
+		return this.Y;
+	}
+
+	/**
+	 * Gets the Z value of the group element.
+	 * This is for most representation the projective Z coordinate.
+	 *
+	 * @return The Z value.
+	 */
+	public FieldElement getZ() {
+		return this.Z;
+	}
+
+	/**
+	 * Gets the T value of the group element.
+	 * This is for most representation the projective T coordinate.
+	 *
+	 * @return The T value.
+	 */
+	public FieldElement getT() {
+		return this.T;
+	}
 
 	/**
 	 * Converts the group element to an encoded point on the curve.
@@ -446,7 +504,7 @@ public class GroupElement implements Serializable {
 
     /**
      * GroupElement addition using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).<br>
+     * extended coordinates (Hisil2008).
 	 * this must be in P^3 representation and q in PRECOMP representation.
      * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
 	 *
@@ -501,7 +559,7 @@ public class GroupElement implements Serializable {
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).<br>
+     * extended coordinates (Hisil2008).
 	 * this must be in P^3 representation and q in PRECOMP representation.
 	 * r = p - q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
 	 *
@@ -529,7 +587,7 @@ public class GroupElement implements Serializable {
 
     /**
      * GroupElement addition using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).<br>
+     * extended coordinates (Hisil2008).
 	 * this must be in P^3 representation and q in CACHED representation.
 	 * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z, q.T) = (Y2 + X2, Y2 - X2, Z2, 2 * d * T2)
 	 *
@@ -569,7 +627,7 @@ public class GroupElement implements Serializable {
 
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
-     * extended coordinates (Hisil2008).<br>
+     * extended coordinates (Hisil2008).
      * r = p - q
 	 *
 	 * Negating q means negating the value of the coordinate X2 and T2.
@@ -613,7 +671,6 @@ public class GroupElement implements Serializable {
         return 42;
     }
 
-	// TODO-CR BR: Class FieldElement needs to override hashCode() and equals() too.
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof GroupElement))
@@ -910,7 +967,7 @@ public class GroupElement implements Serializable {
             FieldElement xx = x.square();
             FieldElement yy = y.square();
             FieldElement dxxyy = curve.getD().multiply(xx).multiply(yy);
-            return curve.getField().one.add(dxxyy).add(xx).equals(yy);
+            return curve.getField().ONE.add(dxxyy).add(xx).equals(yy);
 
         default:
             return toP2().isOnCurve(curve);

@@ -9,7 +9,7 @@ import net.i2p.crypto.eddsa.math.*;
  */
 public class Ed25519LittleEndianEncoding extends Encoding {
     /**
-	 * Encodes a given field element in its 32 byte representation. This is done in two steps.
+	 * Encodes a given field element in its 32 byte representation. This is done in TWO steps.
 	 * Step 1: Reduce the value of the field element modulo p.
 	 * Step 2: Convert the field element to the 32 byte representation.
 	 *
