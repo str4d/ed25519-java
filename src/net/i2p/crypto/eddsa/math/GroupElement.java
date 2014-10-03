@@ -3,6 +3,7 @@ package net.i2p.crypto.eddsa.math;
 import net.i2p.crypto.eddsa.Utils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * A point (x,y) on an EdDSA curve.
@@ -330,16 +331,16 @@ public class GroupElement implements Serializable {
 	 */
     public byte[] toByteArray() {
         switch (this.repr) {
-        case P2:
-        case P3:
-            FieldElement recip = Z.invert();
-            FieldElement x = X.multiply(recip);
-            FieldElement y = Y.multiply(recip);
-            byte[] s = y.toByteArray();
-            s[s.length-1] |= (x.isNegative() ? (byte) 0x80 : 0);
-            return s;
-        default:
-            return toP2().toByteArray();
+			case P2:
+			case P3:
+				FieldElement recip = Z.invert();
+				FieldElement x = X.multiply(recip);
+				FieldElement y = Y.multiply(recip);
+				byte[] s = y.toByteArray();
+				s[s.length-1] |= (x.isNegative() ? (byte) 0x80 : 0);
+				return s;
+			default:
+				return toP2().toByteArray();
         }
     }
 
@@ -692,8 +693,7 @@ public class GroupElement implements Serializable {
 
     @Override
     public int hashCode() {
-        // TODO
-        return 42;
+        return Arrays.hashCode(this.toByteArray());
     }
 
     @Override

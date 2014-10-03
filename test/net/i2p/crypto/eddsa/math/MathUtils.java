@@ -318,6 +318,45 @@ public class MathUtils {
 	}
 
 	/**
+	 * Scalar multiply the group element by the field element.
+	 *
+	 * @param g The group element.
+	 * @param f The field element.
+	 * @return The resulting group element.
+	 */
+	public static GroupElement scalarMultiplyGroupElement(final GroupElement g, final FieldElement f) {
+		final byte[] bytes = f.toByteArray();
+		GroupElement h = curve.getZero(GroupElement.Representation.P3);
+		for (int i=254; i>=0; i--) {
+			h = doubleGroupElement(h);
+			if (Utils.bit(bytes, i) == 1) {
+				h = addGroupElements(h, g);
+			}
+		}
+
+		return h;
+	}
+
+	/**
+	 * Calculates f1 * g1 + f2 * g2.
+	 *
+	 * @param g1 The first group element.
+	 * @param f1 The first multiplier.
+	 * @param g2 The second group element.
+	 * @param f2 The second multiplier.
+	 * @return The resulting group element.
+	 */
+	public static GroupElement doubleScalarMultiplyGroupElements(
+			final GroupElement g1,
+			final FieldElement f1,
+			final GroupElement g2,
+			final FieldElement f2) {
+		final GroupElement h1 = scalarMultiplyGroupElement(g1, f1);
+		final GroupElement h2 = scalarMultiplyGroupElement(g2, f2);
+		return addGroupElements(h1, h2);
+	}
+
+	/**
 	 * Negates a group element.
 	 *
 	 * @param g The group element.
@@ -333,7 +372,7 @@ public class MathUtils {
 
 	// Start TODO BR: Remove when finished!
 	@Test
-	public void testMathUtils() {
+	public void mathUtilsWorkAsExpected() {
 		final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
 		for (int i=0; i<1000; i++) {
 			final GroupElement g = getRandomGroupElement();
@@ -370,6 +409,17 @@ public class MathUtils {
 			g = toRepresentation(g, GroupElement.Representation.P2);
 			h = toRepresentation(g, GroupElement.Representation.P1P1);
 			Assert.assertThat(g, IsEqual.equalTo(h));
+		}
+
+		for (int i=0; i<10; i++) {
+			// Arrange:
+			final GroupElement g = MathUtils.getRandomGroupElement();
+
+			// Act:
+			final GroupElement h = MathUtils.scalarMultiplyGroupElement(g, curve.getField().ZERO);
+
+			// Assert:
+			Assert.assertThat(curve.getZero(GroupElement.Representation.P3), IsEqual.equalTo(h));
 		}
 	}
 	// End TODO BR: Remove when finished!

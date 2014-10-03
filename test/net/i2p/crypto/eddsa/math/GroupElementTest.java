@@ -2,7 +2,7 @@ package net.i2p.crypto.eddsa.math;
 
 import net.i2p.crypto.eddsa.*;
 import net.i2p.crypto.eddsa.spec.*;
-import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * @author str4d
+ * Additional tests by NEM project team.
  *
  */
 public class GroupElementTest {
@@ -42,7 +43,7 @@ public class GroupElementTest {
     public ExpectedException exception = ExpectedException.none();
 
     /**
-     * Test method for {@link GroupElement#p2(FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#p2(Curve, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testP2() {
@@ -56,7 +57,7 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#p3(FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testP3() {
@@ -70,7 +71,7 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#p1p1(FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#p1p1(Curve, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testP1p1() {
@@ -98,7 +99,7 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#cached(FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#cached(Curve, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testCached() {
@@ -140,7 +141,7 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#GroupElement(byte[])}.
+     * Test method for {@link GroupElement#GroupElement(Curve, byte[])}.
      */
     @Test
     public void testGroupElementByteArray() {
@@ -254,19 +255,21 @@ public class GroupElementTest {
 
 	@Test
 	public void toP2ReturnsExpectedResultIfGroupElementHasP2Representation() {
-		// Arrange:
-		final GroupElement g = MathUtils.toRepresentation(MathUtils.getRandomGroupElement(), GroupElement.Representation.P2);
+		for (int i=0; i<10; i++) {
+			// Arrange:
+			final GroupElement g = MathUtils.toRepresentation(MathUtils.getRandomGroupElement(), GroupElement.Representation.P2);
 
-		// Act:
-		final GroupElement h = g.toP2();
+			// Act:
+			final GroupElement h = g.toP2();
 
-		// Assert:
-		Assert.assertThat(h, IsEqual.equalTo(g));
-		Assert.assertThat(h.getRepresentation(), IsEqual.equalTo(GroupElement.Representation.P2));
-		Assert.assertThat(h.getX(), IsEqual.equalTo(g.getX()));
-		Assert.assertThat(h.getY(), IsEqual.equalTo(g.getY()));
-		Assert.assertThat(h.getZ(), IsEqual.equalTo(g.getZ()));
-		Assert.assertThat(h.getT(), IsEqual.equalTo(null));
+			// Assert:
+			Assert.assertThat(h, IsEqual.equalTo(g));
+			Assert.assertThat(h.getRepresentation(), IsEqual.equalTo(GroupElement.Representation.P2));
+			Assert.assertThat(h.getX(), IsEqual.equalTo(g.getX()));
+			Assert.assertThat(h.getY(), IsEqual.equalTo(g.getY()));
+			Assert.assertThat(h.getZ(), IsEqual.equalTo(g.getZ()));
+			Assert.assertThat(h.getT(), IsEqual.equalTo(null));
+		}
 	}
 
 	@Test
@@ -282,7 +285,6 @@ public class GroupElementTest {
 			// Assert:
 			Assert.assertThat(h1, IsEqual.equalTo(h2));
 			Assert.assertThat(h1.getRepresentation(), IsEqual.equalTo(GroupElement.Representation.P2));
-			Assert.assertThat(h1, IsEqual.equalTo(g));
 			Assert.assertThat(h1.getX(), IsEqual.equalTo(g.getX()));
 			Assert.assertThat(h1.getY(), IsEqual.equalTo(g.getY()));
 			Assert.assertThat(h1.getZ(), IsEqual.equalTo(g.getZ()));
@@ -448,7 +450,7 @@ public class GroupElementTest {
 	// endregion
 
     /**
-     * Test method for {@link GroupElement#precompute()}.
+     * Test method for {@link GroupElement#precompute(boolean)}.
      */
     @Test
     public void testPrecompute() {
@@ -562,6 +564,7 @@ public class GroupElementTest {
 		}
 	}
 
+	// region hashCode / equals
     /**
      * Test method for {@link GroupElement#equals(java.lang.Object)}.
      */
@@ -570,6 +573,43 @@ public class GroupElementTest {
         assertThat(GroupElement.p2(curve, ZERO, ONE, ONE),
                 is(equalTo(P2_ZERO)));
     }
+
+	@Test
+	public void equalsOnlyReturnsTrueForEquivalentObjects() {
+		// Arrange:
+		final GroupElement g1 = MathUtils.getRandomGroupElement();
+		final GroupElement g2 = MathUtils.toRepresentation(g1, GroupElement.Representation.P2);
+		final GroupElement g3 = MathUtils.toRepresentation(g1, GroupElement.Representation.CACHED);
+		final GroupElement g4 = MathUtils.toRepresentation(g1, GroupElement.Representation.P1P1);
+		final GroupElement g5 = MathUtils.getRandomGroupElement();
+
+		// Assert
+		Assert.assertThat(g2, IsEqual.equalTo(g1));
+		Assert.assertThat(g3, IsEqual.equalTo(g1));
+		Assert.assertThat(g1, IsEqual.equalTo(g4));
+		Assert.assertThat(g1, IsNot.not(IsEqual.equalTo(g5)));
+		Assert.assertThat(g2, IsNot.not(IsEqual.equalTo(g5)));
+		Assert.assertThat(g3, IsNot.not(IsEqual.equalTo(g5)));
+		Assert.assertThat(g5, IsNot.not(IsEqual.equalTo(g4)));
+	}
+
+	@Test
+	public void hashCodesAreEqualForEquivalentObjects() {
+		// Arrange:
+		final GroupElement g1 = MathUtils.getRandomGroupElement();
+		final GroupElement g2 = MathUtils.toRepresentation(g1, GroupElement.Representation.P2);
+		final GroupElement g3 = MathUtils.toRepresentation(g1, GroupElement.Representation.P1P1);
+		final GroupElement g4 = MathUtils.getRandomGroupElement();
+
+		// Assert
+		Assert.assertThat(g2.hashCode(), IsEqual.equalTo(g1.hashCode()));
+		Assert.assertThat(g3.hashCode(), IsEqual.equalTo(g1.hashCode()));
+		Assert.assertThat(g1.hashCode(), IsNot.not(IsEqual.equalTo(g4.hashCode())));
+		Assert.assertThat(g2.hashCode(), IsNot.not(IsEqual.equalTo(g4.hashCode())));
+		Assert.assertThat(g3.hashCode(), IsNot.not(IsEqual.equalTo(g4.hashCode())));
+	}
+
+	// endregion
 
     static final byte[] BYTES_ZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
@@ -581,7 +621,7 @@ public class GroupElementTest {
     static final byte[] RADIX16_42 = Utils.hexToBytes("FA030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 
     /**
-     * Test method for {@link net.i2p.crypto.eddsa.Utils#toRadix16(byte[])}.
+     * Test method for {@link GroupElement#toRadix16(byte[])}.
      */
     @Test
     public void testToRadix16() {
@@ -643,6 +683,7 @@ public class GroupElementTest {
         }
     }
 
+	// region scalar multiplication
     /**
      * Test method for {@link GroupElement#scalarMultiply(byte[])}.
      * Test values generated with Python Ed25519 implementation.
@@ -667,7 +708,48 @@ public class GroupElementTest {
                 ed25519.getB().scalarMultiply(a), is(equalTo(A)));
     }
 
-    @Test
+	@Test
+	public void scalarMultiplyBasePointWithZeroReturnsNeutralElement() {
+		// Arrange:
+		final GroupElement basePoint = ed25519.getB();
+
+		// Act:
+		final GroupElement g = basePoint.scalarMultiply(curve.getField().ZERO.toByteArray());
+
+		// Assert:
+		Assert.assertThat(curve.getZero(GroupElement.Representation.P3), IsEqual.equalTo(g));
+	}
+
+	@Test
+	public void scalarMultiplyBasePointWithOneReturnsBasePoint() {
+		// Arrange:
+		final GroupElement basePoint = ed25519.getB();
+
+		// Act:
+		final GroupElement g = basePoint.scalarMultiply(curve.getField().ONE.toByteArray());
+
+		// Assert:
+		Assert.assertThat(basePoint, IsEqual.equalTo(g));
+	}
+
+	// This test is slow (~6s) due to math utils using an inferior algorithm to calculate the result.
+	@Test
+	public void scalarMultiplyBasePointReturnsExpectedResult() {
+		for (int i=0; i<100; i++) {
+			// Arrange:
+			final GroupElement basePoint = ed25519.getB();
+			final FieldElement f = MathUtils.getRandomFieldElement();
+
+			// Act:
+			final GroupElement g = basePoint.scalarMultiply(f.toByteArray());
+			final GroupElement h = MathUtils.scalarMultiplyGroupElement(basePoint, f);
+
+			// Assert:
+			Assert.assertThat(g, IsEqual.equalTo(h));
+		}
+	}
+
+	@Test
     public void testDoubleScalarMultiplyVariableTime() {
         // Little-endian
         byte[] zero = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
@@ -712,8 +794,30 @@ public class GroupElementTest {
                 is(equalTo(A.dbl())));
     }
 
+	// This test is slow (~6s) due to math utils using an inferior algorithm to calculate the result.
+	@Test
+	public void doubleScalarMultiplyVariableTimeReturnsExpectedResult() {
+		for (int i=0; i<50; i++) {
+			// Arrange:
+			final GroupElement basePoint = ed25519.getB();
+			final GroupElement g = MathUtils.getRandomGroupElement();
+			g.precompute(false);
+			final FieldElement f1 = MathUtils.getRandomFieldElement();
+			final FieldElement f2 = MathUtils.getRandomFieldElement();
+
+			// Act:
+			final GroupElement h1 = basePoint.doubleScalarMultiplyVariableTime(g, f2.toByteArray(), f1.toByteArray());
+			final GroupElement h2 = MathUtils.doubleScalarMultiplyGroupElements(basePoint, f1, g, f2);
+
+			// Assert:
+			Assert.assertThat(h1, IsEqual.equalTo(h2));
+		}
+	}
+
+	// endregion
+
     /**
-     * Test method for {@link GroupElement#isOnCurve(GroupElement)}.
+     * Test method for {@link GroupElement#isOnCurve(Curve)}.
      */
     @Test
     public void testIsOnCurve() {
@@ -731,4 +835,26 @@ public class GroupElementTest {
                 is(true));
     }
 
+	@Test
+	public void isOnCurveReturnsTrueForPointsOnTheCurve() {
+		for (int i=0; i<100; i++) {
+			// Arrange:
+			final GroupElement g = MathUtils.getRandomGroupElement();
+
+			// Assert:
+			Assert.assertThat(g.isOnCurve(), IsEqual.equalTo(true));
+		}
+	}
+
+	@Test
+	public void isOnCurveReturnsFalseForPointsNotOnTheCurve() {
+		for (int i=0; i<100; i++) {
+			// Arrange:
+			final GroupElement g = MathUtils.getRandomGroupElement();
+			final GroupElement h = GroupElement.p2(curve, g.getX(), g.getY(), g.getZ().multiply(curve.getField().TWO));
+
+			// Assert (can only fail for 5*Z^2=1):
+			Assert.assertThat(h.isOnCurve(), IsEqual.equalTo(false));
+		}
+	}
 }
