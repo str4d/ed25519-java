@@ -18,12 +18,20 @@ public class MathUtils {
 	private static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
 	private static final Curve curve = ed25519.getCurve();
 	private static final BigInteger d = new BigInteger("-121665").multiply(new BigInteger("121666").modInverse(getQ()));
+	private static final BigInteger groupOrder = BigInteger.ONE.shiftLeft(252).add(new BigInteger("27742317777372353535851937790883648493"));
 
 	/**
 	 * Gets q = 2^255 - 19 as BigInteger.
 	 */
 	public static BigInteger getQ() {
 		return new BigInteger("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed", 16);
+	}
+
+	/**
+	 * Gets group order = 2^252 + 27742317777372353535851937790883648493 as BigInteger.
+	 */
+	public static BigInteger getGroupOrder() {
+		return groupOrder;
 	}
 
 	/**
@@ -57,15 +65,15 @@ public class MathUtils {
 	}
 
 	/**
-	 * Converts a 32 byte representation to a BigInteger.
-	 * Value: bytes[0] + 2^8 * bytes[1] + ... + 2^248 * bytes[31]
+	 * Converts a 2^8 bit representation to a BigInteger.
+	 * Value: bytes[0] + 2^8 * bytes[1] + ...
 	 *
-	 * @param bytes The 32 byte representation.
+	 * @param bytes The 2^8 bit representation.
 	 * @return The BigInteger.
 	 */
 	public static BigInteger toBigInteger(final byte[] bytes) {
 		BigInteger b = BigInteger.ZERO;
-		for (int i=0; i<32; i++) {
+		for (int i=0; i<bytes.length; i++) {
 			b = b.add(BigInteger.ONE.multiply(BigInteger.valueOf(bytes[i] & 0xff)).shiftLeft(i * 8));
 		}
 
@@ -111,6 +119,37 @@ public class MathUtils {
 			bytes[original.length - i - offset - 1] = original[i + offset];
 		}
 
+		return bytes;
+	}
+
+	/**
+	 * Reduces an integer in 2^8 bit representation modulo the group order and returns the result.
+	 *
+	 * @param bytes The integer in 2^8 bit representation.
+	 * @return The mod group order reduced integer.
+	 */
+	public static byte[] reduceModGroupOrder(final byte[] bytes) {
+		final BigInteger b = toBigInteger(bytes).mod(groupOrder);
+		return toByteArray(b);
+	}
+
+	/**
+	 * Calculates (a * b + c) mod group order and returns the result.
+	 * a, b and c are given in 2^8 bit representation.
+	 *
+	 * @param a The first integer.
+	 * @param b The second integer.
+	 * @param c The third integer.
+	 * @return The mod group order reduced result.
+	 */
+	public static byte[] multiplyAndAddModGroupOrder(final byte[] a, final byte[] b, final byte[] c) {
+		final BigInteger result = toBigInteger(a).multiply(toBigInteger(b)).add(toBigInteger(c)).mod(groupOrder);
+		return toByteArray(result);
+	}
+
+	public static byte[] getRandomByteArray(final int length) {
+		final byte[] bytes = new byte[length];
+		random.nextBytes(bytes);
 		return bytes;
 	}
 
