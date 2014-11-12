@@ -28,7 +28,7 @@ public class Utils {
             result |= b[i] ^ c[i];
         }
 
-		return equal(result, 0);
+        return equal(result, 0);
     }
 
     /**

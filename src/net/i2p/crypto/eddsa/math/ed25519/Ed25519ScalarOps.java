@@ -26,8 +26,8 @@ public class Ed25519ScalarOps implements ScalarOps {
     }
 
     /**
-	 * Reduction modulo the group order q.
-	 *
+     * Reduction modulo the group order q.
+     *
      * Input:
      *   s[0]+256*s[1]+...+256^63*s[63] = s
      *
@@ -36,7 +36,7 @@ public class Ed25519ScalarOps implements ScalarOps {
      *   where q = 2^252 + 27742317777372353535851937790883648493.
      */
     public byte[] reduce(byte[] s) {
-		// s0,..., s22 have 21 bits, s23 has 29 bits
+        // s0,..., s22 have 21 bits, s23 has 29 bits
         long s0 = 0x1FFFFF & load_3(s, 0);
         long s1 = 0x1FFFFF & (load_4(s, 2) >> 5);
         long s2 = 0x1FFFFF & (load_3(s, 5) >> 2);
@@ -79,22 +79,22 @@ public class Ed25519ScalarOps implements ScalarOps {
         long carry15;
         long carry16;
 
-		/**
-		 * Lots of magic numbers :)
-		 * To understand what's going on below, note that
-		 *
-		 * (1) q = 2^252 + q0 where q0 = 27742317777372353535851937790883648493.
-		 * (2) s11 is the coefficient of 2^(11*21), s23 is the coefficient of 2^(^23*21) and 2^252 = 2^((23-11) * 21)).
-		 * (3) 2^252 congruent -q0 modulo q.
-		 * (4) -q0 = 666643 * 2^0 + 470296 * 2^21 + 654183 * 2^(2*21) - 997805 * 2^(3*21) + 136657 * 2^(4*21) - 683901 * 2^(5*21)
-		 *
-		 * Thus
-		 * s23 * 2^(23*11) = s23 * 2^(12*21) * 2^(11*21) = s3 * 2^252 * 2^(11*21) congruent
-		 * s23 * (666643 * 2^0 + 470296 * 2^21 + 654183 * 2^(2*21) - 997805 * 2^(3*21) + 136657 * 2^(4*21) - 683901 * 2^(5*21)) * 2^(11*21) modulo q =
-		 * s23 * (666643 * 2^(11*21) + 470296 * 2^(12*21) + 654183 * 2^(13*21) - 997805 * 2^(14*21) + 136657 * 2^(15*21) - 683901 * 2^(16*21)).
-		 *
-		 * The same procedure is then applied for s22,...,s18.
-		 */
+        /**
+         * Lots of magic numbers :)
+         * To understand what's going on below, note that
+         *
+         * (1) q = 2^252 + q0 where q0 = 27742317777372353535851937790883648493.
+         * (2) s11 is the coefficient of 2^(11*21), s23 is the coefficient of 2^(^23*21) and 2^252 = 2^((23-11) * 21)).
+         * (3) 2^252 congruent -q0 modulo q.
+         * (4) -q0 = 666643 * 2^0 + 470296 * 2^21 + 654183 * 2^(2*21) - 997805 * 2^(3*21) + 136657 * 2^(4*21) - 683901 * 2^(5*21)
+         *
+         * Thus
+         * s23 * 2^(23*11) = s23 * 2^(12*21) * 2^(11*21) = s3 * 2^252 * 2^(11*21) congruent
+         * s23 * (666643 * 2^0 + 470296 * 2^21 + 654183 * 2^(2*21) - 997805 * 2^(3*21) + 136657 * 2^(4*21) - 683901 * 2^(5*21)) * 2^(11*21) modulo q =
+         * s23 * (666643 * 2^(11*21) + 470296 * 2^(12*21) + 654183 * 2^(13*21) - 997805 * 2^(14*21) + 136657 * 2^(15*21) - 683901 * 2^(16*21)).
+         *
+         * The same procedure is then applied for s22,...,s18.
+         */
         s11 += s23 * 666643;
         s12 += s23 * 470296;
         s13 += s23 * 654183;
@@ -143,9 +143,9 @@ public class Ed25519ScalarOps implements ScalarOps {
         s11 -= s18 * 683901;
         s18 = 0;
 
-		/**
-		 * Time to reduce the coefficient in order not to get an overflow.
-		 */
+        /**
+         * Time to reduce the coefficient in order not to get an overflow.
+         */
         carry6 = (s6 + (1<<20)) >> 21; s7 += carry6; s6 -= carry6 << 21;
         carry8 = (s8 + (1<<20)) >> 21; s9 += carry8; s8 -= carry8 << 21;
         carry10 = (s10 + (1<<20)) >> 21; s11 += carry10; s10 -= carry10 << 21;
@@ -159,9 +159,9 @@ public class Ed25519ScalarOps implements ScalarOps {
         carry13 = (s13 + (1<<20)) >> 21; s14 += carry13; s13 -= carry13 << 21;
         carry15 = (s15 + (1<<20)) >> 21; s16 += carry15; s15 -= carry15 << 21;
 
-		/**
-		 * Continue with above procedure.
-		 */
+        /**
+         * Continue with above procedure.
+         */
         s5 += s17 * 666643;
         s6 += s17 * 470296;
         s7 += s17 * 654183;
@@ -210,9 +210,9 @@ public class Ed25519ScalarOps implements ScalarOps {
         s5 -= s12 * 683901;
         s12 = 0;
 
-		/**
-		 * Reduce coefficients again.
-		 */
+        /**
+         * Reduce coefficients again.
+         */
         carry0 = (s0 + (1<<20)) >> 21; s1 += carry0; s0 -= carry0 << 21;
         carry2 = (s2 + (1<<20)) >> 21; s3 += carry2; s2 -= carry2 << 21;
         carry4 = (s4 + (1<<20)) >> 21; s5 += carry4; s4 -= carry4 << 21;
@@ -248,7 +248,7 @@ public class Ed25519ScalarOps implements ScalarOps {
         carry10 = s10 >> 21; s11 += carry10; s10 -= carry10 << 21;
         carry11 = s11 >> 21; s12 += carry11; s11 -= carry11 << 21;
 
-		// TODO-CR BR: Is it really needed to do it TWO times? (it doesn't hurt, just a question).
+        // TODO-CR BR: Is it really needed to do it TWO times? (it doesn't hurt, just a question).
         s0 += s12 * 666643;
         s1 += s12 * 470296;
         s2 += s12 * 654183;
@@ -269,7 +269,7 @@ public class Ed25519ScalarOps implements ScalarOps {
         carry9 = s9 >> 21; s10 += carry9; s9 -= carry9 << 21;
         carry10 = s10 >> 21; s11 += carry10; s10 -= carry10 << 21;
 
-		// s0, ..., s11 got 21 bits each.
+        // s0, ..., s11 got 21 bits each.
         byte[] result = new byte[32];
         result[0] = (byte) (s0 >> 0);
         result[1] = (byte) (s0 >> 8);
@@ -316,8 +316,8 @@ public class Ed25519ScalarOps implements ScalarOps {
      * Output:
      *   result[0]+256*result[1]+...+256^31*result[31] = (ab+c) mod q
      *   where q = 2^252 + 27742317777372353535851937790883648493.
-	 *
-	 * See the comments in the method reduce() for an explanation of the algorithm.
+     *
+     * See the comments in the method reduce() for an explanation of the algorithm.
      */
     public byte[] multiplyAndAdd(byte[] a, byte[] b, byte[] c) {
         long a0 = 0x1FFFFF & load_3(a, 0);

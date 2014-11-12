@@ -19,12 +19,12 @@ public class Ed25519FieldElement extends FieldElement {
      */
     int[] t;
 
-	/**
-	 * Creates a field element.
-	 *
-	 * @param f	The underlying field, must be the finite field with p = 2^255 - 19 elements
-	 * @param t The 2^25.5 bit representation of the field element.
-	 */
+    /**
+     * Creates a field element.
+     *
+     * @param f The underlying field, must be the finite field with p = 2^255 - 19 elements
+     * @param t The 2^25.5 bit representation of the field element.
+     */
     public Ed25519FieldElement(Field f, int[] t) {
         super(f);
         if (t.length != 10)
@@ -34,11 +34,11 @@ public class Ed25519FieldElement extends FieldElement {
 
     private static final byte[] ZERO = new byte[32];
 
-	/**
-	 * Gets a value indicating whether or not the field element is non-zero.
-	 *
-	 * @return 1 if it is non-zero, 0 otherwise.
-	 */
+    /**
+     * Gets a value indicating whether or not the field element is non-zero.
+     *
+     * @return 1 if it is non-zero, 0 otherwise.
+     */
     public boolean isNonZero() {
         final byte[] s = toByteArray();
         return Utils.equal(s, ZERO) == 0;
@@ -46,7 +46,7 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = f + g
- 	 * TODO-CR BR: h is allocated via new, probably not a good idea. Do we need the copying into temp variables if we do that?
+     * TODO-CR BR: h is allocated via new, probably not a good idea. Do we need the copying into temp variables if we do that?
      *
      * Preconditions:
      *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
@@ -54,9 +54,9 @@ public class Ed25519FieldElement extends FieldElement {
      *
      * Postconditions:
      *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
-	 *
-	 * @param val The field element to add.
-	 * @return The field element this + val.
+     *
+     * @param val The field element to add.
+     * @return The field element this + val.
      */
     public FieldElement add(FieldElement val) {
         int[] g = ((Ed25519FieldElement)val).t;
@@ -107,7 +107,7 @@ public class Ed25519FieldElement extends FieldElement {
     /**
      * h = f - g
      * Can overlap h with f or g.
-	 * TODO-CR BR: See above.
+     * TODO-CR BR: See above.
      *
      * Preconditions:
      *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
@@ -115,9 +115,9 @@ public class Ed25519FieldElement extends FieldElement {
      *
      * Postconditions:
      *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
-	 *
-	 * @param val The field element to subtract.
-	 * @return The field element this - val.
+     *
+     * @param val The field element to subtract.
+     * @return The field element this - val.
      **/
     public FieldElement subtract(FieldElement val) {
         int[] g = ((Ed25519FieldElement)val).t;
@@ -167,15 +167,15 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = -f
-	 * TODO-CR BR: see above.
+     * TODO-CR BR: see above.
      *
      * Preconditions:
      *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
      *
      * Postconditions:
      *    |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-	 *
-	 * @return The field element (-1) * this.
+     *
+     * @return The field element (-1) * this.
      */
     public FieldElement negate() {
         int f0 = t[0];
@@ -239,10 +239,10 @@ public class Ed25519FieldElement extends FieldElement {
      * deeper.
      *
      * With tighter constraints on inputs can squeeze carries into int32.
-	 *
-	 * @param val The field element to multiply.
-	 * @return The (reasonably reduced) field element this * val.
-	 */
+     *
+     * @param val The field element to multiply.
+     * @return The (reasonably reduced) field element this * val.
+     */
     public FieldElement multiply(FieldElement val) {
         int[] g = ((Ed25519FieldElement)val).t;
         int f0 = t[0];
@@ -380,17 +380,17 @@ public class Ed25519FieldElement extends FieldElement {
         long f9g8_19 = f9   * (long) g8_19;
         long f9g9_38 = f9_2 * (long) g9_19;
 
-		/**
-		 * Remember: 2^255 congruent 19 modulo p.
-		 * h = h0 * 2^0 + h1 * 2^26 + h2 * 2^(26+25) + h3 * 2^(26+25+26) + ... + h9 * 2^(5*26+5*25).
-		 * So to get the real number we would have to multiply the coefficients with the corresponding powers of 2.
-		 * To get an idea what is going on below, look at the calculation of h0:
-		 * h0 is the coefficient to the power 2^0 so it collects (sums) all products that have the power 2^0.
-		 * f0 * g0 really is f0 * 2^0 * g0 * 2^0 = (f0 * g0) * 2^0.
-		 * f1 * g9 really is f1 * 2^26 * g9 * 2^230 = f1 * g9 * 2^256 = 2 * f1 * g9 * 2^255 congruent 2 * 19 * f1 * g9 * 2^0 modulo p.
-		 * f2 * g8 really is f2 * 2^51 * g8 * 2^204 = f2 * g8 * 2^255 congruent 19 * f2 * g8 * 2^0 modulo p.
-		 * and so on...
-		 */
+        /**
+         * Remember: 2^255 congruent 19 modulo p.
+         * h = h0 * 2^0 + h1 * 2^26 + h2 * 2^(26+25) + h3 * 2^(26+25+26) + ... + h9 * 2^(5*26+5*25).
+         * So to get the real number we would have to multiply the coefficients with the corresponding powers of 2.
+         * To get an idea what is going on below, look at the calculation of h0:
+         * h0 is the coefficient to the power 2^0 so it collects (sums) all products that have the power 2^0.
+         * f0 * g0 really is f0 * 2^0 * g0 * 2^0 = (f0 * g0) * 2^0.
+         * f1 * g9 really is f1 * 2^26 * g9 * 2^230 = f1 * g9 * 2^256 = 2 * f1 * g9 * 2^255 congruent 2 * 19 * f1 * g9 * 2^0 modulo p.
+         * f2 * g8 really is f2 * 2^51 * g8 * 2^204 = f2 * g8 * 2^255 congruent 19 * f2 * g8 * 2^0 modulo p.
+         * and so on...
+         */
         long h0 = f0g0 + f1g9_38 + f2g8_19 + f3g7_38 + f4g6_19 + f5g5_38 + f6g4_19 + f7g3_38 + f8g2_19 + f9g1_38;
         long h1 = f0g1 + f1g0    + f2g9_19 + f3g8_19 + f4g7_19 + f5g6_19 + f6g5_19 + f7g4_19 + f8g3_19 + f9g2_19;
         long h2 = f0g2 + f1g1_2  + f2g0    + f3g9_38 + f4g8_19 + f5g7_38 + f6g6_19 + f7g5_38 + f8g4_19 + f9g3_38;
@@ -488,8 +488,8 @@ public class Ed25519FieldElement extends FieldElement {
      *
      * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
      * of implementation strategy.
-	 *
-	 * @return The (reasonably reduced) square of this field element.
+     *
+     * @return The (reasonably reduced) square of this field element.
      */
     public FieldElement square() {
         int f0 = t[0];
@@ -571,10 +571,10 @@ public class Ed25519FieldElement extends FieldElement {
         long f8f9_38 = f8   * (long) f9_38;
         long f9f9_38 = f9   * (long) f9_38;
 
-		/**
-		 * Same procedure as in multiply, but this time we have a higher symmetry leading to less summands.
-		 * e.g. f1f9_76 really stands for f1 * 2^26 * f9 * 2^230 + f9 * 2^230 + f1 * 2^26 congruent 2 * 2 * 19 * f1 * f9  2^0 modulo p.
-		 */
+        /**
+         * Same procedure as in multiply, but this time we have a higher symmetry leading to less summands.
+         * e.g. f1f9_76 really stands for f1 * 2^26 * f9 * 2^230 + f9 * 2^230 + f1 * 2^26 congruent 2 * 2 * 19 * f1 * f9  2^0 modulo p.
+         */
         long h0 = f0f0   + f1f9_76 + f2f8_38 + f3f7_76 + f4f6_38 + f5f5_38;
         long h1 = f0f1_2 + f2f9_38 + f3f8_38 + f4f7_38 + f5f6_38;
         long h2 = f0f2_2 + f1f1_2  + f3f9_76 + f4f8_38 + f5f7_76 + f6f6_19;
@@ -641,8 +641,8 @@ public class Ed25519FieldElement extends FieldElement {
      *
      * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
      * of implementation strategy.
-	 *
-	 * @return The (reasonably reduced) square of this field element times 2.
+     *
+     * @return The (reasonably reduced) square of this field element times 2.
      */
     public FieldElement squareAndDouble() {
         int f0 = t[0];
@@ -788,160 +788,160 @@ public class Ed25519FieldElement extends FieldElement {
         return new Ed25519FieldElement(f, h);
     }
 
-	/**
-	 * Invert this field element.
-	 * The inverse is found via Fermat's little theorem:
-	 * a^p congruent a mod p and therefore a^(p-2) congruent a^-1 mod p
-	 *
-	 * @return The inverse of this field element.
-	 */
+    /**
+     * Invert this field element.
+     * The inverse is found via Fermat's little theorem:
+     * a^p congruent a mod p and therefore a^(p-2) congruent a^-1 mod p
+     *
+     * @return The inverse of this field element.
+     */
     public FieldElement invert() {
         FieldElement t0, t1, t2, t3;
 
-		// 2 == 2 * 1
+        // 2 == 2 * 1
         t0 = square();
 
-		// TODO -CR BR: What is this? Is the author superstitious?
+        // TODO -CR BR: What is this? Is the author superstitious?
         for (int i = 1; i < 1; ++i) { // Don't remove this
             t0 = t0.square();
         }
 
-		// 4 == 2 * 2
+        // 4 == 2 * 2
         t1 = t0.square();
 
-		// 8 == 2 * 4
+        // 8 == 2 * 4
         for (int i = 1; i < 2; ++i) {
             t1 = t1.square();
         }
 
-		// 9 == 8 + 1
+        // 9 == 8 + 1
         t1 = multiply(t1);
 
-		// 11 == 9 + 2
+        // 11 == 9 + 2
         t0 = t0.multiply(t1);
 
-		// 22 == 2 * 11
+        // 22 == 2 * 11
         t2 = t0.square();
 
-		// TODO -CR BR: see above
+        // TODO -CR BR: see above
         for (int i = 1; i < 1; ++i) { // Don't remove this
             t2 = t2.square();
         }
 
-		// 31 == 22 + 9
+        // 31 == 22 + 9
         t1 = t1.multiply(t2);
 
-		// 2^6 - 2^1
+        // 2^6 - 2^1
         t2 = t1.square();
 
-		// 2^10 - 2^5
+        // 2^10 - 2^5
         for (int i = 1; i < 5; ++i) {
             t2 = t2.square();
         }
 
-		// 2^10 - 2^0
+        // 2^10 - 2^0
         t1 = t2.multiply(t1);
 
-		// 2^11 - 2^1
+        // 2^11 - 2^1
         t2 = t1.square();
 
-		// 2^20 - 2^10
+        // 2^20 - 2^10
         for (int i = 1; i < 10; ++i) {
             t2 = t2.square();
         }
 
-		// 2^20 - 2^0
+        // 2^20 - 2^0
         t2 = t2.multiply(t1);
 
-		// 2^21 - 2^1
+        // 2^21 - 2^1
         t3 = t2.square();
 
-		// 2^40 - 2^20
+        // 2^40 - 2^20
         for (int i = 1; i < 20; ++i) {
             t3 = t3.square();
         }
 
-		// 2^40 - 2^0
+        // 2^40 - 2^0
         t2 = t3.multiply(t2);
 
-		// 2^41 - 2^1
+        // 2^41 - 2^1
         t2 = t2.square();
 
-		// 2^50 - 2^10
+        // 2^50 - 2^10
         for (int i = 1; i < 10; ++i) {
             t2 = t2.square();
         }
 
-		// 2^50 - 2^0
+        // 2^50 - 2^0
         t1 = t2.multiply(t1);
 
-		// 2^51 - 2^1
+        // 2^51 - 2^1
         t2 = t1.square();
 
-		// 2^100 - 2^50
+        // 2^100 - 2^50
         for (int i = 1; i < 50; ++i) {
             t2 = t2.square();
         }
 
-		// 2^100 - 2^0
+        // 2^100 - 2^0
         t2 = t2.multiply(t1);
 
-		// 2^101 - 2^1
+        // 2^101 - 2^1
         t3 = t2.square();
 
-		// 2^200 - 2^100
+        // 2^200 - 2^100
         for (int i = 1; i < 100; ++i) {
             t3 = t3.square();
         }
 
-		// 2^200 - 2^0
+        // 2^200 - 2^0
         t2 = t3.multiply(t2);
 
-		// 2^201 - 2^1
+        // 2^201 - 2^1
         t2 = t2.square();
 
-		// 2^250 - 2^50
+        // 2^250 - 2^50
         for (int i = 1; i < 50; ++i) {
             t2 = t2.square();
         }
 
-		// 2^250 - 2^0
+        // 2^250 - 2^0
         t1 = t2.multiply(t1);
 
-		// 2^251 - 2^1
+        // 2^251 - 2^1
         t1 = t1.square();
 
-		// 2^255 - 2^5
+        // 2^255 - 2^5
         for (int i = 1; i < 5; ++i) {
             t1 = t1.square();
         }
 
-		// 2^255 - 21
+        // 2^255 - 21
         return t1.multiply(t0);
     }
 
-	/**
-	 * Gets this field element to the power of (2^252 - 3).
-	 * This is a helper function for calculating the square root.
-	 * TODO-CR BR: I think it makes sense to have a sqrt function.
-	 *
-	 * @return This field element to the power of (2^252 - 3).
-	 */
+    /**
+     * Gets this field element to the power of (2^252 - 3).
+     * This is a helper function for calculating the square root.
+     * TODO-CR BR: I think it makes sense to have a sqrt function.
+     *
+     * @return This field element to the power of (2^252 - 3).
+     */
     public FieldElement pow22523() {
         FieldElement t0, t1, t2;
 
-		// 2 == 2 * 1
+        // 2 == 2 * 1
         t0 = square();
 
-		// TODO -CR BR: see invert
+        // TODO -CR BR: see invert
         for (int i = 1; i < 1; ++i) { // Don't remove this
             t0 = t0.square();
         }
 
-		// 4 == 2 * 2
+        // 4 == 2 * 2
         t1 = t0.square();
 
-		// 8 == 2 * 4
+        // 8 == 2 * 4
         for (int i = 1; i < 2; ++i) {
             t1 = t1.square();
         }
@@ -949,106 +949,106 @@ public class Ed25519FieldElement extends FieldElement {
         // z9 = z1*z8
         t1 = multiply(t1);
 
-		// 11 == 9 + 2
+        // 11 == 9 + 2
         t0 = t0.multiply(t1);
 
-		// 22 == 2 * 11
+        // 22 == 2 * 11
         t0 = t0.square();
 
-		// TODO -CR BR: see above
+        // TODO -CR BR: see above
         for (int i = 1; i < 1; ++i) { // Don't remove this
             t0 = t0.square();
         }
 
-		// 31 == 22 + 9
+        // 31 == 22 + 9
         t0 = t1.multiply(t0);
 
-		// 2^6 - 2^1
+        // 2^6 - 2^1
         t1 = t0.square();
 
-		// 2^10 - 2^5
+        // 2^10 - 2^5
         for (int i = 1; i < 5; ++i) {
             t1 = t1.square();
         }
 
-		// 2^10 - 2^0
+        // 2^10 - 2^0
         t0 = t1.multiply(t0);
 
-		// 2^11 - 2^1
+        // 2^11 - 2^1
         t1 = t0.square();
 
-		// 2^20 - 2^10
+        // 2^20 - 2^10
         for (int i = 1; i < 10; ++i) {
             t1 = t1.square();
         }
 
-		// 2^20 - 2^0
+        // 2^20 - 2^0
         t1 = t1.multiply(t0);
 
-		// 2^21 - 2^1
+        // 2^21 - 2^1
         t2 = t1.square();
 
-		// 2^40 - 2^20
+        // 2^40 - 2^20
         for (int i = 1; i < 20; ++i) {
             t2 = t2.square();
         }
 
-		// 2^40 - 2^0
+        // 2^40 - 2^0
         t1 = t2.multiply(t1);
 
-		// 2^41 - 2^1
+        // 2^41 - 2^1
         t1 = t1.square();
 
-		// 2^50 - 2^10
+        // 2^50 - 2^10
         for (int i = 1; i < 10; ++i) {
             t1 = t1.square();
         }
 
-		// 2^50 - 2^0
+        // 2^50 - 2^0
         t0 = t1.multiply(t0);
 
-		// 2^51 - 2^1
+        // 2^51 - 2^1
         t1 = t0.square();
 
-		// 2^100 - 2^50
+        // 2^100 - 2^50
         for (int i = 1; i < 50; ++i) {
             t1 = t1.square();
         }
 
-		// 2^100 - 2^0
+        // 2^100 - 2^0
         t1 = t1.multiply(t0);
 
-		// 2^101 - 2^1
+        // 2^101 - 2^1
         t2 = t1.square();
 
-		// 2^200 - 2^100
+        // 2^200 - 2^100
         for (int i = 1; i < 100; ++i) {
             t2 = t2.square();
         }
 
-		// 2^200 - 2^0
+        // 2^200 - 2^0
         t1 = t2.multiply(t1);
 
-		// 2^201 - 2^1
+        // 2^201 - 2^1
         t1 = t1.square();
 
-		// 2^250 - 2^50
+        // 2^250 - 2^50
         for (int i = 1; i < 50; ++i) {
             t1 = t1.square();
         }
 
-		// 2^250 - 2^0
+        // 2^250 - 2^0
         t0 = t1.multiply(t0);
 
-		// 2^251 - 2^1
+        // 2^251 - 2^1
         t0 = t0.square();
 
-		// 2^252 - 2^2
+        // 2^252 - 2^2
         for (int i = 1; i < 2; ++i) {
             t0 = t0.square();
         }
 
-		// 2^252 - 3
+        // 2^252 - 3
         return multiply(t0);
     }
 
