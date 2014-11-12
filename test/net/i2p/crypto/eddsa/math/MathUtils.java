@@ -50,6 +50,7 @@ public class MathUtils {
 
     /**
      * Converts a 2^25.5 bit representation to a BigInteger.
+     * <p>
      * Value: 2^exponents[0] * t[0] + 2^exponents[1] * t[1] + ... + 2^exponents[9] * t[9]
      *
      * @param t The 2^25.5 bit representation.
@@ -66,6 +67,7 @@ public class MathUtils {
 
     /**
      * Converts a 2^8 bit representation to a BigInteger.
+     * <p>
      * Value: bytes[0] + 2^8 * bytes[1] + ...
      *
      * @param bytes The 2^8 bit representation.
@@ -135,6 +137,7 @@ public class MathUtils {
 
     /**
      * Calculates (a * b + c) mod group order and returns the result.
+     * <p>
      * a, b and c are given in 2^8 bit representation.
      *
      * @param a The first integer.
@@ -189,6 +192,7 @@ public class MathUtils {
 
     /**
      * Creates a group element from a byte array.
+     * <p>
      * Bit 0 to 254 are the affine y-coordinate, bit 255 is the sign of the affine x-coordinate.
      *
      * @param bytes the byte array.

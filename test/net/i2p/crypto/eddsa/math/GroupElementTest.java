@@ -168,6 +168,7 @@ public class GroupElementTest {
 
     /**
      * Test method for {@link GroupElement#toByteArray()}.
+     * <p>
      * TODO 20141001 BR: why test with points which are not on the curve?
      */
     @Test
