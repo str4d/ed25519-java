@@ -167,7 +167,7 @@ public class GroupElement implements Serializable {
     final FieldElement T;
 
     /**
-     * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
+     * Precomputed table for {@link #scalarMultiply(byte[])},
      * filled if necessary.
      * <p>
      * Variable is package private only so that tests run.
@@ -175,7 +175,7 @@ public class GroupElement implements Serializable {
     GroupElement[][] precmp;
 
     /**
-     * Precomputed table for {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
+     * Precomputed table for {@link #doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
      * filled if necessary.
      * <p>
      * Variable is package private only so that tests run.
@@ -440,8 +440,8 @@ public class GroupElement implements Serializable {
     /**
      * Precomputes several tables.
      * <p>
-     * The precomputed tables are used for {@link GroupElement#scalarMultiply(byte[])}
-     * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
+     * The precomputed tables are used for {@link #scalarMultiply(byte[])}
+     * and {@link #doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      *
      * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
      */
