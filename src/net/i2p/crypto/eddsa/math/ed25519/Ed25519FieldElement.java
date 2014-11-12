@@ -7,10 +7,11 @@ import java.util.Arrays;
 
 /**
  * Class to represent a field element of the finite field p=2^255-19 elements.
+ * <p>
  * An element t, entries t[0]...t[9], represents the integer
  * t[0]+2^26 t[1]+2^51 t[2]+2^77 t[3]+2^102 t[4]+...+2^230 t[9].
  * Bounds on each t[i] vary depending on context.
- *
+ * <p>
  * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
  */
 public class Ed25519FieldElement extends FieldElement {
@@ -46,14 +47,17 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = f + g
+     * <p>
      * TODO-CR BR: h is allocated via new, probably not a good idea. Do we need the copying into temp variables if we do that?
-     *
+     * <p>
      * Preconditions:
-     *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-     *    |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-     *
+     * <p><ul>
+     * <li>|f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * <li>|g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * </ul><p>
      * Postconditions:
-     *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+     * <p><ul>
+     * <li>|h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
      *
      * @param val The field element to add.
      * @return The field element this + val.
@@ -106,15 +110,19 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = f - g
+     * <p>
      * Can overlap h with f or g.
+     * <p>
      * TODO-CR BR: See above.
-     *
+     * <p>
      * Preconditions:
-     *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-     *    |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-     *
+     * <p><ul>
+     * <li>|f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * <li>|g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * </ul><p>
      * Postconditions:
-     *    |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+     * <p><ul>
+     * <li>|h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
      *
      * @param val The field element to subtract.
      * @return The field element this - val.
@@ -167,13 +175,16 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = -f
+     * <p>
      * TODO-CR BR: see above.
-     *
+     * <p>
      * Preconditions:
-     *    |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-     *
+     * <p><ul>
+     * <li>|f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * </ul><p>
      * Postconditions:
-     *    |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+     * <p><ul>
+     * <li>|h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
      *
      * @return The field element (-1) * this.
      */
@@ -213,31 +224,38 @@ public class Ed25519FieldElement extends FieldElement {
     }
 
     /**
-     * h = f * g Can overlap h with f or g.
-     * 
-     * Preconditions: |f| bounded by
-     * 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc. |g| bounded by
+     * h = f * g
+     * <p>
+     * Can overlap h with f or g.
+     * <p>
+     * Preconditions:
+     * <p><ul>
+     * <li>|f| bounded by
      * 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
-     * 
-     * Postconditions: |h| bounded by
+     * <li>|g| bounded by
+     * 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
+     * </ul><p>
+     * Postconditions:
+     * <p><ul>
+     * <li>|h| bounded by
      * 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
-     *
+     * </ul><p>
      * Notes on implementation strategy:
-     *
+     * <p>
      * Using schoolbook multiplication. Karatsuba would save a little in some
      * cost models.
-     *
+     * <p>
      * Most multiplications by 2 and 19 are 32-bit precomputations; cheaper than
      * 64-bit postcomputations.
-     *
+     * <p>
      * There is one remaining multiplication by 19 in the carry chain; one *19
      * precomputation can be merged into this, but the resulting data flow is
      * considerably less clean.
-     *
+     * <p>
      * There are 12 carries below. 10 of them are 2-way parallelizable and
      * vectorizable. Can get away with 11 carries, but then data flow is much
      * deeper.
-     *
+     * <p>
      * With tighter constraints on inputs can squeeze carries into int32.
      *
      * @param val The field element to multiply.
@@ -478,15 +496,18 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = f * f
+     * <p>
      * Can overlap h with f.
-     *
+     * <p>
      * Preconditions:
-     *    |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
-     *
+     * <p><ul>
+     * <li>|f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
+     * </ul><p>
      * Postconditions:
-     *    |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
-     *
-     * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
+     * <p><ul>
+     * <li>|h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
+     * </ul><p>
+     * See {@link #multiply(FieldElement)} for discussion
      * of implementation strategy.
      *
      * @return The (reasonably reduced) square of this field element.
@@ -631,15 +652,18 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * h = 2 * f * f
+     * <p>
      * Can overlap h with f.
-     *
+     * <p>
      * Preconditions:
-     *    |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
-     *
+     * <p><ul>
+     * <li>|f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
+     * </ul><p>
      * Postconditions:
-     *    |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
-     *
-     * See {@link Ed25519FieldElement#multiply(FieldElement)} for discussion
+     * <p><ul>
+     * <li>|h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
+     * </ul><p>
+     * See {@link #multiply(FieldElement)} for discussion
      * of implementation strategy.
      *
      * @return The (reasonably reduced) square of this field element times 2.
@@ -790,7 +814,8 @@ public class Ed25519FieldElement extends FieldElement {
 
     /**
      * Invert this field element.
-     * The inverse is found via Fermat's little theorem:
+     * <p>
+     * The inverse is found via Fermat's little theorem:<br>
      * a^p congruent a mod p and therefore a^(p-2) congruent a^-1 mod p
      *
      * @return The inverse of this field element.
@@ -923,6 +948,7 @@ public class Ed25519FieldElement extends FieldElement {
     /**
      * Gets this field element to the power of (2^252 - 3).
      * This is a helper function for calculating the square root.
+     * <p>
      * TODO-CR BR: I think it makes sense to have a sqrt function.
      *
      * @return This field element to the power of (2^252 - 3).

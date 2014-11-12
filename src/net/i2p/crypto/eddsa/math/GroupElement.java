@@ -7,29 +7,30 @@ import java.util.Arrays;
 
 /**
  * A point (x,y) on an EdDSA curve.
- * @author str4d
- *
+ * <p>
  * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
+ * <p>
+ * Literature:<br>
+ * [1] Daniel J. Bernstein, Niels Duif, Tanja Lange, Peter Schwabe and Bo-Yin Yang : High-speed high-security signatures<br>
+ * [2] Huseyin Hisil, Kenneth Koon-Ho Wong, Gary Carter, Ed Dawson: Twisted Edwards Curves Revisited<br>
+ * [3] Daniel J. Bernsteina, Tanja Lange: A complete set of addition laws for incomplete Edwards curves<br>
+ * [4] Daniel J. Bernstein, Peter Birkner, Marc Joye, Tanja Lange and Christiane Peters: Twisted Edwards Curves<br>
+ * [5] Christiane Pascale Peters: Curves, Codes, and Cryptography (PhD thesis)<br>
+ * [6] Daniel J. Bernstein, Peter Birkner, Tanja Lange and Christiane Peters: Optimizing double-base elliptic-curve single-scalar multiplication<br>
  *
- * Literature:
- * [1] Daniel J. Bernstein, Niels Duif, Tanja Lange, Peter Schwabe and Bo-Yin Yang : High-speed high-security signatures
- * [2] Huseyin Hisil, Kenneth Koon-Ho Wong, Gary Carter, Ed Dawson: Twisted Edwards Curves Revisited
- * [3] Daniel J. Bernsteina, Tanja Lange: A complete set of addition laws for incomplete Edwards curves
- * [4] Daniel J. Bernstein, Peter Birkner, Marc Joye, Tanja Lange and Christiane Peters: Twisted Edwards Curves
- * [5] Christiane Pascale Peters: Curves, Codes, and Cryptography (PhD thesis)
- * [6] Daniel J. Bernstein, Peter Birkner, Tanja Lange and Christiane Peters: Optimizing double-base elliptic-curve single-scalar multiplication
+ * @author str4d
  */
 public class GroupElement implements Serializable {
     private static final long serialVersionUID = 2395879087349587L;
 
     /**
      * Available representations for a group element.
-     *
-     * P2: Projective representation (X:Y:Z) satisfying x=X/Z, y=Y/Z.
-     * P3: Extended projective representation (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT.
-     * P1P1: Completed representation ((X:Z), (Y:T)) satisfying x=X/Z, y=Y/T.
-     * PRECOMP: Precomputed representation (y+x, y-x, 2dxy).
-     * CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
+     * <p><ul>
+     * <li>P2: Projective representation (X:Y:Z) satisfying x=X/Z, y=Y/Z.
+     * <li>P3: Extended projective representation (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT.
+     * <li>P1P1: Completed representation ((X:Z), (Y:T)) satisfying x=X/Z, y=Y/T.
+     * <li>PRECOMP: Precomputed representation (y+x, y-x, 2dxy).
+     * <li>CACHED: Cached representation (Y+X, Y-X, Z, 2dT)
      */
     public enum Representation {
         /** Projective (P^2): (X:Y:Z) satisfying x=X/Z, y=Y/Z */
@@ -168,7 +169,7 @@ public class GroupElement implements Serializable {
     /**
      * Precomputed table for {@link GroupElement#scalarMultiply(byte[])},
      * filled if necessary.
-     *
+     * <p>
      * Variable is package private only so that tests run.
      */
     GroupElement[][] precmp;
@@ -176,7 +177,7 @@ public class GroupElement implements Serializable {
     /**
      * Precomputed table for {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])},
      * filled if necessary.
-     *
+     * <p>
      * Variable is package private only so that tests run.
      */
     GroupElement[] dblPrecmp;
@@ -208,15 +209,15 @@ public class GroupElement implements Serializable {
 
     /**
      * Creates a group element for a curve from a given encoded point.
-     *
+     * <p>
      * A point (x,y) is encoded by storing y in bit 0 to bit 254 and the sign of x in bit 255.
      * x is recovered in the following way:
-     *
-     * x = sign(x) * sqrt((y^2 - 1) / (d * y^2 + 1)) = sign(x) * sqrt(u / v) with u = y^2 - 1 and v = d * y^2 + 1.
-     * Setting β = (u * v^3) * (u * v^7)^((q - 5) / 8) one has β^2 = +-(u / v).
-     * If v * β = -u multiply β with i=sqrt(-1).
-     * Set x := β.
-     * If sign(x) != bit 255 of s then negate x.
+     * <p><ul>
+     * <li>x = sign(x) * sqrt((y^2 - 1) / (d * y^2 + 1)) = sign(x) * sqrt(u / v) with u = y^2 - 1 and v = d * y^2 + 1.
+     * <li>Setting β = (u * v^3) * (u * v^7)^((q - 5) / 8) one has β^2 = +-(u / v).
+     * <li>If v * β = -u multiply β with i=sqrt(-1).
+     * <li>Set x := β.
+     * <li>If sign(x) != bit 255 of s then negate x.
      *
      * @param curve The curve.
      * @param s The encoded point.
@@ -375,12 +376,13 @@ public class GroupElement implements Serializable {
      * Convert a GroupElement from one Representation to another.
      * TODO-CR: Add additional conversion?
      * r = p
-     *
+     * <p>
      * Supported conversions:
-     * - P3 -> P2
-     * - P3 -> CACHED (1 multiply, 1 add, 1 subtract)
-     * - P1P1 -> P2 (3 multiply)
-     * - P1P1 -> P3 (4 multiply)
+     * <p><ul>
+     * <li>P3 -> P2
+     * <li>P3 -> CACHED (1 multiply, 1 add, 1 subtract)
+     * <li>P1P1 -> P2 (3 multiply)
+     * <li>P1P1 -> P3 (4 multiply)
      *
      * @param repr The representation to convert to.
      * @return A new group element in the given representation.
@@ -436,7 +438,9 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * Precompute the tables for {@link GroupElement#scalarMultiply(byte[])}
+     * Precomputes several tables.
+     * <p>
+     * The precomputed tables are used for {@link GroupElement#scalarMultiply(byte[])}
      * and {@link GroupElement#doubleScalarMultiplyVariableTime(GroupElement, byte[], byte[])}.
      *
      * @param precomputeSingle should the matrix for scalarMultiply() be precomputed?
@@ -484,25 +488,27 @@ public class GroupElement implements Serializable {
     /**
      * Doubles a given group element p in P^2 or P^3 representation and returns the result in P x P representation.
      * r = 2 * p where p = (X : Y : Z) or p = (X : Y : Z : T)
-     *
+     * <p>
      * r in P x P representation:
-     *
+     * <p>
      * r = ((X' : Z'), (Y' : T')) where
-     * X' = (X + Y)^2 - (Y^2 + X^2)
-     * Y' = Y^2 + X^2
-     * Z' = y^2 - X^2
-     * T' = 2 * Z^2 - (y^2 - X^2)
-     *
+     * <p><ul>
+     * <li>X' = (X + Y)^2 - (Y^2 + X^2)
+     * <li>Y' = Y^2 + X^2
+     * <li>Z' = y^2 - X^2
+     * <li>T' = 2 * Z^2 - (y^2 - X^2)
+     * </ul><p>
      * r converted from P x P to P^2 representation:
-     *
+     * <p>
      * r = (X'' : Y'' : Z'') where
-     * X'' = X' * Z' = ((X + Y)^2 - Y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
-     * Y'' = Y' * T' = (Y^2 + X^2) * (2 * Z^2 - (y^2 - X^2))
-     * Z'' = Z' * T' = (y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
-     *
+     * <p><ul>
+     * <li>X'' = X' * Z' = ((X + Y)^2 - Y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
+     * <li>Y'' = Y' * T' = (Y^2 + X^2) * (2 * Z^2 - (y^2 - X^2))
+     * <li>Z'' = Z' * T' = (y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))
+     * </ul><p>
      * Formula for the P^2 representation is in agreement with the formula given in [4] page 12 (with a = -1)
      * up to a common factor -1 which does not matter:
-     *
+     * <p>
      * B = (X + Y)^2; C = X^2; D = Y^2; E = -C = -X^2; F := E + D = Y^2 - X^2; H = Z^2; J = F − 2 * H;
      * X3 = (B − C − D) · J = X' * (-T');
      * Y3 = F · (E − D) = Z' * (-Y');
@@ -531,34 +537,38 @@ public class GroupElement implements Serializable {
     /**
      * GroupElement addition using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).
+     * <p>
      * this must be in P^3 representation and q in PRECOMP representation.
      * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
-     *
+     * <p>
      * r in P x P representation:
-     *
+     * <p>
      * r = ((X' : Z'), (Y' : T')) where
-     * X' = (Y1 + X1) * q.X - (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)) * 1/Z2
-     * Y' = (Y1 + X1) * q.X + (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)) * 1/Z2
-     * Z' = 2 * Z1 + T1 * q.Z = 2 * Z1 + T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 + 2 * d * T1 * T2) * 1/Z2
-     * T' = 2 * Z1 - T1 * q.Z = 2 * Z1 - T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 - 2 * d * T1 * T2) * 1/Z2
-     *
+     * <p><ul>
+     * <li>X' = (Y1 + X1) * q.X - (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)) * 1/Z2
+     * <li>Y' = (Y1 + X1) * q.X + (Y1 - X1) * q.Y = ((Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)) * 1/Z2
+     * <li>Z' = 2 * Z1 + T1 * q.Z = 2 * Z1 + T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 + 2 * d * T1 * T2) * 1/Z2
+     * <li>T' = 2 * Z1 - T1 * q.Z = 2 * Z1 - T1 * 2 * d * X2 * Y2 * 1/Z2^2 = (2 * Z1 * Z2 - 2 * d * T1 * T2) * 1/Z2
+     * </ul><p>
      * Setting A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2 we get
-     * X' = (B - A) * 1/Z2
-     * Y' = (B + A) * 1/Z2
-     * Z' = (D + C) * 1/Z2
-     * T' = (D - C) * 1/Z2
-     *
+     * <p><ul>
+     * <li>X' = (B - A) * 1/Z2
+     * <li>Y' = (B + A) * 1/Z2
+     * <li>Z' = (D + C) * 1/Z2
+     * <li>T' = (D - C) * 1/Z2
+     * </ul><p>
      * r converted from P x P to P^2 representation:
-     *
+     * <p>
      * r = (X'' : Y'' : Z'' : T'') where
-     * X'' = X' * Z' = (B - A) * (D + C) * 1/Z2^2
-     * Y'' = Y' * T' = (B + A) * (D - C) * 1/Z2^2
-     * Z'' = Z' * T' = (D + C) * (D - C) * 1/Z2^2
-     * T'' = X' * Y' = (B - A) * (B + A) * 1/Z2^2
-     *
-     * TODO-CR BR: Formula for the P^2 representation is not in agreement with the formula given in [2] page 6
-     * TODO-CR BR: (the common factor 1/Z2^2 does not matter):
-     * E = B - A, F = D - C, G = D + C, H = B + A
+     * <p><ul>
+     * <li>X'' = X' * Z' = (B - A) * (D + C) * 1/Z2^2
+     * <li>Y'' = Y' * T' = (B + A) * (D - C) * 1/Z2^2
+     * <li>Z'' = Z' * T' = (D + C) * (D - C) * 1/Z2^2
+     * <li>T'' = X' * Y' = (B - A) * (B + A) * 1/Z2^2
+     * </ul><p>
+     * TODO-CR BR: Formula for the P^2 representation is not in agreement with the formula given in [2] page 6<br>
+     * TODO-CR BR: (the common factor 1/Z2^2 does not matter):<br>
+     * E = B - A, F = D - C, G = D + C, H = B + A<br>
      * X3 = E * F = (B - A) * (D - C);
      * Y3 = G * H = (D + C) * (B + A);
      * Z3 = F * G = (D - C) * (D + C);
@@ -586,11 +596,12 @@ public class GroupElement implements Serializable {
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).
+     * <p>
      * this must be in P^3 representation and q in PRECOMP representation.
      * r = p - q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z) = (Y2/Z2 + X2/Z2, Y2/Z2 - X2/Z2, 2 * d * X2/Z2 * Y2/Z2)
-     *
+     * <p>
      * Negating q means negating the value of X2 and T2 (the latter is irrelevant here).
-     * The formula is in accordance to the above addition.
+     * The formula is in accordance to {@link #madd the above addition}.
      *
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
@@ -614,22 +625,25 @@ public class GroupElement implements Serializable {
     /**
      * GroupElement addition using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).
+     * <p>
      * this must be in P^3 representation and q in CACHED representation.
      * r = p + q where p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z, q.T) = (Y2 + X2, Y2 - X2, Z2, 2 * d * T2)
-     *
+     * <p>
      * r in P x P representation:
-     * X' = (Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)
-     * Y' = (Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)
-     * Z' = 2 * Z1 * Z2 + 2 * d * T1 * T2
-     * T' = 2 * Z1 * T2 - 2 * d * T1 * T2
-     *
+     * <p><ul>
+     * <li>X' = (Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)
+     * <li>Y' = (Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)
+     * <li>Z' = 2 * Z1 * Z2 + 2 * d * T1 * T2
+     * <li>T' = 2 * Z1 * T2 - 2 * d * T1 * T2
+     * </ul><p>
      * Setting A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2 we get
-     * X' = (B - A)
-     * Y' = (B + A)
-     * Z' = (D + C)
-     * T' = (D - C)
-     *
-     * Same result as in madd() (up to a common factor which does not matter).
+     * <p><ul>
+     * <li>X' = (B - A)
+     * <li>Y' = (B + A)
+     * <li>Z' = (D + C)
+     * <li>T' = (D - C)
+     * </ul><p>
+     * Same result as in {@link #madd} (up to a common factor which does not matter).
      *
      * @param q the CACHED representation of the GroupElement to add.
      * @return the P1P1 representation of the result.
@@ -654,10 +668,11 @@ public class GroupElement implements Serializable {
     /**
      * GroupElement subtraction using the twisted Edwards addition law with
      * extended coordinates (Hisil2008).
+     * <p>
      * r = p - q
-     *
+     * <p>
      * Negating q means negating the value of the coordinate X2 and T2.
-     * The formula is in accordance to the above addition.
+     * The formula is in accordance to {@link #add the above addition}.
      *
      * @param q the PRECOMP representation of the GroupElement to subtract.
      * @return the P1P1 representation of the result.
@@ -681,6 +696,7 @@ public class GroupElement implements Serializable {
 
     /**
      * Negates this group element by subtracting it from the neutral group element.
+     * <p>
      * TODO-CR BR: why not simply negate the coordinates X and T?
      *
      * @return The negative of this group element.
@@ -744,7 +760,7 @@ public class GroupElement implements Serializable {
 
     /**
      * Convert a to radix 16.
-     *
+     * <p>
      * Method is package private only so that tests run.
      *
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
@@ -774,9 +790,10 @@ public class GroupElement implements Serializable {
 
     /**
      * Constant-time conditional move.
-     * Replaces this with u if b == 1.
+     * <p>
+     * Replaces this with u if b == 1.<br>
      * Replaces this with this if b == 0.
-     *
+     * <p>
      * Method is package private only so that tests run.
      *
      * @param u The group element to return if b == 1.
@@ -798,11 +815,12 @@ public class GroupElement implements Serializable {
 
     /**
      * Look up 16^i r_i B in the precomputed table.
+     * <p>
      * No secret array indices, no secret branching.
      * Constant time.
-     *
+     * <p>
      * Must have previously precomputed.
-     *
+     * <p>
      * Method is package private only so that tests run.
      *
      * @param pos = i/2 for i in {0, 2, 4,..., 62}
@@ -836,7 +854,7 @@ public class GroupElement implements Serializable {
      * B is this point. If its lookup table has not been precomputed, it
      * will be at the start of the method (and cached for later calls). 
      * Constant time.
-     *
+     * <p>
      * Preconditions: (TODO: Check this applies here)
      *   a[31] <= 127
      * @param a = a[0]+256*a[1]+...+256^31 a[31]
@@ -873,10 +891,10 @@ public class GroupElement implements Serializable {
     /**
      * Calculates a sliding-windows base 2 representation for a given value a.
      * To learn more about it see [6] page 8.
-     *
+     * <p>
      * Output: r which satisfies
      * a = r0 * 2^0 + r1 * 2^1 + ... + r255 * 2^255 with ri in {-15, -13, -11, -9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9, 11, 13, 15}
-     *
+     * <p>
      * Method is package private only so that tests run.
      *
      * @param a = a[0]+256*a[1]+...+256^31 a[31].
@@ -921,7 +939,7 @@ public class GroupElement implements Serializable {
     /**
      * r = a * A + b * B where a = a[0]+256*a[1]+...+256^31 a[31],
      * b = b[0]+256*b[1]+...+256^31 b[31] and B is this point.
-     *
+     * <p>
      * A must have been previously precomputed.
      *
      * @param A in P3 representation.

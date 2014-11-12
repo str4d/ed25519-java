@@ -4,7 +4,7 @@ import net.i2p.crypto.eddsa.math.*;
 
 /**
  * Helper class for encoding/decoding from/to the 32 byte representation.
- *
+ * <p>
  * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
  */
 public class Ed25519LittleEndianEncoding extends Encoding {
@@ -12,33 +12,36 @@ public class Ed25519LittleEndianEncoding extends Encoding {
      * Encodes a given field element in its 32 byte representation. This is done in TWO steps.
      * Step 1: Reduce the value of the field element modulo p.
      * Step 2: Convert the field element to the 32 byte representation.
-     *
+     * <p>
      * The idea for the modulo p reduction algorithm is as follows:
+     * <p>
      * Assumption:
-     * p = 2^255 - 19
-     * h = h0 + 2^25 * h1 + 2^(26+25) * h2 + ... + 2^230 * h9 where 0 <= |hi| < 2^27 for all i=0,...,9.
-     * h congruent r modulo p, i.e. h = r + q * p for some suitable 0 <= r < p and an integer q.
-     *
+     * <p><ul>
+     * <li>p = 2^255 - 19
+     * <li>h = h0 + 2^25 * h1 + 2^(26+25) * h2 + ... + 2^230 * h9 where 0 <= |hi| < 2^27 for all i=0,...,9.
+     * <li>h congruent r modulo p, i.e. h = r + q * p for some suitable 0 <= r < p and an integer q.
+     * </ul><p>
      * Then q = [2^-255 * (h + 19 * 2^-25 * h9 + 1/2)] where [x] = floor(x).
-     *
+     * <p>
      * Proof:
+     * <p>
      * We begin with some very raw estimation for the bounds of some expressions:
-     * |h| < 2^230 * 2^30 = 2^260 ==> |r + q * p| < 2^260 ==> |q| < 2^10.
+     * <pre>|h| < 2^230 * 2^30 = 2^260 ==> |r + q * p| < 2^260 ==> |q| < 2^10.
      * ==> -1/4 <= a := 19^2 * 2^-255 * q < 1/4.
      * |h - 2^230 * h9| = |h0 + ... + 2^204 * h8| < 2^204 * 2^30 = 2^234.
-     * ==> -1/4 <= b := 19 * 2^-255 * (h - 2^230 * h9) < 1/4
+     * ==> -1/4 <= b := 19 * 2^-255 * (h - 2^230 * h9) < 1/4</pre>
      * Therefore 0 < 1/2 - a - b < 1.
-     *
+     * <p>
      * Set x := r + 19 * 2^-255 * r + 1/2 - a - b then
      * 0 <= x < 255 - 20 + 19 + 1 = 2^255 ==> 0 <= 2^-255 * x < 1. Since q is an integer we have
      *
-     * [q + 2^-255 * x] = q        (1)
-     *
+     * <pre>[q + 2^-255 * x] = q        (1)</pre>
+     * <p>
      * Have a closer look at x:
-     * x = h - q * (2^255 - 19) + 19 * 2^-255 * (h - q * (2^255 - 19)) + 1/2 - 19^2 * 2^-255 * q - 19 * 2^-255 * (h - 2^230 * h9)
+     * <pre>x = h - q * (2^255 - 19) + 19 * 2^-255 * (h - q * (2^255 - 19)) + 1/2 - 19^2 * 2^-255 * q - 19 * 2^-255 * (h - 2^230 * h9)
      *   = h - q * 2^255 + 19 * q + 19 * 2^-255 * h - 19 * q + 19^2 * 2^-255 * q + 1/2 - 19^2 * 2^-255 * q - 19 * 2^-255 * h + 19 * 2^-25 * h9
-     *   = h + 19 * 2^-25 * h9 + 1/2 - q^255.
-     *
+     *   = h + 19 * 2^-25 * h9 + 1/2 - q^255.</pre>
+     * <p>
      * Inserting the expression for x into (1) we get the desired expression for q.
      */
     public byte[] encode(FieldElement x) {
@@ -202,11 +205,14 @@ public class Ed25519LittleEndianEncoding extends Encoding {
     }
 
     /**
-     * Return true if x is in {1,3,5,...,q-2}
+     * Is the FieldElement negative in this encoding?
+     * <p>
+     * Return true if x is in {1,3,5,...,q-2}<br>
      * Return false if x is in {0,2,4,...,q-1}
-     *
+     * <p>
      * Preconditions:
-     *    |x| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+     * <p><ul>
+     * <li>|x| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
      *
      * @return true if x is in {1,3,5,...,q-2}, false otherwise.
      */

@@ -5,9 +5,10 @@ import net.i2p.crypto.eddsa.math.ScalarOps;
 /**
  * Class for reducing a huge integer modulo the group order q and
  * doing a combined multiply plus add plus reduce operation.
+ * <p>
  * q = 2^252 + 27742317777372353535851937790883648493.
- *
-* Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
+ * <p>
+ * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
  */
 public class Ed25519ScalarOps implements ScalarOps {
     private static long load_3(byte[] in, int offset) {
@@ -27,10 +28,10 @@ public class Ed25519ScalarOps implements ScalarOps {
 
     /**
      * Reduction modulo the group order q.
-     *
+     * <p>
      * Input:
      *   s[0]+256*s[1]+...+256^63*s[63] = s
-     *
+     * <p>
      * Output:
      *   s[0]+256*s[1]+...+256^31*s[31] = s mod q
      *   where q = 2^252 + 27742317777372353535851937790883648493.
@@ -309,15 +310,16 @@ public class Ed25519ScalarOps implements ScalarOps {
 
     /**
      * Input:
-     *   a[0]+256*a[1]+...+256^31*a[31] = a
-     *   b[0]+256*b[1]+...+256^31*b[31] = b
-     *   c[0]+256*c[1]+...+256^31*c[31] = c
-     *
+     * <p><ul>
+     * <li>a[0]+256*a[1]+...+256^31*a[31] = a
+     * <li>b[0]+256*b[1]+...+256^31*b[31] = b
+     * <li>c[0]+256*c[1]+...+256^31*c[31] = c
+     * </ul><p>
      * Output:
      *   result[0]+256*result[1]+...+256^31*result[31] = (ab+c) mod q
      *   where q = 2^252 + 27742317777372353535851937790883648493.
-     *
-     * See the comments in the method reduce() for an explanation of the algorithm.
+     * <p>
+     * See the comments in {@link #reduce(byte[])} for an explanation of the algorithm.
      */
     public byte[] multiplyAndAdd(byte[] a, byte[] b, byte[] c) {
         long a0 = 0x1FFFFF & load_3(a, 0);
