@@ -28,7 +28,7 @@ public class UtilsTest {
      * Test method for {@link net.i2p.crypto.eddsa.Utils#equal(int, int)}.
      */
     @Test
-    public void testEqual() {
+    public void testIntEqual() {
         assertThat(Utils.equal(0, 0),       is(1));
         assertThat(Utils.equal(1, 1),       is(1));
         assertThat(Utils.equal(1, 0),       is(0));
@@ -62,6 +62,21 @@ public class UtilsTest {
             bytes2[i] = (byte)(bytes2[i] ^ 0xff);
             Assert.assertThat(Utils.equal(bytes1, bytes2), IsEqual.equalTo(0));
         }
+    }
+
+    /**
+     * Test method for {@link net.i2p.crypto.eddsa.Utils#equal(byte[], byte[])}.
+     */
+    @Test
+    public void testByteArrayEqual() {
+        byte[] zero = new byte[32];
+        byte[] one = new byte[32];
+        one[0] = 1;
+
+        assertThat(Utils.equal(zero, zero), is(1));
+        assertThat(Utils.equal(one, one),   is(1));
+        assertThat(Utils.equal(one, zero),  is(0));
+        assertThat(Utils.equal(zero, one),  is(0));
     }
 
     /**
