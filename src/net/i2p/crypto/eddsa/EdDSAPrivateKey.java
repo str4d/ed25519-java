@@ -3,6 +3,7 @@ package net.i2p.crypto.eddsa;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -80,7 +81,6 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
      *  @return 49 bytes for Ed25519, null for other curves
      */
     public byte[] getEncoded() {
-        // TODO no equals() implemented in spec, but it's essentially a singleton
         if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512)))
             return null;
         int totlen = 17 + seed.length;
@@ -178,5 +178,21 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
 
     public byte[] getAbyte() {
         return Abyte;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(seed);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof EdDSAPrivateKey))
+            return false;
+        EdDSAPrivateKey pk = (EdDSAPrivateKey) o;
+        return Arrays.equals(seed, pk.getSeed()) &&
+               edDsaSpec.equals(pk.getParams());
     }
 }

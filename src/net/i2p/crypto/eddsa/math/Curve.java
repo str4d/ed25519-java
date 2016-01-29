@@ -67,4 +67,23 @@ public class Curve implements Serializable {
             ge.precompute(true);
         return ge;
     }
+
+    @Override
+    public int hashCode() {
+        return f.hashCode() ^
+               d.hashCode() ^
+               I.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Curve))
+            return false;
+        Curve c = (Curve) o;
+        return f.equals(c.getField()) &&
+               d.equals(c.getD()) &&
+               I.equals(c.getI());
+    }
 }

@@ -714,6 +714,8 @@ public class GroupElement implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
         if (!(obj instanceof GroupElement))
             return false;
         GroupElement ge = (GroupElement) obj;
