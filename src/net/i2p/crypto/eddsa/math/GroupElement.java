@@ -720,7 +720,7 @@ public class GroupElement implements Serializable {
         if (!this.repr.equals(ge.repr)) {
             try {
                 ge = ge.toRep(this.repr);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 return false;
             }
         }
