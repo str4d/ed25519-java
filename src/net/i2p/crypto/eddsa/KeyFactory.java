@@ -15,7 +15,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
  * @author str4d
  *
  */
-public class KeyFactory extends KeyFactorySpi {
+public final class KeyFactory extends KeyFactorySpi {
 
     protected PrivateKey engineGeneratePrivate(KeySpec keySpec)
             throws InvalidKeySpecException {
