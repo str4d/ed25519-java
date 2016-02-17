@@ -1,3 +1,5 @@
-bin/
+/bin/
+/target/
+/.settings/
 *.class
 *.iml
