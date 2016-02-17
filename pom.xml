@@ -5,6 +5,7 @@
 	<artifactId>eddsa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ed25519-java</name>
+	<packaging>bundle</packaging>
 	<description>Implementation of EdDSA in Java</description>
 	<url>https://github.com/str4d/ed25519-java</url>
 	<licenses>
@@ -54,6 +55,27 @@
 				<version>2.17</version>
 				<configuration>
 					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.0.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Name>ed25519-java</Bundle-Name>
+						<Bundle-Description>
+							${project.description}
+						</Bundle-Description>
+						<Export-Package>
+					        net.i2p.crypto.eddsa,
+					        net.i2p.crypto.eddsa.spec
+						</Export-Package>
+						<Private-Package>
+							net.i2p.crypto.eddsa.math.*
+						</Private-Package>
+					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
