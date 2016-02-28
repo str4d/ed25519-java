@@ -7,13 +7,28 @@ There are two internal implementations:
 * A port of the radix-2^51 operations in ref10 - fast and constant-time, but only useful for Ed25519.
 * A generic version using BigIntegers for calculation - a bit slower and not constant-time, but compatible with any EdDSA parameter specification.
 
-There are no guarantees that this is secure for use. All unit tests are passing, including tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input), and the code has been reviewed by [an independent developer](https://github.com/BloodyRookie), but it has not yet been audited by a professional cryptographer. In particular, the constant-time properties of ref10 may not have been completely retained (although this is the eventual goal for the Ed25519-specific implementation).
+
+To use
+------
+
+Download the latest .jar from the releases tab and place it in your classpath.
+
+Gradle users:
+
+```
+compile 'net.i2p.crypto:eddsa:0.1.0'
+```
 
 The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
 
 The JUnit4 tests require the Hamcrest library `hamcrest-all.jar`.
 
 This code is released to the public domain and can be used for any purpose. See `LICENSE.txt` for details.
+
+Disclaimer
+----------
+
+There are no guarantees that this is secure for all uses. All unit tests are passing, including tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input), and the code has been reviewed by [an independent developer](https://github.com/BloodyRookie), but it has not yet been audited by a professional cryptographer. In particular, the constant-time signing properties of ref10 may not have been completely retained (although this is the eventual goal for the Ed25519-specific implementation).
 
 Code comparison
 ---------------
