@@ -1,7 +1,7 @@
 ed25519-java
 ============
 
-This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see http://ed25519.cr.yp.to/software.html).
+This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see https://ed25519.cr.yp.to/software.html).
 
 There are two internal implementations:
 * A port of the radix-2^51 operations in ref10 - fast and constant-time, but only useful for Ed25519.
@@ -28,7 +28,12 @@ This code is released to the public domain and can be used for any purpose. See 
 Disclaimer
 ----------
 
-There are no guarantees that this is secure for all uses. All unit tests are passing, including tests against [the data from the Python implementation](http://ed25519.cr.yp.to/python/sign.input), and the code has been reviewed by [an independent developer](https://github.com/BloodyRookie), but it has not yet been audited by a professional cryptographer. In particular, the constant-time signing properties of ref10 may not have been completely retained (although this is the eventual goal for the Ed25519-specific implementation).
+There are no guarantees that this is secure for all uses. All unit tests are passing,
+including tests against [the data from the Python implementation](https://ed25519.cr.yp.to/python/sign.input),
+and the code has been reviewed by [an independent developer](https://github.com/BloodyRookie),
+but it has not yet been audited by a professional cryptographer. In particular, the
+constant-time signing properties of ref10 may not have been completely retained (although
+this is the eventual goal for the Ed25519-specific implementation).
 
 Code comparison
 ---------------
@@ -52,6 +57,6 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 Credits
 -------
 
-* The Ed25519 class was originally ported by k3d3 from [the Python Ed25519 reference implementation](http://ed25519.cr.yp.to/python/ed25519.py).
+* The Ed25519 class was originally ported by k3d3 from [the Python Ed25519 reference implementation](https://ed25519.cr.yp.to/python/ed25519.py).
 * Useful comments and tweaks were found in [the GNUnet implementation of Ed25519](https://gnunet.org/svn/gnunet-java/src/main/java/org/gnunet/util/crypto/) (based on k3d3's class).
 * [BloodyRookie](https://github.com/BloodyRookie) reviewed the code, adding many useful comments, unit tests and literature.
