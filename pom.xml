@@ -10,8 +10,8 @@
   <url>https://github.com/str4d/ed25519-java</url>
   <licenses>
     <license>
-      <name>Public Domain</name>
-      <url>http://en.wikipedia.org/wiki/Public_domain</url>
+      <name>CC0 1.0 Universal</name>
+      <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
