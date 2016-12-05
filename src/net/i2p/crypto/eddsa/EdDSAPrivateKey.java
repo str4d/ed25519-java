@@ -119,17 +119,14 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
         // not in the Josefsson example
         rv[idx++] = 0x30;
         rv[idx++] = 8;
-        // OID 1.3.101.112
+        // OID 1.3.101.100
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb540809%28v=vs.85%29.aspx
         // not in the Josefsson example
-        //
-        // https://datatracker.ietf.org/doc/draft-ietf-curdle-pkix/?include_text=1
-        // id-Ed25519   OBJECT IDENTIFIER ::= { 1 3 101 112 }
         rv[idx++] = 0x06;
         rv[idx++] = 3;
         rv[idx++] = (1 * 40) + 3;
         rv[idx++] = 101;
-        rv[idx++] = 112;
+        rv[idx++] = 100;
         // params
         rv[idx++] = 0x0a;
         rv[idx++] = 1;
