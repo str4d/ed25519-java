@@ -161,7 +161,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
                 d[idx++] != 3 ||
                 d[idx++] != (1 * 40) + 3 ||
                 d[idx++] != 101 ||
-                d[idx++] != 100 ||
+                d[idx++] != 112 ||
                 d[idx++] != 0x0a ||
                 d[idx++] != 1 ||
                 d[idx++] != 1 ||
