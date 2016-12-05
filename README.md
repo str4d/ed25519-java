@@ -1,5 +1,5 @@
-ed25519-java
-============
+EdDSA-Java
+==========
 
 This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see https://ed25519.cr.yp.to/software.html).
 

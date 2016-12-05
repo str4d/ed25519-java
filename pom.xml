@@ -4,7 +4,7 @@
   <groupId>net.i2p.crypto</groupId>
   <artifactId>eddsa</artifactId>
   <version>0.1.0</version>
-  <name>ed25519-java</name>
+  <name>EdDSA-Java</name>
   <packaging>bundle</packaging>
   <description>Implementation of EdDSA in Java</description>
   <url>https://github.com/str4d/ed25519-java</url>
