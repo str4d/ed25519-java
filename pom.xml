@@ -70,7 +70,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>ed25519-java</Bundle-Name>
+            <Bundle-Name>EdDSA-Java</Bundle-Name>
             <Bundle-Description>
               ${project.description}
             </Bundle-Description>
