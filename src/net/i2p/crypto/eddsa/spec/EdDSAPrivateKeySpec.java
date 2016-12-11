@@ -86,7 +86,7 @@ public class EdDSAPrivateKeySpec implements KeySpec {
         this.h = h;
         this.a = a;
         this.A = A;
-        this.spec = spec;        
+        this.spec = spec;
     }
 
     /**
