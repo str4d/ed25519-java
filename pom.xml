@@ -70,10 +70,6 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>EdDSA-Java</Bundle-Name>
-            <Bundle-Description>
-              ${project.description}
-            </Bundle-Description>
             <Export-Package>
               net.i2p.crypto.eddsa,
               net.i2p.crypto.eddsa.spec
