@@ -1,6 +1,8 @@
 EdDSA-Java
 ==========
 
+[![Build Status](https://travis-ci.org/str4d/ed25519-java.svg?branch=master)](https://travis-ci.org/str4d/ed25519-java)
+
 This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see https://ed25519.cr.yp.to/software.html).
 
 There are two internal implementations:
