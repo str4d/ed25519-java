@@ -30,7 +30,7 @@ import org.junit.Test;
  */
 public class BigIntegerScalarOpsTest {
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("ed25519-sha-512");
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
     static final Field ed25519Field = ed25519.getCurve().getField();
 
     /**

@@ -8,6 +8,9 @@
   <packaging>bundle</packaging>
   <description>Implementation of EdDSA in Java</description>
   <url>https://github.com/str4d/ed25519-java</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <licenses>
     <license>
       <name>CC0 1.0 Universal</name>
@@ -100,6 +103,9 @@
             <goals>
               <goal>jar</goal>
             </goals>
+            <configuration> <!-- There are some malformed javadoc comments -->
+                <failOnError>false</failOnError>
+            </configuration>
           </execution>
         </executions>
       </plugin>
