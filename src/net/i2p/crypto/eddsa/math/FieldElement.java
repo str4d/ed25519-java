@@ -29,8 +29,8 @@ public abstract class FieldElement implements Serializable {
     }
 
     /**
-     * Encode a FieldElement in its (b-1)-bit encoding.
-     * @return the (b-1)-bit encoding of this FieldElement.
+     * Encode a FieldElement in its $(b-1)$-bit encoding.
+     * @return the $(b-1)$-bit encoding of this FieldElement.
      */
     public byte[] toByteArray() {
         return f.getEncoding().encode(this);
