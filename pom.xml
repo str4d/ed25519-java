@@ -114,9 +114,6 @@
             <goals>
               <goal>jar</goal>
             </goals>
-            <configuration> <!-- There are some malformed javadoc comments -->
-                <failOnError>false</failOnError>
-            </configuration>
           </execution>
         </executions>
       </plugin>
