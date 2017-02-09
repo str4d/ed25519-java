@@ -942,6 +942,29 @@ public class Ed25519FieldElement extends FieldElement {
         return multiply(t0);
     }
 
+    /**
+     * Constant-time conditional move. Well, actually it is a conditional copy.
+     * Logic is inspired by the SUPERCOP implementation at:
+     *   https://github.com/floodyberry/supercop/blob/master/crypto_sign/ed25519/ref10/fe_cmov.c
+     *
+     * @param val the other field element.
+     * @param b must be 0 or 1, otherwise results are undefined.
+     * @return a copy of this if $b == 0$, or a copy of val if $b == 1$.
+     */
+    @Override
+    public FieldElement cmov(FieldElement val, int b) {
+        Ed25519FieldElement that = (Ed25519FieldElement) val;
+        b = -b;
+        int[] result = new int[10];
+        for (int i = 0; i < 10; i++) {
+            result[i] = this.t[i];
+            int x = this.t[i] ^ that.t[i];
+            x &= b;
+            result[i] ^= x;
+        }
+        return new Ed25519FieldElement(this.f, result);
+    }
+
     @Override
     public int hashCode() {
         return Arrays.hashCode(t);

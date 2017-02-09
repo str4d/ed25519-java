@@ -238,7 +238,7 @@ public class GroupElement implements Serializable {
         y = curve.getField().fromByteArray(s);
         yy = y.square();
 
-        // u = y^2-1    
+        // u = y^2-1
         u = yy.subtractOne();
 
         // v = dy^2+1
@@ -248,7 +248,7 @@ public class GroupElement implements Serializable {
         v3 = v.square().multiply(v);
 
         // x = (v3^2)vu, aka x = uv^7
-        x = v3.square().multiply(v).multiply(u);    
+        x = v3.square().multiply(v).multiply(u);
 
         //  x = (uv^7)^((q-5)/8)
         x = x.pow22523();
@@ -815,19 +815,10 @@ public class GroupElement implements Serializable {
      *
      * @param u The group element to return if $b == 1$.
      * @param b in $\{0, 1\}$
-     * @return $u$ if $b == 1$; this if $b == 0$; null otherwise.
+     * @return $u$ if $b == 1$; this if $b == 0$. Results undefined if $b$ is not in $\{0, 1\}$.
      */
     GroupElement cmov(final GroupElement u, final int b) {
-        GroupElement ret = null;
-        for (int i = 0; i < b; i++) {
-            // Only for b == 1
-            ret = u;
-        }
-        for (int i = 0; i < 1-b; i++) {
-            // Only for b == 0
-            ret = this;
-        }
-        return ret;
+        return precomp(curve, X.cmov(u.X, b), Y.cmov(u.Y, b), Z.cmov(u.Z, b));
     }
 
     /**
@@ -869,7 +860,7 @@ public class GroupElement implements Serializable {
     /**
      * $h = a * B$ where $a = a[0]+256*a[1]+\dots+256^{31} a[31]$ and
      * $B$ is this point. If its lookup table has not been precomputed, it
-     * will be at the start of the method (and cached for later calls). 
+     * will be at the start of the method (and cached for later calls).
      * Constant time.
      * <p>
      * Preconditions: (TODO: Check this applies here)

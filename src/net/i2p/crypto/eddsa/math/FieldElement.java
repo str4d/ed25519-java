@@ -70,5 +70,7 @@ public abstract class FieldElement implements Serializable {
 
     public abstract FieldElement pow22523();
 
+    public abstract FieldElement cmov(FieldElement val, final int b);
+
     // Note: concrete subclasses must implement hashCode() and equals()
 }
