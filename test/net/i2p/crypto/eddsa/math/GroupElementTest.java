@@ -747,7 +747,7 @@ public class GroupElementTest {
     // This test is slow (~6s) due to math utils using an inferior algorithm to calculate the result.
     @Test
     public void scalarMultiplyBasePointReturnsExpectedResult() {
-        for (int i=0; i<100; i++) {
+        for (int i=0; i<10; i++) {
             // Arrange:
             final GroupElement basePoint = ed25519.getB();
             final FieldElement f = MathUtils.getRandomFieldElement();
@@ -809,7 +809,7 @@ public class GroupElementTest {
     // This test is slow (~6s) due to math utils using an inferior algorithm to calculate the result.
     @Test
     public void doubleScalarMultiplyVariableTimeReturnsExpectedResult() {
-        for (int i=0; i<50; i++) {
+        for (int i=0; i<10; i++) {
             // Arrange:
             final GroupElement basePoint = ed25519.getB();
             final GroupElement g = MathUtils.getRandomGroupElement();
