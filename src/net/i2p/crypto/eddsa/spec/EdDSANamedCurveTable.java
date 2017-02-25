@@ -12,6 +12,7 @@
 package net.i2p.crypto.eddsa.spec;
 
 import java.util.Hashtable;
+import java.util.Locale;
 
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Curve;
@@ -48,15 +49,15 @@ public class EdDSANamedCurveTable {
     private static final Hashtable<String, EdDSANamedCurveSpec> curves = new Hashtable<String, EdDSANamedCurveSpec>();
 
     public static void defineCurve(String name, EdDSANamedCurveSpec curve) {
-        curves.put(name, curve);
+        curves.put(name.toLowerCase(Locale.ENGLISH), curve);
     }
 
     static void defineCurveAlias(String name, String alias) {
-        EdDSANamedCurveSpec curve = curves.get(name);
+        EdDSANamedCurveSpec curve = curves.get(name.toLowerCase(Locale.ENGLISH));
         if (curve == null) {
             throw new IllegalStateException();
         }
-        curves.put(alias, curve);
+        curves.put(alias.toLowerCase(Locale.ENGLISH), curve);
     }
 
     static {
@@ -67,6 +68,6 @@ public class EdDSANamedCurveTable {
     }
 
     public static EdDSANamedCurveSpec getByName(String name) {
-        return curves.get(name);
+        return curves.get(name.toLowerCase(Locale.ENGLISH));
     }
 }
