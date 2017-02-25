@@ -51,8 +51,19 @@ public class EdDSANamedCurveTable {
         curves.put(name, curve);
     }
 
+    static void defineCurveAlias(String name, String alias) {
+        EdDSANamedCurveSpec curve = curves.get(name);
+        if (curve == null) {
+            throw new IllegalStateException();
+        }
+        curves.put(alias, curve);
+    }
+
     static {
         defineCurve(CURVE_ED25519_SHA512, ed25519sha512);
+
+        // RFC 8032
+        defineCurveAlias(CURVE_ED25519_SHA512, "Ed25519");
     }
 
     public static EdDSANamedCurveSpec getByName(String name) {
