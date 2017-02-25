@@ -12,6 +12,7 @@
 package net.i2p.crypto.eddsa.spec;
 
 import java.util.Hashtable;
+import java.util.Locale;
 
 import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.math.Curve;
@@ -25,7 +26,7 @@ import net.i2p.crypto.eddsa.math.ed25519.Ed25519ScalarOps;
  *
  */
 public class EdDSANamedCurveTable {
-    public static final String CURVE_ED25519_SHA512 = "SHA512withEd25519";
+    public static final String CURVE_ED25519_SHA512 = "ed25519-sha-512";
 
     private static final Field ed25519field = new Field(
                     256, // b
@@ -48,14 +49,25 @@ public class EdDSANamedCurveTable {
     private static final Hashtable<String, EdDSANamedCurveSpec> curves = new Hashtable<String, EdDSANamedCurveSpec>();
 
     public static void defineCurve(String name, EdDSANamedCurveSpec curve) {
-        curves.put(name, curve);
+        curves.put(name.toLowerCase(Locale.ENGLISH), curve);
+    }
+
+    static void defineCurveAlias(String name, String alias) {
+        EdDSANamedCurveSpec curve = curves.get(name.toLowerCase(Locale.ENGLISH));
+        if (curve == null) {
+            throw new IllegalStateException();
+        }
+        curves.put(alias.toLowerCase(Locale.ENGLISH), curve);
     }
 
     static {
         defineCurve(CURVE_ED25519_SHA512, ed25519sha512);
+
+        // RFC 8032
+        defineCurveAlias(CURVE_ED25519_SHA512, "Ed25519");
     }
 
     public static EdDSANamedCurveSpec getByName(String name) {
-        return curves.get(name);
+        return curves.get(name.toLowerCase(Locale.ENGLISH));
     }
 }
