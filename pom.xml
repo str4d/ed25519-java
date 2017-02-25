@@ -97,15 +97,23 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
+        <configuration>
+          <header>&lt;script type='text/x-mathjax-config'&gt;
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'] ],
+      processEscapes: true
+    }
+  });
+&lt;/script&gt;
+&lt;script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'&gt;&lt;/script&gt;</header>
+        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
             <goals>
               <goal>jar</goal>
             </goals>
-            <configuration> <!-- There are some malformed javadoc comments -->
-                <failOnError>false</failOnError>
-            </configuration>
           </execution>
         </executions>
       </plugin>

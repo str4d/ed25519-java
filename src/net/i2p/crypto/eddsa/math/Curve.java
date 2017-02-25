@@ -15,7 +15,7 @@ import java.io.Serializable;
 
 /**
  * A twisted Edwards curve.
- * Points on the curve satisfy -x^2 + y^2 = 1 + d x^2y^2
+ * Points on the curve satisfy $-x^2 + y^2 = 1 + d x^2y^2$
  * @author str4d
  *
  */

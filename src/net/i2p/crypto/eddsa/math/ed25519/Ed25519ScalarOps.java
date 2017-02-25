@@ -19,21 +19,21 @@ import static net.i2p.crypto.eddsa.math.ed25519.Ed25519LittleEndianEncoding.load
  * Class for reducing a huge integer modulo the group order q and
  * doing a combined multiply plus add plus reduce operation.
  * <p>
- * q = 2^252 + 27742317777372353535851937790883648493.
+ * $q = 2^{252} + 27742317777372353535851937790883648493$.
  * <p>
  * Reviewed/commented by Bloody Rookie (nemproject@gmx.de)
  */
 public class Ed25519ScalarOps implements ScalarOps {
 
     /**
-     * Reduction modulo the group order q.
+     * Reduction modulo the group order $q$.
      * <p>
      * Input:
-     *   s[0]+256*s[1]+...+256^63*s[63] = s
+     *   $s[0]+256*s[1]+\dots+256^{63}*s[63] = s$
      * <p>
      * Output:
-     *   s[0]+256*s[1]+...+256^31*s[31] = s mod q
-     *   where q = 2^252 + 27742317777372353535851937790883648493.
+     *   $s[0]+256*s[1]+\dots+256^{31}*s[31] = s \bmod q$
+     *   where $q = 2^{252} + 27742317777372353535851937790883648493$.
      */
     public byte[] reduce(byte[] s) {
         // s0,..., s22 have 21 bits, s23 has 29 bits
@@ -324,15 +324,17 @@ public class Ed25519ScalarOps implements ScalarOps {
 
 
     /**
+     * $(ab+c) \bmod q$
+     * <p>
      * Input:
      * <p><ul>
-     * <li>a[0]+256*a[1]+...+256^31*a[31] = a
-     * <li>b[0]+256*b[1]+...+256^31*b[31] = b
-     * <li>c[0]+256*c[1]+...+256^31*c[31] = c
+     * <li>$a[0]+256*a[1]+\dots+256^{31}*a[31] = a$
+     * <li>$b[0]+256*b[1]+\dots+256^{31}*b[31] = b$
+     * <li>$c[0]+256*c[1]+\dots+256^{31}*c[31] = c$
      * </ul><p>
      * Output:
-     *   result[0]+256*result[1]+...+256^31*result[31] = (ab+c) mod q
-     *   where q = 2^252 + 27742317777372353535851937790883648493.
+     *   $result[0]+256*result[1]+\dots+256^{31}*result[31] = (ab+c) \bmod q$
+     *   where $q = 2^{252} + 27742317777372353535851937790883648493$.
      * <p>
      * See the comments in {@link #reduce(byte[])} for an explanation of the algorithm.
      */

@@ -36,10 +36,10 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
     }
 
     /**
-     *  Convert x to little endian.
+     *  Convert $x$ to little endian.
      *  Constant time.
      *
-     *  @return array of length b/8
+     *  @return array of length $b/8$
      *  @throws IllegalStateException if field not set
      */
     public byte[] encode(BigInteger x) {
@@ -57,10 +57,10 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
     }
 
     /**
-     *  Decode a FieldElement from its (b-1)-bit encoding.
+     *  Decode a FieldElement from its $(b-1)$-bit encoding.
      *  The highest bit is masked out.
      *
-     *  @param in the (b-1)-bit encoding of a FieldElement.
+     *  @param in the $(b-1)$-bit encoding of a FieldElement.
      *  @return the FieldElement represented by 'val'.
      *  @throws IllegalStateException if field not set
      *  @throws IllegalArgumentException if encoding is invalid
@@ -86,10 +86,10 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
 
     /**
      * From the Ed25519 paper:<br>
-     * x is negative if the (b-1)-bit encoding of x is lexicographically larger
-     * than the (b-1)-bit encoding of -x. If q is an odd prime and the encoding
-     * is the little-endian representation of {0, 1,..., q-1} then the negative
-     * elements of F_q are {1, 3, 5,..., q-2}.
+     * $x$ is negative if the $(b-1)$-bit encoding of $x$ is lexicographically larger
+     * than the $(b-1)$-bit encoding of $-x$. If $q$ is an odd prime and the encoding
+     * is the little-endian representation of $\{0, 1,\dots, q-1\}$ then the negative
+     * elements of $F_q$ are $\{1, 3, 5,\dots, q-2\}$.
      * @return true if negative
      */
     public boolean isNegative(FieldElement x) {
