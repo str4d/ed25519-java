@@ -16,8 +16,6 @@ import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Security;
 
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
-
 /**
  * A security {@link Provider} that can be registered via {@link Security#addProvider(Provider)}
  *
@@ -43,6 +41,6 @@ public class EdDSASecurityProvider extends Provider {
         // see https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/HowToImplAProvider.html
         put("KeyPairGenerator." + EdDSAKey.KEY_ALGORITHM, "net.i2p.crypto.eddsa.KeyPairGenerator");
         put("KeyFactory." + EdDSAKey.KEY_ALGORITHM, "net.i2p.crypto.eddsa.KeyFactory");
-        put("Signature." + EdDSANamedCurveTable.CURVE_ED25519_SHA512, "net.i2p.crypto.eddsa.EdDSAEngine");
+        put("Signature." + EdDSAEngine.SIGNATURE_ALGORITHM, "net.i2p.crypto.eddsa.EdDSAEngine");
     }
 }

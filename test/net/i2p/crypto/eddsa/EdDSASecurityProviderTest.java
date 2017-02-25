@@ -38,7 +38,7 @@ public class EdDSASecurityProviderTest {
 
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EdDSA", "EdDSA");
         KeyFactory keyFac = KeyFactory.getInstance("EdDSA", "EdDSA");
-        Signature sgr = Signature.getInstance("SHA512withEd25519", "EdDSA");
+        Signature sgr = Signature.getInstance("NONEwithEdDSA", "EdDSA");
 
         Security.removeProvider("EdDSA");
     }

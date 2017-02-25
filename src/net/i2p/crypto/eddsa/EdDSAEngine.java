@@ -64,6 +64,8 @@ import net.i2p.crypto.eddsa.math.ScalarOps;
  *
  */
 public final class EdDSAEngine extends Signature {
+    public static final String SIGNATURE_ALGORITHM = "NONEwithEdDSA";
+
     private MessageDigest digest;
     private ByteArrayOutputStream baos;
     private EdDSAKey key;
