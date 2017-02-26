@@ -86,14 +86,14 @@ public final class EdDSAEngine extends Signature {
     private static class OneShotSpec implements AlgorithmParameterSpec {}
 
     /**
-     * No specific hash requested, allows any EdDSA key.
+     * No specific EdDSA-internal hash requested, allows any EdDSA key.
      */
     public EdDSAEngine() {
-        super("EdDSA");
+        super(SIGNATURE_ALGORITHM);
     }
 
     /**
-     * Specific hash requested, only matching keys will be allowed.
+     * Specific EdDSA-internal hash requested, only matching keys will be allowed.
      * @param digest the hash algorithm that keys must have to sign or verify.
      */
     public EdDSAEngine(MessageDigest digest) {
