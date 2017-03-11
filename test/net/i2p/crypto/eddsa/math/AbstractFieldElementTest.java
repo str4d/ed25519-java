@@ -190,6 +190,23 @@ public abstract class AbstractFieldElementTest {
 
     // endregion
 
+    // region cmov
+
+    @Test
+    public void cmovReturnsCorrectResult() {
+        final FieldElement zero = getZeroFieldElement();
+        final FieldElement nz = getNonZeroFieldElement();
+        final FieldElement f = getRandomFieldElement();
+
+        Assert.assertThat(zero.cmov(nz, 0), IsEqual.equalTo(zero));
+        Assert.assertThat(zero.cmov(nz, 1), IsEqual.equalTo(nz));
+
+        Assert.assertThat(f.cmov(nz, 0), IsEqual.equalTo(f));
+        Assert.assertThat(f.cmov(nz, 1), IsEqual.equalTo(nz));
+    }
+
+    // endregion
+
     // region hashCode / equals
 
     @Test
