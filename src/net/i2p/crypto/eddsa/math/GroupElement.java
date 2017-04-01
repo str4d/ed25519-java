@@ -36,12 +36,13 @@ public class GroupElement implements Serializable {
 
     /**
      * Available representations for a group element.
-     * <p><ul>
+     * <ul>
      * <li>P2: Projective representation $(X:Y:Z)$ satisfying $x=X/Z, y=Y/Z$.
      * <li>P3: Extended projective representation $(X:Y:Z:T)$ satisfying $x=X/Z, y=Y/Z, XY=ZT$.
      * <li>P1P1: Completed representation $((X:Z), (Y:T))$ satisfying $x=X/Z, y=Y/T$.
      * <li>PRECOMP: Precomputed representation $(y+x, y-x, 2dxy)$.
      * <li>CACHED: Cached representation $(Y+X, Y-X, Z, 2dT)$
+     * </ul>
      */
     public enum Representation {
         /** Projective ($P^2$): $(X:Y:Z)$ satisfying $x=X/Z, y=Y/Z$ */
@@ -223,12 +224,13 @@ public class GroupElement implements Serializable {
      * <p>
      * A point $(x,y)$ is encoded by storing $y$ in bit 0 to bit 254 and the sign of $x$ in bit 255.
      * $x$ is recovered in the following way:
-     * <p><ul>
+     * </p><ul>
      * <li>$x = sign(x) * \sqrt{(y^2 - 1) / (d * y^2 + 1)} = sign(x) * \sqrt{u / v}$ with $u = y^2 - 1$ and $v = d * y^2 + 1$.
      * <li>Setting $β = (u * v^3) * (u * v^7)^{((q - 5) / 8)}$ one has $β^2 = \pm(u / v)$.
      * <li>If $v * β = -u$ multiply $β$ with $i=\sqrt{-1}$.
      * <li>Set $x := β$.
      * <li>If $sign(x) \ne$ bit 255 of $s$ then negate $x$.
+     * </ul>
      *
      * @param curve The curve.
      * @param s The encoded point.
@@ -864,7 +866,7 @@ public class GroupElement implements Serializable {
      * Constant time.
      * <p>
      * Preconditions: (TODO: Check this applies here)
-     *   $a[31] <= 127$
+     *   $a[31] \le 127$
      * @param a $= a[0]+256*a[1]+\dots+256^{31} a[31]$
      * @return the GroupElement
      */

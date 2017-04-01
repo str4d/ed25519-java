@@ -26,15 +26,15 @@ public class Ed25519LittleEndianEncoding extends Encoding {
      * <li>Convert the field element to the 32 byte representation.
      * </ol><p>
      * The idea for the modulo $p$ reduction algorithm is as follows:
-     * <p>
+     * </p>
      * <h2>Assumption:</h2>
-     * <p><ul>
+     * <ul>
      * <li>$p = 2^{255} - 19$
      * <li>$h = h_0 + 2^{25} * h_1 + 2^{(26+25)} * h_2 + \dots + 2^{230} * h_9$ where $0 \le |h_i| \lt 2^{27}$ for all $i=0,\dots,9$.
      * <li>$h \cong r \mod p$, i.e. $h = r + q * p$ for some suitable $0 \le r \lt p$ and an integer $q$.
      * </ul><p>
      * Then $q = [2^{-255} * (h + 19 * 2^{-25} * h_9 + 1/2)]$ where $[x] = floor(x)$.
-     * <p>
+     * </p>
      * <h2>Proof:</h2>
      * <p>
      * We begin with some very raw estimation for the bounds of some expressions:
@@ -242,8 +242,9 @@ public class Ed25519LittleEndianEncoding extends Encoding {
      * Return false if $x$ is in $\{0,2,4,\dots,q-1\}$
      * <p>
      * Preconditions:
-     * <p><ul>
+     * </p><ul>
      * <li>$|x|$ bounded by $1.1*2^{26},1.1*2^{25},1.1*2^{26},1.1*2^{25}$, etc.
+     * </ul>
      *
      * @return true if $x$ is in $\{1,3,5,\dots,q-2\}$, false otherwise.
      */
