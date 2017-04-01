@@ -107,6 +107,8 @@
   });
 &lt;/script&gt;
 &lt;script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'&gt;&lt;/script&gt;</header>
+          <!-- Required for Java 8u121 or later. See https://github.com/neo4j/neo4j-java-driver/pull/318  -->
+          <!--<additionalparam>&#45;&#45;allow-script-in-comments</additionalparam>-->
         </configuration>
         <executions>
           <execution>
