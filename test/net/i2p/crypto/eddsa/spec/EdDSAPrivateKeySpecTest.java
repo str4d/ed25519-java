@@ -15,7 +15,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import net.i2p.crypto.eddsa.Utils;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author str4d
@@ -28,6 +30,9 @@ public class EdDSAPrivateKeySpecTest {
 
     static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     /**
      * Test method for {@link net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec#EdDSAPrivateKeySpec(byte[], net.i2p.crypto.eddsa.spec.EdDSAParameterSpec)}.
      */
@@ -37,6 +42,13 @@ public class EdDSAPrivateKeySpecTest {
         assertThat(key.getSeed(), is(equalTo(ZERO_SEED)));
         assertThat(key.getH(), is(equalTo(ZERO_H)));
         assertThat(key.getA().toByteArray(), is(equalTo(ZERO_PK)));
+    }
+
+    @Test
+    public void incorrectSeedLengthThrows() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("seed length is wrong");
+        EdDSAPrivateKeySpec key = new EdDSAPrivateKeySpec(new byte[2], ed25519);
     }
 
     /**
@@ -50,4 +62,10 @@ public class EdDSAPrivateKeySpecTest {
         assertThat(key.getA().toByteArray(), is(equalTo(ZERO_PK)));
     }
 
+    @Test
+    public void incorrectHashLengthThrows() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("hash length is wrong");
+        EdDSAPrivateKeySpec key = new EdDSAPrivateKeySpec(ed25519, new byte[2]);
+    }
 }
