@@ -25,7 +25,9 @@ public class EdDSAPublicKeySpec implements KeySpec {
     private final EdDSAParameterSpec spec;
 
     /**
-     *  @throws IllegalArgumentException if key length is wrong
+     * @param pk the public key
+     * @param spec the parameter specification for this key
+     * @throws IllegalArgumentException if key length is wrong
      */
     public EdDSAPublicKeySpec(byte[] pk, EdDSAParameterSpec spec) {
         if (pk.length != spec.getCurve().getField().getb()/8)

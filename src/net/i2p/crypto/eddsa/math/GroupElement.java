@@ -505,7 +505,7 @@ public class GroupElement implements Serializable {
      * $r$ in $P \times P$ representation:
      * <p>
      * $r = ((X' : Z'), (Y' : T'))$ where
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (X + Y)^2 - (Y^2 + X^2)$
      * <li>$Y' = Y^2 + X^2$
      * <li>$Z' = y^2 - X^2$
@@ -514,7 +514,7 @@ public class GroupElement implements Serializable {
      * $r$ converted from $P \times P$ to $P^2$ representation:
      * <p>
      * $r = (X'' : Y'' : Z'')$ where
-     * <p><ul>
+     * </p><ul>
      * <li>$X'' = X' * Z' = ((X + Y)^2 - Y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))$
      * <li>$Y'' = Y' * T' = (Y^2 + X^2) * (2 * Z^2 - (y^2 - X^2))$
      * <li>$Z'' = Z' * T' = (y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))$
@@ -647,14 +647,14 @@ public class GroupElement implements Serializable {
      * $r = p + q$ where $p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z, q.T) = (Y2 + X2, Y2 - X2, Z2, 2 * d * T2)$
      * <p>
      * $r$ in $P \times P$ representation:
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)$
      * <li>$Y' = (Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)$
      * <li>$Z' = 2 * Z1 * Z2 + 2 * d * T1 * T2$
      * <li>$T' = 2 * Z1 * T2 - 2 * d * T1 * T2$
      * </ul><p>
      * Setting $A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2$ we get
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (B - A)$
      * <li>$Y' = (B + A)$
      * <li>$Z' = (D + C)$

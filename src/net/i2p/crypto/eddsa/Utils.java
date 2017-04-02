@@ -21,6 +21,8 @@ package net.i2p.crypto.eddsa;
 public class Utils {
     /**
      * Constant-time byte comparison.
+     * @param b a byte
+     * @param c a byte
      * @return 1 if b and c are equal, 0 otherwise.
      */
     public static int equal(int b, int c) {
@@ -34,6 +36,8 @@ public class Utils {
 
     /**
      * Constant-time byte[] comparison.
+     * @param b a byte[]
+     * @param c a byte[]
      * @return 1 if b and c are equal, 0 otherwise.
      */
     public static int equal(byte[] b, byte[] c) {

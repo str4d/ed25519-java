@@ -318,6 +318,8 @@ public final class EdDSAEngine extends Signature {
      *  sig = sign()
      *</pre>
      *
+     * @param data the message to be signed
+     * @return the signature
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
@@ -336,6 +338,10 @@ public final class EdDSAEngine extends Signature {
      *  sig = sign()
      *</pre>
      *
+     * @param data byte array containing the message to be signed
+     * @param off the start of the message inside data
+     * @param len the length of the message
+     * @return the signature
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
@@ -356,6 +362,9 @@ public final class EdDSAEngine extends Signature {
      *  ok = verify(signature)
      *</pre>
      *
+     * @param data the message that was signed
+     * @param signature of the message
+     * @return true if the signature is valid, false otherwise
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
@@ -374,6 +383,11 @@ public final class EdDSAEngine extends Signature {
      *  ok = verify(signature)
      *</pre>
      *
+     * @param data byte array containing the message that was signed
+     * @param off the start of the message inside data
+     * @param len the length of the message
+     * @param signature of the message
+     * @return true if the signature is valid, false otherwise
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
@@ -392,6 +406,11 @@ public final class EdDSAEngine extends Signature {
      *  ok = verify(signature, sigoff, siglen)
      *</pre>
      *
+     * @param data the message that was signed
+     * @param signature byte array containing the signature
+     * @param sigoff the start of the signature
+     * @param siglen the length of the signature
+     * @return true if the signature is valid, false otherwise
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
@@ -410,6 +429,13 @@ public final class EdDSAEngine extends Signature {
      *  ok = verify(signature, sigoff, siglen)
      *</pre>
      *
+     * @param data byte array containing the message that was signed
+     * @param off the start of the message inside data
+     * @param len the length of the message
+     * @param signature byte array containing the signature
+     * @param sigoff the start of the signature
+     * @param siglen the length of the signature
+     * @return true if the signature is valid, false otherwise
      * @throws SignatureException if update() already called
      * @see #ONE_SHOT_MODE
      */
