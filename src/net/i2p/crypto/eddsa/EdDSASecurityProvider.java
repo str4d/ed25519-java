@@ -26,7 +26,7 @@ public class EdDSASecurityProvider extends Provider {
     public static final String PROVIDER_NAME = "EdDSA";
 
     public EdDSASecurityProvider() {
-        super(PROVIDER_NAME, 0.1 /* should match POM major.minor version */, "str4d " + PROVIDER_NAME + " security provider wrapper");
+        super(PROVIDER_NAME, 0.2 /* should match POM major.minor version */, "str4d " + PROVIDER_NAME + " security provider wrapper");
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             @Override

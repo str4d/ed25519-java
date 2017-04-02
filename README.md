@@ -18,7 +18,7 @@ Download the latest .jar from the releases tab and place it in your classpath.
 Gradle users:
 
 ```
-compile 'net.i2p.crypto:eddsa:0.1.0'
+compile 'net.i2p.crypto:eddsa:0.2.0'
 ```
 
 The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
