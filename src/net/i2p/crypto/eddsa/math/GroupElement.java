@@ -36,12 +36,13 @@ public class GroupElement implements Serializable {
 
     /**
      * Available representations for a group element.
-     * <p><ul>
+     * <ul>
      * <li>P2: Projective representation $(X:Y:Z)$ satisfying $x=X/Z, y=Y/Z$.
      * <li>P3: Extended projective representation $(X:Y:Z:T)$ satisfying $x=X/Z, y=Y/Z, XY=ZT$.
      * <li>P1P1: Completed representation $((X:Z), (Y:T))$ satisfying $x=X/Z, y=Y/T$.
      * <li>PRECOMP: Precomputed representation $(y+x, y-x, 2dxy)$.
      * <li>CACHED: Cached representation $(Y+X, Y-X, Z, 2dT)$
+     * </ul>
      */
     public enum Representation {
         /** Projective ($P^2$): $(X:Y:Z)$ satisfying $x=X/Z, y=Y/Z$ */
@@ -223,12 +224,13 @@ public class GroupElement implements Serializable {
      * <p>
      * A point $(x,y)$ is encoded by storing $y$ in bit 0 to bit 254 and the sign of $x$ in bit 255.
      * $x$ is recovered in the following way:
-     * <p><ul>
+     * </p><ul>
      * <li>$x = sign(x) * \sqrt{(y^2 - 1) / (d * y^2 + 1)} = sign(x) * \sqrt{u / v}$ with $u = y^2 - 1$ and $v = d * y^2 + 1$.
      * <li>Setting $β = (u * v^3) * (u * v^7)^{((q - 5) / 8)}$ one has $β^2 = \pm(u / v)$.
      * <li>If $v * β = -u$ multiply $β$ with $i=\sqrt{-1}$.
      * <li>Set $x := β$.
      * <li>If $sign(x) \ne$ bit 255 of $s$ then negate $x$.
+     * </ul>
      *
      * @param curve The curve.
      * @param s The encoded point.
@@ -503,7 +505,7 @@ public class GroupElement implements Serializable {
      * $r$ in $P \times P$ representation:
      * <p>
      * $r = ((X' : Z'), (Y' : T'))$ where
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (X + Y)^2 - (Y^2 + X^2)$
      * <li>$Y' = Y^2 + X^2$
      * <li>$Z' = y^2 - X^2$
@@ -512,7 +514,7 @@ public class GroupElement implements Serializable {
      * $r$ converted from $P \times P$ to $P^2$ representation:
      * <p>
      * $r = (X'' : Y'' : Z'')$ where
-     * <p><ul>
+     * </p><ul>
      * <li>$X'' = X' * Z' = ((X + Y)^2 - Y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))$
      * <li>$Y'' = Y' * T' = (Y^2 + X^2) * (2 * Z^2 - (y^2 - X^2))$
      * <li>$Z'' = Z' * T' = (y^2 - X^2) * (2 * Z^2 - (y^2 - X^2))$
@@ -645,14 +647,14 @@ public class GroupElement implements Serializable {
      * $r = p + q$ where $p = this = (X1 : Y1 : Z1 : T1), q = (q.X, q.Y, q.Z, q.T) = (Y2 + X2, Y2 - X2, Z2, 2 * d * T2)$
      * <p>
      * $r$ in $P \times P$ representation:
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (Y1 + X1) * (Y2 + X2) - (Y1 - X1) * (Y2 - X2)$
      * <li>$Y' = (Y1 + X1) * (Y2 + X2) + (Y1 - X1) * (Y2 - X2)$
      * <li>$Z' = 2 * Z1 * Z2 + 2 * d * T1 * T2$
      * <li>$T' = 2 * Z1 * T2 - 2 * d * T1 * T2$
      * </ul><p>
      * Setting $A = (Y1 - X1) * (Y2 - X2), B = (Y1 + X1) * (Y2 + X2), C = 2 * d * T1 * T2, D = 2 * Z1 * Z2$ we get
-     * <p><ul>
+     * </p><ul>
      * <li>$X' = (B - A)$
      * <li>$Y' = (B + A)$
      * <li>$Z' = (D + C)$
@@ -864,7 +866,7 @@ public class GroupElement implements Serializable {
      * Constant time.
      * <p>
      * Preconditions: (TODO: Check this applies here)
-     *   $a[31] <= 127$
+     *   $a[31] \le 127$
      * @param a $= a[0]+256*a[1]+\dots+256^{31} a[31]$
      * @return the GroupElement
      */

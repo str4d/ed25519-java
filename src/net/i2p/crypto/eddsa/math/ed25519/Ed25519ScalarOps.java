@@ -327,7 +327,7 @@ public class Ed25519ScalarOps implements ScalarOps {
      * $(ab+c) \bmod q$
      * <p>
      * Input:
-     * <p><ul>
+     * </p><ul>
      * <li>$a[0]+256*a[1]+\dots+256^{31}*a[31] = a$
      * <li>$b[0]+256*b[1]+\dots+256^{31}*b[31] = b$
      * <li>$c[0]+256*c[1]+\dots+256^{31}*c[31] = c$

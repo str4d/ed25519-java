@@ -98,6 +98,9 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
         <configuration>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
+          <encoding>UTF-8</encoding>
           <header>&lt;script type='text/x-mathjax-config'&gt;
   MathJax.Hub.Config({
     tex2jax: {
@@ -107,6 +110,8 @@
   });
 &lt;/script&gt;
 &lt;script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'&gt;&lt;/script&gt;</header>
+          <!-- Required for Java 8u121 or later. See https://github.com/neo4j/neo4j-java-driver/pull/318  -->
+          <!--<additionalparam>&#45;&#45;allow-script-in-comments</additionalparam>-->
         </configuration>
         <executions>
           <execution>

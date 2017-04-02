@@ -39,6 +39,7 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
      *  Convert $x$ to little endian.
      *  Constant time.
      *
+     *  @param x the BigInteger value to encode
      *  @return array of length $b/8$
      *  @throws IllegalStateException if field not set
      */
@@ -75,6 +76,9 @@ public class BigIntegerLittleEndianEncoding extends Encoding implements Serializ
 
     /**
      *  Convert in to big endian
+     *
+     *  @param in the $(b-1)$-bit encoding of a FieldElement.
+     *  @return the decoded value as a BigInteger
      */
     public BigInteger toBigInteger(byte[] in) {
         byte[] out = new byte[in.length];
