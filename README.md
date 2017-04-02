@@ -30,12 +30,16 @@ This code is released to the public domain and can be used for any purpose. See 
 Disclaimer
 ----------
 
-There are no guarantees that this is secure for all uses. All unit tests are passing,
-including tests against [the data from the Python implementation](https://ed25519.cr.yp.to/python/sign.input),
-and the code has been reviewed by [an independent developer](https://github.com/BloodyRookie),
-but it has not yet been audited by a professional cryptographer. In particular, the
-constant-time signing properties of ref10 may not have been completely retained (although
-this is the eventual goal for the Ed25519-specific implementation).
+There are **no** guarantees that this is secure for all cases, and users should
+review the code themselves before depending on it. PRs that fix bugs or improve
+reviewability are very welcome. Additionally:
+
+- The unit test suite includes tests against
+  [the data from the original Python implementation](https://ed25519.cr.yp.to/python/sign.input).
+- The code (as of 97cea3f0d910fc627c7b57b1bc4d783cdd0c2a4a) was reviewed by
+  [an independent developer](https://github.com/BloodyRookie).
+- The code (as of dc9f58f2c874463c15465326efc040d17a627b3a) was audited by an independent third party,
+  and the one issue found [was fixed](https://github.com/str4d/ed25519-java/pull/31).
 
 Code comparison
 ---------------
