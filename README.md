@@ -56,6 +56,15 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 | `R = P + Q` | `ge_madd`, `ge_add` | `GroupElement.madd`, `GroupElement.add` |
 | `R = P - Q` | `ge_msub`, `ge_sub` | `GroupElement.msub`, `GroupElement.sub` |
 
+
+Important changes
+-----------------
+
+### 0.2.0
+
+- Ed25519 is now named `Ed25519` in `EdDSANamedCurveTable`, and the previous public constant
+  (containing the older inaccurate name) has been removed.
+
 Credits
 -------
 
