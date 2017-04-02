@@ -34,7 +34,7 @@ public class GroupElementTest {
     static final byte[] BYTES_TENZERO = Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
     static final byte[] BYTES_ONETEN = Utils.hexToBytes("0a00000000000000000000000000000000000000000000000000000000000080");
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("Ed25519");
     static final Curve curve = ed25519.getCurve();
 
     static final FieldElement ZERO = curve.getField().ZERO;

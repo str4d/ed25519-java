@@ -53,7 +53,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
 
     public EdDSAPrivateKey(PKCS8EncodedKeySpec spec) throws InvalidKeySpecException {
         this(new EdDSAPrivateKeySpec(decode(spec.getEncoded()),
-                                     EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512)));
+                                     EdDSANamedCurveTable.getByName("Ed25519")));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
      */
     @Override
     public byte[] getEncoded() {
-        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512)))
+        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName("Ed25519")))
             return null;
         int totlen = 17 + seed.length;
         byte[] rv = new byte[totlen];

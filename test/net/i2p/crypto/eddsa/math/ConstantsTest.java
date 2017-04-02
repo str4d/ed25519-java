@@ -31,7 +31,7 @@ import org.junit.Test;
  *
  */
 public class ConstantsTest {
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("Ed25519");
     static final Curve curve = ed25519.getCurve();
 
     static final FieldElement ZERO = curve.getField().ZERO;

@@ -48,7 +48,7 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
 
     public EdDSAPublicKey(X509EncodedKeySpec spec) throws InvalidKeySpecException {
         this(new EdDSAPublicKeySpec(decode(spec.getEncoded()),
-                                    EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512)));
+                                    EdDSANamedCurveTable.getByName("Ed25519")));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
      */
     @Override
     public byte[] getEncoded() {
-        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512)))
+        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName("Ed25519")))
             return null;
         int totlen = 15 + Abyte.length;
         byte[] rv = new byte[totlen];
