@@ -14,6 +14,7 @@ package net.i2p.crypto.eddsa.spec;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import net.i2p.crypto.eddsa.Utils;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class EdDSAPrivateKeySpecTest {
     static final byte[] ZERO_H = Utils.hexToBytes("5046adc1dba838867b2bbbfdd0c3423e58b57970b5267a90f57960924a87f1960a6a85eaa642dac835424b5d7c8d637c00408c7a73da672b7f498521420b6dd3");
     static final byte[] ZERO_PK = Utils.hexToBytes("3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29");
 
-    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName("Ed25519");
+    static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

@@ -40,7 +40,7 @@ public final class KeyPairGenerator extends KeyPairGeneratorSpi {
     static {
         edParameters = new Hashtable<Integer, AlgorithmParameterSpec>();
 
-        edParameters.put(Integer.valueOf(256), new EdDSAGenParameterSpec("Ed25519"));
+        edParameters.put(Integer.valueOf(256), new EdDSAGenParameterSpec(EdDSANamedCurveTable.ED_25519));
     }
 
     public void initialize(int keysize, SecureRandom random) {
