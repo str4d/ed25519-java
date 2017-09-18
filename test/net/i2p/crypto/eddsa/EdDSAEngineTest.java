@@ -21,6 +21,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.cert.X509Certificate;
 
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
@@ -30,6 +31,8 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import sun.security.util.DerValue;
+import sun.security.x509.X509Key;
 
 /**
  * @author str4d
@@ -212,5 +215,22 @@ public class EdDSAEngineTest {
         sgr.initVerify(vKey);
 
         assertThat("verifyOneShot() failed", sgr.verifyOneShot(TEST_MSG, TEST_MSG_SIG), is(true));
+    }
+
+    @Test
+    public void testVerifyX509PublicKeyInfo() throws Exception {
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
+        for (Ed25519TestVectors.TestTuple testCase : Ed25519TestVectors.testCases) {
+            EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(testCase.pk, spec);
+            PublicKey vKey = new EdDSAPublicKey(pubKey);
+            PublicKey x509Key = X509Key.parse(new DerValue(vKey.getEncoded()));
+            sgr.initVerify(x509Key);
+
+            sgr.update(testCase.message);
+
+            assertThat("Test case " + testCase.caseNum + " failed",
+                    sgr.verify(testCase.sig), is(true));
+        }
     }
 }
