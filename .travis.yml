@@ -11,7 +11,7 @@ matrix:
           packages:
             - openjdk-6-jdk
       jdk: openjdk6
-      env: CUSTOM_MVN_VERION="3.0"
+      env: CUSTOM_MVN_VERION="3.2.5"
 
 install:
   - if [[ -n "${CUSTOM_MVN_VERION}" ]]; then
