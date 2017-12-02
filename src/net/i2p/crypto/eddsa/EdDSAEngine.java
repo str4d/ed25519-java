@@ -22,11 +22,14 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.math.ScalarOps;
+import sun.security.x509.X509Key;
 
 /**
  * Signing and verification for EdDSA.
@@ -154,6 +157,16 @@ public final class EdDSAEngine extends Signature {
                 }
             } else if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
                 throw new InvalidKeyException("Key hash algorithm does not match chosen digest");
+        } else if (publicKey instanceof X509Key) {
+            // X509Certificate will sometimes contain an X509Key rather than the EdDSAPublicKey itself; the contained
+            // key is valid but needs to be instanced as an EdDSAPublicKey before it can be used.
+            EdDSAPublicKey parsedPublicKey;
+            try {
+                parsedPublicKey = new EdDSAPublicKey(new X509EncodedKeySpec(publicKey.getEncoded()));
+            } catch (InvalidKeySpecException ex) {
+                throw new InvalidKeyException("cannot handle X.509 EdDSA public key: " + publicKey.getAlgorithm());
+            }
+            engineInitVerify(parsedPublicKey);
         } else {
             throw new InvalidKeyException("cannot identify EdDSA public key: " + publicKey.getClass());
         }
