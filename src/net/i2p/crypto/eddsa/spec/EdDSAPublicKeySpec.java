@@ -21,7 +21,7 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  */
 public class EdDSAPublicKeySpec implements KeySpec {
     private final GroupElement A;
-    private final GroupElement Aneg;
+    private GroupElement Aneg;
     private final EdDSAParameterSpec spec;
 
     /**
@@ -34,8 +34,6 @@ public class EdDSAPublicKeySpec implements KeySpec {
             throw new IllegalArgumentException("public-key length is wrong");
 
         this.A = new GroupElement(spec.getCurve(), pk);
-        // Precompute -A for use in verification.
-        this.Aneg = A.negate();
         this.spec = spec;
     }
 
@@ -50,7 +48,13 @@ public class EdDSAPublicKeySpec implements KeySpec {
     }
 
     public GroupElement getNegativeA() {
-        return Aneg;
+        // Only read Aneg once, otherwise read re-ordering might occur between here and return.
+        GroupElement ourAneg = Aneg;
+        if(ourAneg == null) {
+            ourAneg = A.negate();
+            Aneg = ourAneg;
+        }
+        return ourAneg;
     }
 
     public EdDSAParameterSpec getParams() {
