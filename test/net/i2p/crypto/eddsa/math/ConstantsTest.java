@@ -38,7 +38,7 @@ public class ConstantsTest {
     static final FieldElement ONE = curve.getField().ONE;
     static final FieldElement TWO = curve.getField().TWO;
 
-    static final GroupElement P3_ZERO = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
+    static final GroupElement P3_ZERO = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO, false);
 
     @Test
     public void testb() {

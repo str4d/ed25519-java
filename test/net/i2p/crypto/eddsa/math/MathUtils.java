@@ -189,12 +189,14 @@ public class MathUtils {
      *
      * @return The group element.
      */
-    public static GroupElement getRandomGroupElement() {
+    public static GroupElement getRandomGroupElement() { return getRandomGroupElement(false); }
+
+    public static GroupElement getRandomGroupElement(boolean precompute) {
         final byte[] bytes = new byte[32];
         while (true) {
             try {
                 random.nextBytes(bytes);
-                return new GroupElement(curve, bytes);
+                return new GroupElement(curve, bytes, precompute);
             } catch (IllegalArgumentException e) {
                 // Will fail in about 87.5%, so try again.
             }
@@ -230,7 +232,7 @@ public class MathUtils {
             x = x.negate().mod(getQ());
         }
 
-        return GroupElement.p3(curve, toFieldElement(x), toFieldElement(y), getField().ONE, toFieldElement(x.multiply(y).mod(getQ())));
+        return GroupElement.p3(curve, toFieldElement(x), toFieldElement(y), getField().ONE, toFieldElement(x.multiply(y).mod(getQ())), false);
     }
 
     /**
@@ -286,7 +288,7 @@ public class MathUtils {
                         toFieldElement(x),
                         toFieldElement(y),
                         getField().ONE,
-                        toFieldElement(x.multiply(y).mod(getQ())));
+                        toFieldElement(x.multiply(y).mod(getQ())), false);
             case P1P1:
                 return GroupElement.p1p1(
                         curve,
@@ -356,7 +358,7 @@ public class MathUtils {
                 .multiply(BigInteger.ONE.subtract(dx1x2y1y2).modInverse(getQ())).mod(getQ());
         BigInteger t3 = x3.multiply(y3).mod(getQ());
 
-        return GroupElement.p3(g1.getCurve(), toFieldElement(x3), toFieldElement(y3), getField().ONE, toFieldElement(t3));
+        return GroupElement.p3(g1.getCurve(), toFieldElement(x3), toFieldElement(y3), getField().ONE, toFieldElement(t3), false);
     }
 
     /**
@@ -421,13 +423,13 @@ public class MathUtils {
             throw new IllegalArgumentException("g must have representation P3");
         }
 
-        return GroupElement.p3(g.getCurve(), g.getX().negate(), g.getY(), g.getZ(), g.getT().negate());
+        return GroupElement.p3(g.getCurve(), g.getX().negate(), g.getY(), g.getZ(), g.getT().negate(), false);
     }
 
     // Start TODO BR: Remove when finished!
     @Test
     public void mathUtilsWorkAsExpected() {
-        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
+        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO, false);
         for (int i=0; i<1000; i++) {
             final GroupElement g = getRandomGroupElement();
 

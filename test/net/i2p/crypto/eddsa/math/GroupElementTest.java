@@ -68,11 +68,11 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
      */
     @Test
     public void testP3() {
-        final GroupElement t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
+        final GroupElement t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO, false);
         assertThat(t.curve, is(equalTo(curve)));
         assertThat(t.repr, is(GroupElement.Representation.P3));
         assertThat(t.X, is(ZERO));
@@ -124,11 +124,11 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement)}.
+     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
      */
     @Test
     public void testGroupElementCurveRepresentationFieldElementFieldElementFieldElementFieldElement() {
-        final GroupElement t = new GroupElement(curve, GroupElement.Representation.P3, ZERO, ONE, ONE, ZERO);
+        final GroupElement t = new GroupElement(curve, GroupElement.Representation.P3, ZERO, ONE, ONE, ZERO, false);
         assertThat(t.curve, is(equalTo(curve)));
         assertThat(t.repr, is(GroupElement.Representation.P3));
         assertThat(t.X, is(ZERO));
@@ -157,7 +157,7 @@ public class GroupElementTest {
     @Test
     public void testGroupElementByteArray() {
         final GroupElement t = new GroupElement(curve, BYTES_PKR);
-        final GroupElement s = GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1]));
+        final GroupElement s = GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1]),false);
         assertThat(t, is(equalTo(s)));
     }
 
@@ -462,7 +462,7 @@ public class GroupElementTest {
     // endregion
 
     /**
-     * Test method for {@link GroupElement#precompute(boolean)}.
+     * Test method for precomputation.
      */
     @Test
     public void testPrecompute() {
@@ -529,7 +529,7 @@ public class GroupElementTest {
 
     @Test
     public void addingNeutralGroupElementDoesNotChangeGroupElement() {
-        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
+        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO, false);
         for (int i=0; i<1000; i++) {
             // Arrange:
             final GroupElement g = MathUtils.getRandomGroupElement();
@@ -770,8 +770,7 @@ public class GroupElementTest {
         byte[] a = Utils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c");
         GroupElement A = new GroupElement(curve, Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66"));
         GroupElement B = ed25519.getB();
-        GroupElement geZero = curve.getZero(GroupElement.Representation.P3);
-        geZero.precompute(false);
+        GroupElement geZero = curve.getZero(GroupElement.Representation.P3PrecomputedDouble);
 
         // 0 * GE(0) + 0 * GE(0) = GE(0)
         assertThat(geZero.doubleScalarMultiplyVariableTime(geZero, zero, zero),
@@ -812,8 +811,7 @@ public class GroupElementTest {
         for (int i=0; i<10; i++) {
             // Arrange:
             final GroupElement basePoint = ed25519.getB();
-            final GroupElement g = MathUtils.getRandomGroupElement();
-            g.precompute(false);
+            final GroupElement g = MathUtils.getRandomGroupElement(true);
             final FieldElement f1 = MathUtils.getRandomFieldElement();
             final FieldElement f2 = MathUtils.getRandomFieldElement();
 

@@ -11,7 +11,7 @@
  */
 package net.i2p.crypto.eddsa.spec;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
 
 import net.i2p.crypto.eddsa.Utils;
@@ -46,10 +46,16 @@ public class EdDSANamedCurveTable {
                     Utils.hexToBytes("5866666666666666666666666666666666666666666666666666666666666666"),
                     true)); // Precompute tables for B
 
-    private static final Hashtable<String, EdDSANamedCurveSpec> curves = new Hashtable<String, EdDSANamedCurveSpec>();
+    private static volatile HashMap<String, EdDSANamedCurveSpec> curves = new HashMap<String, EdDSANamedCurveSpec>();
+
+    private static synchronized void putCurve(String name, EdDSANamedCurveSpec curve) {
+        HashMap<String, EdDSANamedCurveSpec> newCurves = new HashMap<String, EdDSANamedCurveSpec>(curves);
+        newCurves.put(name, curve);
+        curves = newCurves;
+    }
 
     public static void defineCurve(EdDSANamedCurveSpec curve) {
-        curves.put(curve.getName().toLowerCase(Locale.ENGLISH), curve);
+        putCurve(curve.getName().toLowerCase(Locale.ENGLISH), curve);
     }
 
     static void defineCurveAlias(String name, String alias) {
@@ -57,7 +63,7 @@ public class EdDSANamedCurveTable {
         if (curve == null) {
             throw new IllegalStateException();
         }
-        curves.put(alias.toLowerCase(Locale.ENGLISH), curve);
+        putCurve(alias.toLowerCase(Locale.ENGLISH), curve);
     }
 
     static {

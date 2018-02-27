@@ -36,14 +36,12 @@ public class EdDSAPublicKeySpec implements KeySpec {
         this.A = new GroupElement(spec.getCurve(), pk);
         // Precompute -A for use in verification.
         this.Aneg = A.negate();
-        Aneg.precompute(false);
         this.spec = spec;
     }
 
     public EdDSAPublicKeySpec(GroupElement A, EdDSAParameterSpec spec) {
         this.A = A;
         this.Aneg = A.negate();
-        Aneg.precompute(false);
         this.spec = spec;
     }
 
