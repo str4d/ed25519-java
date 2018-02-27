@@ -48,7 +48,7 @@ public class EdDSAPublicKeySpec implements KeySpec {
     }
 
     public GroupElement getNegativeA() {
-        // Only read Aneg once, otherwise read re-ordering might occur between here and return.
+        // Only read Aneg once, otherwise read re-ordering might occur between here and return. Requires all GroupElement's fields to be final.
         GroupElement ourAneg = Aneg;
         if(ourAneg == null) {
             ourAneg = A.negate();
