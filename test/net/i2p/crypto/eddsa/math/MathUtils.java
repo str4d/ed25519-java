@@ -191,6 +191,11 @@ public class MathUtils {
      */
     public static GroupElement getRandomGroupElement() { return getRandomGroupElement(false); }
 
+    /**
+     * Gets a random group element in P3 representation, with precmp and dblPrecmp populated.
+     *
+     * @return The group element.
+     */
     public static GroupElement getRandomGroupElement(boolean precompute) {
         final byte[] bytes = new byte[32];
         while (true) {

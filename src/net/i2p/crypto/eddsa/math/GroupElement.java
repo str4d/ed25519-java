@@ -39,6 +39,7 @@ public class GroupElement implements Serializable {
      * <ul>
      * <li>P2: Projective representation $(X:Y:Z)$ satisfying $x=X/Z, y=Y/Z$.
      * <li>P3: Extended projective representation $(X:Y:Z:T)$ satisfying $x=X/Z, y=Y/Z, XY=ZT$.
+     * <li>P3PrecomputedDouble: P3 but with dblPrecmp populated.
      * <li>P1P1: Completed representation $((X:Z), (Y:T))$ satisfying $x=X/Z, y=Y/T$.
      * <li>PRECOMP: Precomputed representation $(y+x, y-x, 2dxy)$.
      * <li>CACHED: Cached representation $(Y+X, Y-X, Z, 2dT)$
@@ -84,6 +85,7 @@ public class GroupElement implements Serializable {
      * @param Y The $Y$ coordinate.
      * @param Z The $Z$ coordinate.
      * @param T The $T$ coordinate.
+     * @param precomputeDoubleOnly If true, populate dblPrecmp, else set to null.
      * @return The group element in P3 representation.
      */
     public static GroupElement p3(
@@ -206,6 +208,7 @@ public class GroupElement implements Serializable {
      * @param Y The $Y$ coordinate.
      * @param Z The $Z$ coordinate.
      * @param T The $T$ coordinate.
+     * @param precomputeDouble If true, populate dblPrecmp, else set to null.
      */
     public GroupElement(
             final Curve curve,
@@ -245,6 +248,23 @@ public class GroupElement implements Serializable {
         this(curve, s, false);
     }
 
+    /**
+     * Creates a group element for a curve from a given encoded point.
+     * <p>
+     * A point $(x,y)$ is encoded by storing $y$ in bit 0 to bit 254 and the sign of $x$ in bit 255.
+     * $x$ is recovered in the following way:
+     * </p><ul>
+     * <li>$x = sign(x) * \sqrt{(y^2 - 1) / (d * y^2 + 1)} = sign(x) * \sqrt{u / v}$ with $u = y^2 - 1$ and $v = d * y^2 + 1$.
+     * <li>Setting $β = (u * v^3) * (u * v^7)^{((q - 5) / 8)}$ one has $β^2 = \pm(u / v)$.
+     * <li>If $v * β = -u$ multiply $β$ with $i=\sqrt{-1}$.
+     * <li>Set $x := β$.
+     * <li>If $sign(x) \ne$ bit 255 of $s$ then negate $x$.
+     * </ul>
+     *
+     * @param curve The curve.
+     * @param s The encoded point.
+     * @param precomputeSingleAndDouble If true, populate both precmp and dblPrecmp, else set both to null.
+     */
     // TODO
     public GroupElement(final Curve curve, final byte[] s, boolean precomputeSingleAndDouble) {
         FieldElement x, y, yy, u, v, v3, vxx, check;
@@ -394,7 +414,11 @@ public class GroupElement implements Serializable {
         return toRep(Representation.P3);
     }
 
-    // TODO
+    /**
+     * Converts the group element to the P3 representation, with dblPrecmp populated.
+     *
+     * @return The group element in the P3 representation.
+     */
     public GroupElement toP3PrecomputeDouble() {
         return toRep(Representation.P3PrecomputedDouble);
     }
@@ -898,10 +922,6 @@ public class GroupElement implements Serializable {
         final byte[] e = toRadix16(a);
 
         GroupElement h = this.curve.getZero(Representation.P3);
-        // TODO: Get opinion from a crypto professional.
-        // This should in practice never be necessary, the only point that
-        // this should get called on is EdDSA's B.
-        //precompute();
         for (i = 1; i < 64; i += 2) {
             t = select(i/2, e[i]);
             h = h.madd(t).toP3();
@@ -988,11 +1008,6 @@ public class GroupElement implements Serializable {
             if (aslide[i] != 0 || bslide[i] != 0) break;
         }
 
-        // TODO-CR BR strange comment below.
-        // TODO: Get opinion from a crypto professional.
-        // This should in practice never be necessary, the only point that
-        // this should get called on is EdDSA's B.
-        //precompute();
         for (; i >= 0; --i) {
             GroupElement t = r.dbl();
 
