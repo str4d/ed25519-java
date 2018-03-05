@@ -21,7 +21,7 @@ import net.i2p.crypto.eddsa.math.GroupElement;
  */
 public class EdDSAPublicKeySpec implements KeySpec {
     private final GroupElement A;
-    private GroupElement Aneg;
+    private GroupElement Aneg = null;
     private final EdDSAParameterSpec spec;
 
     /**
@@ -39,7 +39,6 @@ public class EdDSAPublicKeySpec implements KeySpec {
 
     public EdDSAPublicKeySpec(GroupElement A, EdDSAParameterSpec spec) {
         this.A = A;
-        this.Aneg = A.negate();
         this.spec = spec;
     }
 
