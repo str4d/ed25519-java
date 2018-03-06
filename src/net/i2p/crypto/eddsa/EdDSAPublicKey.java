@@ -78,10 +78,10 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
      * This implements the following specs:
      *<ul><li>
      * General encoding: https://tools.ietf.org/html/draft-ietf-curdle-pkix-04
-     *</li></li>
+     *</li><li>
      * Key encoding: https://tools.ietf.org/html/rfc8032
      *</li></ul>
-     *</p><p>
+     *<p>
      * For keys in older formats, decoding and then re-encoding is sufficient to
      * migrate them to the canonical encoding.
      *</p>
