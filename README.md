@@ -18,7 +18,7 @@ Download the latest .jar from the releases tab and place it in your classpath.
 Gradle users:
 
 ```
-compile 'net.i2p.crypto:eddsa:0.2.0'
+compile 'net.i2p.crypto:eddsa:0.3.0'
 ```
 
 The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
@@ -63,6 +63,14 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 
 Important changes
 -----------------
+
+### 0.3.0
+
+- The library has been extensively profiled for contention issues in a multi-threaded environment.  The only remaining potential
+contention is in `EdDSANamedCurveTable.defineCurve()`, which will be rarely called.
+- The public constant for `Ed25519` has returned as `ED_25519` to avoid repeated lookups in `EdDSAPublicKey.getEncoded()`.
+- `GroupElement` is now completely immutable and all fields final to avoid the need for `synchronized` blocks over mutable fields.
+This required some new constructors and paths to construction.
 
 ### 0.2.0
 
