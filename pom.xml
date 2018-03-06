@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.i2p.crypto</groupId>
   <artifactId>eddsa</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
   <name>EdDSA-Java</name>
   <packaging>bundle</packaging>
   <description>Implementation of EdDSA in Java</description>
