@@ -68,10 +68,24 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
+     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testP3() {
+        final GroupElement t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P3));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ZERO));
+    }
+
+    /**
+     * Test method for {@link GroupElement#p3(Curve, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
+     */
+    @Test
+    public void testP3WithExplicitFlag() {
         final GroupElement t = GroupElement.p3(curve, ZERO, ONE, ONE, ZERO, false);
         assertThat(t.curve, is(equalTo(curve)));
         assertThat(t.repr, is(GroupElement.Representation.P3));
@@ -124,10 +138,24 @@ public class GroupElementTest {
     }
 
     /**
-     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
+     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement)}.
      */
     @Test
     public void testGroupElementCurveRepresentationFieldElementFieldElementFieldElementFieldElement() {
+        final GroupElement t = new GroupElement(curve, GroupElement.Representation.P3, ZERO, ONE, ONE, ZERO);
+        assertThat(t.curve, is(equalTo(curve)));
+        assertThat(t.repr, is(GroupElement.Representation.P3));
+        assertThat(t.X, is(ZERO));
+        assertThat(t.Y, is(ONE));
+        assertThat(t.Z, is(ONE));
+        assertThat(t.T, is(ZERO));
+    }
+
+    /**
+     * Test method for {@link GroupElement#GroupElement(Curve, GroupElement.Representation, FieldElement, FieldElement, FieldElement, FieldElement, boolean)}.
+     */
+    @Test
+    public void testGroupElementCurveRepresentationFieldElementFieldElementFieldElementFieldElementWithExplicitFlag() {
         final GroupElement t = new GroupElement(curve, GroupElement.Representation.P3, ZERO, ONE, ONE, ZERO, false);
         assertThat(t.curve, is(equalTo(curve)));
         assertThat(t.repr, is(GroupElement.Representation.P3));
@@ -157,7 +185,7 @@ public class GroupElementTest {
     @Test
     public void testGroupElementByteArray() {
         final GroupElement t = new GroupElement(curve, BYTES_PKR);
-        final GroupElement s = GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1]),false);
+        final GroupElement s = GroupElement.p3(curve, PKR[0], PKR[1], ONE, PKR[0].multiply(PKR[1]));
         assertThat(t, is(equalTo(s)));
     }
 
@@ -391,6 +419,29 @@ public class GroupElementTest {
         }
     }
 
+    @Test
+    public void toP3PrecomputeDoubleReturnsExpectedResultIfGroupElementHasP1P1Representation() {
+        for (int i=0; i<10; i++) {
+            // Arrange:
+            final GroupElement g = MathUtils.toRepresentation(MathUtils.getRandomGroupElement(), GroupElement.Representation.P1P1);
+
+            // Act:
+            final GroupElement h1 = g.toP3PrecomputeDouble();
+            final GroupElement h2 = MathUtils.toRepresentation(g, GroupElement.Representation.P3PrecomputedDouble);
+
+            // Assert:
+            Assert.assertThat(h1, IsEqual.equalTo(h2));
+            Assert.assertThat(h1.getRepresentation(), IsEqual.equalTo(GroupElement.Representation.P3));
+            Assert.assertThat(h1.getX(), IsEqual.equalTo(g.getX().multiply(g.getT())));
+            Assert.assertThat(h1.getY(), IsEqual.equalTo(g.getY().multiply(g.getZ())));
+            Assert.assertThat(h1.getZ(), IsEqual.equalTo(g.getZ().multiply(g.getT())));
+            Assert.assertThat(h1.getT(), IsEqual.equalTo(g.getX().multiply(g.getY())));
+            Assert.assertThat(h1.precmp, IsNull.nullValue());
+            Assert.assertThat(h1.dblPrecmp, IsNull.notNullValue());
+            Assert.assertThat(h1.dblPrecmp, IsEqual.equalTo(h2.dblPrecmp));
+        }
+    }
+
     @Test (expected = IllegalArgumentException.class)
     public void toCachedThrowsIfGroupElementHasP2Representation() {
         // Arrange:
@@ -529,7 +580,7 @@ public class GroupElementTest {
 
     @Test
     public void addingNeutralGroupElementDoesNotChangeGroupElement() {
-        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO, false);
+        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
         for (int i=0; i<1000; i++) {
             // Arrange:
             final GroupElement g = MathUtils.getRandomGroupElement();

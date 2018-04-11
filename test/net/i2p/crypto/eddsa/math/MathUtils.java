@@ -260,6 +260,7 @@ public class MathUtils {
         switch (g.getRepresentation()) {
             case P2:
             case P3:
+            case P3PrecomputedDouble:
                 x = gX.multiply(gZ.modInverse(getQ())).mod(getQ());
                 y = gY.multiply(gZ.modInverse(getQ())).mod(getQ());
                 break;
@@ -294,6 +295,13 @@ public class MathUtils {
                         toFieldElement(y),
                         getField().ONE,
                         toFieldElement(x.multiply(y).mod(getQ())), false);
+            case P3PrecomputedDouble:
+                return GroupElement.p3(
+                        curve,
+                        toFieldElement(x),
+                        toFieldElement(y),
+                        getField().ONE,
+                        toFieldElement(x.multiply(y).mod(getQ())), true);
             case P1P1:
                 return GroupElement.p1p1(
                         curve,

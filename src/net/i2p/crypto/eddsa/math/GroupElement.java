@@ -50,7 +50,7 @@ public class GroupElement implements Serializable {
         P2,
         /** Extended ($P^3$): $(X:Y:Z:T)$ satisfying $x=X/Z, y=Y/Z, XY=ZT$ */
         P3,
-        /** P3 but also populate dblPrecmp */
+        /** Can only be requested.  Results in P3 representation but also populates dblPrecmp. */
         P3PrecomputedDouble,
         /** Completed ($P \times P$): $((X:Z),(Y:T))$ satisfying $x=X/Z, y=Y/T$ */
         P1P1,
@@ -74,11 +74,30 @@ public class GroupElement implements Serializable {
             final FieldElement X,
             final FieldElement Y,
             final FieldElement Z) {
-        return new GroupElement(curve, Representation.P2, X, Y, Z, null, false);
+        return new GroupElement(curve, Representation.P2, X, Y, Z, null);
     }
 
     /**
-     * Creates a new group element in P3 representation.
+     * Creates a new group element in P3 representation, without pre-computation.
+     *
+     * @param curve The curve.
+     * @param X The $X$ coordinate.
+     * @param Y The $Y$ coordinate.
+     * @param Z The $Z$ coordinate.
+     * @param T The $T$ coordinate.
+     * @return The group element in P3 representation.
+     */
+    public static GroupElement p3(
+            final Curve curve,
+            final FieldElement X,
+            final FieldElement Y,
+            final FieldElement Z,
+            final FieldElement T) {
+        return p3(curve, X, Y, Z, T, false);
+    }
+
+    /**
+     * Creates a new group element in P3 representation, potentially with pre-computation.
      *
      * @param curve The curve.
      * @param X The $X$ coordinate.
@@ -114,7 +133,7 @@ public class GroupElement implements Serializable {
             final FieldElement Y,
             final FieldElement Z,
             final FieldElement T) {
-        return new GroupElement(curve, Representation.P1P1, X, Y, Z, T, false);
+        return new GroupElement(curve, Representation.P1P1, X, Y, Z, T);
     }
 
     /**
@@ -131,7 +150,7 @@ public class GroupElement implements Serializable {
             final FieldElement ypx,
             final FieldElement ymx,
             final FieldElement xy2d) {
-        return new GroupElement(curve, Representation.PRECOMP, ypx, ymx, xy2d, null, false);
+        return new GroupElement(curve, Representation.PRECOMP, ypx, ymx, xy2d, null);
     }
 
     /**
@@ -150,7 +169,7 @@ public class GroupElement implements Serializable {
             final FieldElement YmX,
             final FieldElement Z,
             final FieldElement T2d) {
-        return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d, false);
+        return new GroupElement(curve, Representation.CACHED, YpX, YmX, Z, T2d);
     }
 
     /**
@@ -200,7 +219,27 @@ public class GroupElement implements Serializable {
     final GroupElement[] dblPrecmp;
 
     /**
-     * Creates a group element for a curve.
+     * Creates a group element for a curve, without any pre-computation.
+     *
+     * @param curve The curve.
+     * @param repr The representation used to represent the group element.
+     * @param X The $X$ coordinate.
+     * @param Y The $Y$ coordinate.
+     * @param Z The $Z$ coordinate.
+     * @param T The $T$ coordinate.
+     */
+    public GroupElement(
+            final Curve curve,
+            final Representation repr,
+            final FieldElement X,
+            final FieldElement Y,
+            final FieldElement Z,
+            final FieldElement T) {
+        this(curve, repr, X, Y, Z, T, false);
+    }
+
+    /**
+     * Creates a group element for a curve, with optional pre-computation.
      *
      * @param curve The curve.
      * @param repr The representation used to represent the group element.
@@ -229,7 +268,7 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * Creates a group element for a curve from a given encoded point.
+     * Creates a group element for a curve from a given encoded point. No pre-computation.
      * <p>
      * A point $(x,y)$ is encoded by storing $y$ in bit 0 to bit 254 and the sign of $x$ in bit 255.
      * $x$ is recovered in the following way:
@@ -249,7 +288,7 @@ public class GroupElement implements Serializable {
     }
 
     /**
-     * Creates a group element for a curve from a given encoded point.
+     * Creates a group element for a curve from a given encoded point.  With optional pre-computation.
      * <p>
      * A point $(x,y)$ is encoded by storing $y$ in bit 0 to bit 254 and the sign of $x$ in bit 255.
      * $x$ is recovered in the following way:
@@ -265,7 +304,6 @@ public class GroupElement implements Serializable {
      * @param s The encoded point.
      * @param precomputeSingleAndDouble If true, populate both precmp and dblPrecmp, else set both to null.
      */
-    // TODO
     public GroupElement(final Curve curve, final byte[] s, boolean precomputeSingleAndDouble) {
         FieldElement x, y, yy, u, v, v3, vxx, check;
         y = curve.getField().fromByteArray(s);

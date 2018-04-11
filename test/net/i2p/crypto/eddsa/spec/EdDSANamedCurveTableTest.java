@@ -11,6 +11,7 @@
  */
 package net.i2p.crypto.eddsa.spec;
 
+import static net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable.ED_25519;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -32,5 +33,11 @@ public class EdDSANamedCurveTableTest {
 
         assertThat(lower, is(equalTo(mixed)));
         assertThat(upper, is(equalTo(mixed)));
+    }
+
+    @Test
+    public void testConstant() {
+        EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+        assertThat("Named curve and constant should match", spec, is(equalTo(ED_25519)));
     }
 }
