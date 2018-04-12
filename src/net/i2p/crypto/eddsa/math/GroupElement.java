@@ -499,7 +499,7 @@ public class GroupElement implements Serializable {
                     case P2:
                         return p2(this.curve, this.X, this.Y, this.Z);
                     case P3:
-                        return p3(this.curve, this.X, this.Y, this.Z, this.T, false);
+                        return p3(this.curve, this.X, this.Y, this.Z, this.T);
                     case CACHED:
                         return cached(this.curve, this.Y.add(this.X), this.Y.subtract(this.X), this.Z, this.T.multiply(this.curve.get2D()));
                     default:

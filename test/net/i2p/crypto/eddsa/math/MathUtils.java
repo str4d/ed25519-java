@@ -237,7 +237,7 @@ public class MathUtils {
             x = x.negate().mod(getQ());
         }
 
-        return GroupElement.p3(curve, toFieldElement(x), toFieldElement(y), getField().ONE, toFieldElement(x.multiply(y).mod(getQ())), false);
+        return GroupElement.p3(curve, toFieldElement(x), toFieldElement(y), getField().ONE, toFieldElement(x.multiply(y).mod(getQ())));
     }
 
     /**
@@ -371,7 +371,7 @@ public class MathUtils {
                 .multiply(BigInteger.ONE.subtract(dx1x2y1y2).modInverse(getQ())).mod(getQ());
         BigInteger t3 = x3.multiply(y3).mod(getQ());
 
-        return GroupElement.p3(g1.getCurve(), toFieldElement(x3), toFieldElement(y3), getField().ONE, toFieldElement(t3), false);
+        return GroupElement.p3(g1.getCurve(), toFieldElement(x3), toFieldElement(y3), getField().ONE, toFieldElement(t3));
     }
 
     /**
@@ -436,13 +436,13 @@ public class MathUtils {
             throw new IllegalArgumentException("g must have representation P3");
         }
 
-        return GroupElement.p3(g.getCurve(), g.getX().negate(), g.getY(), g.getZ(), g.getT().negate(), false);
+        return GroupElement.p3(g.getCurve(), g.getX().negate(), g.getY(), g.getZ(), g.getT().negate());
     }
 
     // Start TODO BR: Remove when finished!
     @Test
     public void mathUtilsWorkAsExpected() {
-        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO, false);
+        final GroupElement neutral = GroupElement.p3(curve, curve.getField().ZERO, curve.getField().ONE, curve.getField().ONE, curve.getField().ZERO);
         for (int i=0; i<1000; i++) {
             final GroupElement g = getRandomGroupElement();
 
