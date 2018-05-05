@@ -3,11 +3,13 @@ EdDSA-Java
 
 [![Build Status](https://travis-ci.org/str4d/ed25519-java.svg?branch=master)](https://travis-ci.org/str4d/ed25519-java)
 
-This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP (see https://ed25519.cr.yp.to/software.html).
+This is an implementation of EdDSA in Java. Structurally, it is based on the ref10 implementation in SUPERCOP
+(see https://ed25519.cr.yp.to/software.html).
 
 There are two internal implementations:
-* A port of the radix-2^51 operations in ref10 - fast and constant-time, but only useful for Ed25519.
-* A generic version using BigIntegers for calculation - a bit slower and not constant-time, but compatible with any EdDSA parameter specification.
+- A port of the radix-2^51 operations in ref10 - fast and constant-time, but only useful for Ed25519.
+- A generic version using BigIntegers for calculation - a bit slower and not constant-time, but compatible
+  with any EdDSA parameter specification.
 
 
 To use
@@ -66,25 +68,30 @@ Important changes
 
 ### 0.3.0
 
-- The library has been extensively profiled for contention issues in a multi-threaded environment.  The only remaining potential
-contention is in `EdDSANamedCurveTable.defineCurve()`, which will be rarely called.
-- The public constant for the curve name has returned as `ED_25519` and the curve specification has a public constant
-`ED_25519_CURVE_SPEC` to avoid repeated lookups when converting to and from encoded form for the public or private keys.
-- `GroupElement` is now completely immutable and all fields final to avoid the need for `synchronized` blocks over mutable fields.
-This required some new constructors and paths to construction.
-- `EdDSAPublicKeySpec.getNegativeA()` and `EdDSAPublicKey.getNegativeA()` now evaluate lazily, taking advantage of the 
-immutability of `GroupElement.negate()` which boosts the performance of the public key constructor when the key is just 
-being passed around rather than used. 
+- The library has been extensively profiled for contention issues in a multi-threaded environment.  The only
+  remaining potential contention is in `EdDSANamedCurveTable.defineCurve()`, which will be rarely called.
+- The public constant for the curve name has returned as `ED_25519`, and the curve specification has a public
+  constant `ED_25519_CURVE_SPEC` to avoid repeated lookups when converting to and from encoded form for the
+  public or private keys.
+- `GroupElement` is now completely immutable, and all fields final, to avoid the need for `synchronized`
+  blocks over mutable fields. This required some new constructors and paths to construction.
+- `EdDSAPublicKeySpec.getNegativeA()` and `EdDSAPublicKey.getNegativeA()` now evaluate lazily, taking
+  advantage of the immutability of `GroupElement.negate()`. This boosts the performance of the public key
+  constructor when the key is just being passed around rather than used.
 - Support for X509Key wrapped EdDSA public keys.
 
 ### 0.2.0
 
-- Ed25519 is now named `Ed25519` in `EdDSANamedCurveTable`, and the previous public constant
-  (containing the older inaccurate name) has been removed.
+- Ed25519 is now named `Ed25519` in `EdDSANamedCurveTable`, and the previous public constant (containing the
+  older inaccurate name) has been removed.
 
 Credits
 -------
 
-* The Ed25519 class was originally ported by k3d3 from [the Python Ed25519 reference implementation](https://ed25519.cr.yp.to/python/ed25519.py).
-* Useful comments and tweaks were found in [the GNUnet implementation of Ed25519](https://gnunet.org/svn/gnunet-java/src/main/java/org/gnunet/util/crypto/) (based on k3d3's class).
-* [BloodyRookie](https://github.com/BloodyRookie) reviewed the code, adding many useful comments, unit tests and literature.
+- The Ed25519 class was originally ported by k3d3 from
+  [the Python Ed25519 reference implementation](https://ed25519.cr.yp.to/python/ed25519.py).
+- Useful comments and tweaks were found in
+  [the GNUnet implementation of Ed25519](https://gnunet.org/svn/gnunet-java/src/main/java/org/gnunet/util/crypto/)
+  (based on k3d3's class).
+- [BloodyRookie](https://github.com/BloodyRookie) reviewed the code, adding many useful comments, unit tests
+  and literature.
