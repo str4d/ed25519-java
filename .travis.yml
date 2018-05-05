@@ -8,6 +8,11 @@ jdk:
 
 matrix:
   include:
+    - env: JDK='OpenJDK 10'
+      before_install: wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+      install:
+        - . ./install-jdk.sh -F 10 -L GPL
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -B -V
     - addons:
         apt:
           packages:
