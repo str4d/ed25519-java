@@ -11,7 +11,7 @@
  */
 package net.i2p.crypto.eddsa.spec;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
 
 import net.i2p.crypto.eddsa.Utils;
@@ -37,7 +37,7 @@ public class EdDSANamedCurveTable {
             Utils.hexToBytes("a3785913ca4deb75abd841414d0a700098e879777940c78c73fe6f2bee6c0352"), // d
             ed25519field.fromByteArray(Utils.hexToBytes("b0a00e4a271beec478e42fad0618432fa7d7fb3d99004d2b0bdfc14f8024832b"))); // I
 
-    private static final EdDSANamedCurveSpec ed25519 = new EdDSANamedCurveSpec(
+    public static final EdDSANamedCurveSpec ED_25519_CURVE_SPEC = new EdDSANamedCurveSpec(
             ED_25519,
             ed25519curve,
             "SHA-512", // H
@@ -46,10 +46,16 @@ public class EdDSANamedCurveTable {
                     Utils.hexToBytes("5866666666666666666666666666666666666666666666666666666666666666"),
                     true)); // Precompute tables for B
 
-    private static final Hashtable<String, EdDSANamedCurveSpec> curves = new Hashtable<String, EdDSANamedCurveSpec>();
+    private static volatile HashMap<String, EdDSANamedCurveSpec> curves = new HashMap<String, EdDSANamedCurveSpec>();
+
+    private static synchronized void putCurve(String name, EdDSANamedCurveSpec curve) {
+        HashMap<String, EdDSANamedCurveSpec> newCurves = new HashMap<String, EdDSANamedCurveSpec>(curves);
+        newCurves.put(name, curve);
+        curves = newCurves;
+    }
 
     public static void defineCurve(EdDSANamedCurveSpec curve) {
-        curves.put(curve.getName().toLowerCase(Locale.ENGLISH), curve);
+        putCurve(curve.getName().toLowerCase(Locale.ENGLISH), curve);
     }
 
     static void defineCurveAlias(String name, String alias) {
@@ -57,12 +63,12 @@ public class EdDSANamedCurveTable {
         if (curve == null) {
             throw new IllegalStateException();
         }
-        curves.put(alias.toLowerCase(Locale.ENGLISH), curve);
+        putCurve(alias.toLowerCase(Locale.ENGLISH), curve);
     }
 
     static {
         // RFC 8032
-        defineCurve(ed25519);
+        defineCurve(ED_25519_CURVE_SPEC);
     }
 
     public static EdDSANamedCurveSpec getByName(String name) {

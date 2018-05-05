@@ -189,12 +189,19 @@ public class MathUtils {
      *
      * @return The group element.
      */
-    public static GroupElement getRandomGroupElement() {
+    public static GroupElement getRandomGroupElement() { return getRandomGroupElement(false); }
+
+    /**
+     * Gets a random group element in P3 representation, with precmp and dblPrecmp populated.
+     *
+     * @return The group element.
+     */
+    public static GroupElement getRandomGroupElement(boolean precompute) {
         final byte[] bytes = new byte[32];
         while (true) {
             try {
                 random.nextBytes(bytes);
-                return new GroupElement(curve, bytes);
+                return new GroupElement(curve, bytes, precompute);
             } catch (IllegalArgumentException e) {
                 // Will fail in about 87.5%, so try again.
             }
@@ -253,6 +260,7 @@ public class MathUtils {
         switch (g.getRepresentation()) {
             case P2:
             case P3:
+            case P3PrecomputedDouble:
                 x = gX.multiply(gZ.modInverse(getQ())).mod(getQ());
                 y = gY.multiply(gZ.modInverse(getQ())).mod(getQ());
                 break;
@@ -286,7 +294,14 @@ public class MathUtils {
                         toFieldElement(x),
                         toFieldElement(y),
                         getField().ONE,
-                        toFieldElement(x.multiply(y).mod(getQ())));
+                        toFieldElement(x.multiply(y).mod(getQ())), false);
+            case P3PrecomputedDouble:
+                return GroupElement.p3(
+                        curve,
+                        toFieldElement(x),
+                        toFieldElement(y),
+                        getField().ONE,
+                        toFieldElement(x.multiply(y).mod(getQ())), true);
             case P1P1:
                 return GroupElement.p1p1(
                         curve,

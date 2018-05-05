@@ -40,7 +40,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 public class EdDSAPublicKey implements EdDSAKey, PublicKey {
     private static final long serialVersionUID = 9837459837498475L;
     private final GroupElement A;
-    private final GroupElement Aneg;
+    private GroupElement Aneg = null;
     private final byte[] Abyte;
     private final EdDSAParameterSpec edDsaSpec;
 
@@ -52,14 +52,13 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
 
     public EdDSAPublicKey(EdDSAPublicKeySpec spec) {
         this.A = spec.getA();
-        this.Aneg = spec.getNegativeA();
         this.Abyte = this.A.toByteArray();
         this.edDsaSpec = spec.getParams();
     }
 
     public EdDSAPublicKey(X509EncodedKeySpec spec) throws InvalidKeySpecException {
         this(new EdDSAPublicKeySpec(decode(spec.getEncoded()),
-                                    EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)));
+                                    EdDSANamedCurveTable.ED_25519_CURVE_SPEC));
     }
 
     @Override
@@ -78,10 +77,10 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
      * This implements the following specs:
      *<ul><li>
      * General encoding: https://tools.ietf.org/html/draft-ietf-curdle-pkix-04
-     *</li></li>
+     *</li><li>
      * Key encoding: https://tools.ietf.org/html/rfc8032
      *</li></ul>
-     *</p><p>
+     *<p>
      * For keys in older formats, decoding and then re-encoding is sufficient to
      * migrate them to the canonical encoding.
      *</p>
@@ -113,7 +112,7 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
      */
     @Override
     public byte[] getEncoded() {
-        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)))
+        if (!edDsaSpec.equals(EdDSANamedCurveTable.ED_25519_CURVE_SPEC))
             return null;
         int totlen = 12 + Abyte.length;
         byte[] rv = new byte[totlen];
@@ -250,7 +249,13 @@ public class EdDSAPublicKey implements EdDSAKey, PublicKey {
     }
 
     public GroupElement getNegativeA() {
-        return Aneg;
+        // Only read Aneg once, otherwise read re-ordering might occur between here and return. Requires all GroupElement's fields to be final.
+        GroupElement ourAneg = Aneg;
+        if(ourAneg == null) {
+            ourAneg = A.negate();
+            Aneg = ourAneg;
+        }
+        return ourAneg;
     }
 
     public byte[] getAbyte() {

@@ -63,7 +63,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
 
     public EdDSAPrivateKey(PKCS8EncodedKeySpec spec) throws InvalidKeySpecException {
         this(new EdDSAPrivateKeySpec(decode(spec.getEncoded()),
-                                     EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)));
+                                     EdDSANamedCurveTable.ED_25519_CURVE_SPEC));
     }
 
     @Override
@@ -82,10 +82,10 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
      * This implements the following specs:
      *<ul><li>
      * General encoding: https://tools.ietf.org/html/draft-ietf-curdle-pkix-04
-     *</li></li>
+     *</li><li>
      * Key encoding: https://tools.ietf.org/html/rfc8032
      *</li></ul>
-     *</p><p>
+     *<p>
      * This encodes the seed. It will return null if constructed from
      * a spec which was directly constructed from H, in which case seed is null.
      *</p><p>
@@ -136,7 +136,7 @@ public class EdDSAPrivateKey implements EdDSAKey, PrivateKey {
      */
     @Override
     public byte[] getEncoded() {
-        if (!edDsaSpec.equals(EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)))
+        if (!edDsaSpec.equals(EdDSANamedCurveTable.ED_25519_CURVE_SPEC))
             return null;
         if (seed == null)
             return null;
