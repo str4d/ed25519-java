@@ -11,6 +11,9 @@
  */
 package net.i2p.crypto.eddsa;
 
+import java.security.Security;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 /**
  * Basic utilities for EdDSA.
  * Not for external use, not maintained as a public API.

@@ -13,6 +13,7 @@ package net.i2p.crypto.eddsa.spec;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 
 import net.i2p.crypto.eddsa.math.Curve;
@@ -20,6 +21,7 @@ import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.math.ScalarOps;
 
 import java.io.Serializable;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * Parameter specification for an EdDSA algorithm.
@@ -55,6 +57,10 @@ public class EdDSAParameterSpec implements AlgorithmParameterSpec, Serializable 
         this.hashAlgo = hashAlgo;
         this.sc = sc;
         this.B = B;
+    }
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     public Curve getCurve() {

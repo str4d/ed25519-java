@@ -31,14 +31,14 @@ public class Ed25519TestVectors {
         public TestTuple(String line) {
             caseNum = ++numCases;
             String[] x = line.split(":");
-            seed = Utils.hexToBytes(x[0].substring(0, 64));
-            pk = Utils.hexToBytes(x[1]);
+            seed = Utils.hexToBytes(x[0].substring(0, 64)); // private key
+            pk = Utils.hexToBytes(x[1]); // public key
             message = Utils.hexToBytes(x[2]);
             sig = Utils.hexToBytes(x[3].substring(0, 128));
         }
     }
 
-    public static Collection<TestTuple> testCases = getTestData("test.data");
+    public static Collection<TestTuple> testCases = getTestData("test.data.sha3");
 
     public static Collection<TestTuple> getTestData(String fileName) {
         List<TestTuple> testCases = new ArrayList<TestTuple>();

@@ -40,7 +40,7 @@ public class EdDSANamedCurveTable {
     public static final EdDSANamedCurveSpec ED_25519_CURVE_SPEC = new EdDSANamedCurveSpec(
             ED_25519,
             ed25519curve,
-            "SHA-512", // H
+            "SHA3-512", // H
             new Ed25519ScalarOps(), // l
             ed25519curve.createPoint( // B
                     Utils.hexToBytes("5866666666666666666666666666666666666666666666666666666666666666"),
