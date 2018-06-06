@@ -2,10 +2,10 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
 
-group = 'net.i2p.crypto'
-version = '0.3.0'
+group = 'jp.co.soramitsu.crypto'
+version = '0.0.1'
 
-description = """EdDSA-Java"""
+description = """EdDSA-SHA3-Java"""
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -13,19 +13,6 @@ targetCompatibility = 1.6
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
-
-idea {
-    module {
-        sourceDirs += file('src')
-        testSourceDirs += file('test')
-    }
-}
-
-sourceSets {
-    main.java.srcDir('src')
-    test.java.srcDir('test')
-}
-
 
 repositories {
     mavenCentral()
