@@ -10,13 +10,14 @@ description = """EdDSA-SHA3-Java"""
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+javadoc {
+    options.encoding = 'UTF-8'
 }
 
 repositories {
     mavenCentral()
 }
+
 dependencies {
     compile group: 'com.madgag.spongycastle', name: 'core', version: '1.58.0.0'
     compile group: 'com.madgag.spongycastle', name: 'bcpkix-jdk15on', version: '1.58.0.0'
