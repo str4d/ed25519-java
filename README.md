@@ -1,7 +1,9 @@
 EdDSA-Java
 ==========
 
-[![Build Status](https://travis-ci.org/Warchant/ed25519-java.svg?branch=master)](https://travis-ci.org/warchant/ed25519-java)
+[![Build Status](https://travis-ci.org/Warchant/ed25519-sha3-java.svg?branch=master)](https://travis-ci.org/Warchant/ed25519-sha3-java)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fd277321c4664e93a33b6e7d7fce56d2)](https://www.codacy.com/app/Warchant/ed25519-sha3-java?utm_source=github.com&utm_medium=referral&utm_content=Warchant/ed25519-sha3-java&utm_campaign=Badge_Grade)
+
 
 This is an implementation of EdDSA (SHA3) in Java. Structurally, it is based on the ref10 implementation in SUPERCOP
 (see https://ed25519.cr.yp.to/software.html).
@@ -15,12 +17,16 @@ There are two internal implementations:
 To use
 ------
 
-Download the latest .jar from the releases tab and place it in your classpath.
-
 Gradle users:
 
 ```
-compile 'jp.co.soramitsu.crypto.ed25519:0.0.1'
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile 'com.github.warchant:ed25519-sha3-java:1.0'
 ```
 
 The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
