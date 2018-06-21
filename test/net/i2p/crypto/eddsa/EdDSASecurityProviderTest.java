@@ -11,6 +11,7 @@
  */
 package net.i2p.crypto.eddsa;
 
+import java.security.AlgorithmParameters;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchProviderException;
@@ -39,6 +40,7 @@ public class EdDSASecurityProviderTest {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EdDSA", "EdDSA");
         KeyFactory keyFac = KeyFactory.getInstance("EdDSA", "EdDSA");
         Signature sgr = Signature.getInstance("NONEwithEdDSA", "EdDSA");
+        AlgorithmParameters algParam = AlgorithmParameters.getInstance("EdDSA","EdDSA");
 
         Security.removeProvider("EdDSA");
     }
