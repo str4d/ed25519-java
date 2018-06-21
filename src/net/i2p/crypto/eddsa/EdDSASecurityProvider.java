@@ -42,6 +42,7 @@ public class EdDSASecurityProvider extends Provider {
         put("KeyFactory." + EdDSAKey.KEY_ALGORITHM, "net.i2p.crypto.eddsa.KeyFactory");
         put("KeyPairGenerator." + EdDSAKey.KEY_ALGORITHM, "net.i2p.crypto.eddsa.KeyPairGenerator");
         put("Signature." + EdDSAEngine.SIGNATURE_ALGORITHM, "net.i2p.crypto.eddsa.EdDSAEngine");
+        put("AlgorithmParameters." + EdDSAKey.KEY_ALGORITHM, "net.i2p.crypto.eddsa.AlgorithmParameters");
 
         // OID Mappings
         // See section "Mapping from OID to name".
