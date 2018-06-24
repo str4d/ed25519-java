@@ -1,0 +1,41 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+group = 'jp.co.soramitsu.crypto'
+version = '0.0.1'
+
+description = """EdDSA-SHA3-Java"""
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.madgag.spongycastle', name: 'core', version: '1.58.0.0'
+    compile group: 'com.madgag.spongycastle', name: 'bcpkix-jdk15on', version: '1.58.0.0'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version:'1.3'
+    testCompile group: 'junit', name: 'junit', version:'4.12'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
