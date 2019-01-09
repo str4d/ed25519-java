@@ -11,13 +11,15 @@
  */
 package net.i2p.crypto.eddsa.math;
 
+import java.io.Serializable;
+
 /**
  * Common interface for all $(b-1)$-bit encodings of elements
  * of EdDSA finite fields.
  * @author str4d
  *
  */
-public abstract class Encoding {
+public abstract class Encoding implements Serializable {
     protected Field f;
 
     public synchronized void setField(Field f) {

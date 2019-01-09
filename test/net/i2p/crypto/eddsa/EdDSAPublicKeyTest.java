@@ -16,10 +16,15 @@ import static org.junit.Assert.*;
 
 import java.security.spec.X509EncodedKeySpec;
 
-import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * @author str4d
@@ -81,5 +86,29 @@ public class EdDSAPublicKeyTest {
 
         // Check
         assertThat(keyOut.getEncoded(), is(equalTo(TEST_PUBKEY)));
+    }
+
+    @Test
+    public void testJavaSerialization() throws InvalidKeySpecException {
+        final X509EncodedKeySpec encoded = new X509EncodedKeySpec(TEST_PUBKEY_OLD);
+        final EdDSAPublicKey keyOut = new EdDSAPublicKey(encoded);
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        try {
+            final ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(keyOut);
+            oos.flush();
+            oos.close();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to serialize object of type: " + keyOut.getClass(), ex);
+        }
+
+        try {
+            final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            final EdDSAPublicKey keyIn = (EdDSAPublicKey) ois.readObject();
+            assertThat(keyIn, is(keyOut));
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to deserialize object", ex);
+        }
     }
 }

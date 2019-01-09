@@ -14,9 +14,14 @@ package net.i2p.crypto.eddsa;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.spec.InvalidKeySpecException;
+
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import net.i2p.crypto.eddsa.Utils;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 
 import org.junit.Test;
@@ -90,5 +95,29 @@ public class EdDSAPrivateKeyTest {
 
         // Check
         assertThat(keyOut.getEncoded(), is(equalTo(TEST_PRIVKEY)));
+    }
+
+    @Test
+    public void testJavaSerialization() throws InvalidKeySpecException {
+        final PKCS8EncodedKeySpec encoded = new PKCS8EncodedKeySpec(TEST_PRIVKEY);
+        final EdDSAPrivateKey keyOut = new EdDSAPrivateKey(encoded);
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        try {
+            final ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(keyOut);
+            oos.flush();
+            oos.close();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to serialize object of type: " + keyOut.getClass(), ex);
+        }
+
+        try {
+            final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            final EdDSAPrivateKey keyIn = (EdDSAPrivateKey) ois.readObject();
+            assertThat(keyIn, is(keyOut));
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to deserialize object", ex);
+        }
     }
 }
