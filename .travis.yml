@@ -3,19 +3,17 @@ language: java
 jdk:
   - oraclejdk9
   - oraclejdk8
+  - openjdk10
   - openjdk8
-  - openjdk7
 
 matrix:
   include:
-    - env: JDK='OpenJDK 10'
-      before_install: wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+    - jdk: openjdk7
       install:
-        - . ./install-jdk.sh -F 10 -L GPL
+        - mvn test -DskipTests=true -B -V
+        - jdk_switcher use oraclejdk8
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -B -V
+        - jdk_switcher use $TRAVIS_JDK_VERSION
 
 install:
-  - mvn test -DskipTests=true -B -V
-  - jdk_switcher use oraclejdk8
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -B -V
-  - jdk_switcher use $TRAVIS_JDK_VERSION
