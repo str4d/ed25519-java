@@ -11,7 +11,6 @@
  */
 package net.i2p.crypto.eddsa.math;
 
-import net.i2p.crypto.eddsa.math.*;
 import org.hamcrest.core.*;
 import org.junit.*;
 
