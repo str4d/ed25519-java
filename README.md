@@ -23,7 +23,7 @@ Gradle users:
 compile 'net.i2p.crypto:eddsa:0.3.0'
 ```
 
-The code requires Java 6 (for e.g. the `Arrays.copyOfRange()` calls in `EdDSAEngine.engineVerify()`).
+Java 7 and above are supported.
 
 The JUnit4 tests require the Hamcrest library `hamcrest-all.jar`.
 

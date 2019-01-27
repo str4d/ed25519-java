@@ -49,7 +49,7 @@ public class EdDSAPrivateKeySpecTest {
     public void incorrectSeedLengthThrows() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("seed length is wrong");
-        EdDSAPrivateKeySpec key = new EdDSAPrivateKeySpec(new byte[2], ed25519);
+        new EdDSAPrivateKeySpec(new byte[2], ed25519);
     }
 
     /**
@@ -67,6 +67,6 @@ public class EdDSAPrivateKeySpecTest {
     public void incorrectHashLengthThrows() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("hash length is wrong");
-        EdDSAPrivateKeySpec key = new EdDSAPrivateKeySpec(ed25519, new byte[2]);
+        new EdDSAPrivateKeySpec(ed25519, new byte[2]);
     }
 }
