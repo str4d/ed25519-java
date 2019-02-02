@@ -116,6 +116,11 @@ public class UtilsTest {
         assertThat(Utils.bit(new byte[] {1, 2, 3}, 16), is(1));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void hexToBytesThrowsOnInvalidLengthHexString() {
+        Utils.hexToBytes("bad");
+    }
+
     @Test
     public void hexToBytesReturnsCorrectByteArray() {
         Assert.assertThat(Utils.hexToBytes(hex1), IsEqual.equalTo(bytes1));
