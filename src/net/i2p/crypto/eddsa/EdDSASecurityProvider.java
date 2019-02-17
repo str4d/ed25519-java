@@ -47,7 +47,7 @@ public class EdDSASecurityProvider extends Provider {
         // See section "Mapping from OID to name".
         // The Key* -> OID mappings correspond to the default algorithm in KeyPairGenerator.
         //
-        // From draft-ieft-curdle-pkix-04:
+        // From RFC 8410 section 3:
         //   id-Ed25519   OBJECT IDENTIFIER ::= { 1 3 101 112 }
         put("Alg.Alias.KeyFactory.1.3.101.112", EdDSAKey.KEY_ALGORITHM);
         put("Alg.Alias.KeyFactory.OID.1.3.101.112", EdDSAKey.KEY_ALGORITHM);
