@@ -28,7 +28,7 @@ import org.junit.Test;
 public class EdDSAPrivateKeyTest {
     /**
      * The example private key MC4CAQAwBQYDK2VwBCIEINTuctv5E1hK1bbY8fdp+K06/nwoy/HU++CXqI9EdVhC
-     * from https://tools.ietf.org/html/draft-ietf-curdle-pkix-04#section-10.3
+     * from https://tools.ietf.org/html/rfc8410#section-10.3
      */
     static final byte[] TEST_PRIVKEY = Utils.hexToBytes("302e020100300506032b657004220420d4ee72dbf913584ad5b6d8f1f769f8ad3afe7c28cbf1d4fbe097a88f44755842");
 

@@ -28,7 +28,7 @@ import org.junit.Test;
 public class EdDSAPublicKeyTest {
     /**
      * The example public key MCowBQYDK2VwAyEAGb9ECWmEzf6FQbrBZ9w7lshQhqowtrbLDFw4rXAxZuE=
-     * from https://tools.ietf.org/html/draft-ietf-curdle-pkix-04#section-10.1
+     * from https://tools.ietf.org/html/rfc8410#section-10.1
      */
     static final byte[] TEST_PUBKEY = Utils.hexToBytes("302a300506032b657003210019bf44096984cdfe8541bac167dc3b96c85086aa30b6b6cb0c5c38ad703166e1");
 
