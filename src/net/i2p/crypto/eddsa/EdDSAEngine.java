@@ -29,7 +29,6 @@ import java.util.Arrays;
 import net.i2p.crypto.eddsa.math.Curve;
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.math.ScalarOps;
-import sun.security.x509.X509Key;
 
 /**
  * Signing and verification for EdDSA.
@@ -157,7 +156,7 @@ public final class EdDSAEngine extends Signature {
                 }
             } else if (!key.getParams().getHashAlgorithm().equals(digest.getAlgorithm()))
                 throw new InvalidKeyException("Key hash algorithm does not match chosen digest");
-        } else if (publicKey instanceof X509Key) {
+        } else if (publicKey.getFormat().equals("X.509")) {
             // X509Certificate will sometimes contain an X509Key rather than the EdDSAPublicKey itself; the contained
             // key is valid but needs to be instanced as an EdDSAPublicKey before it can be used.
             EdDSAPublicKey parsedPublicKey;
