@@ -72,6 +72,7 @@
           <instructions>
             <Export-Package>
               net.i2p.crypto.eddsa,
+              net.i2p.crypto.eddsa.math,
               net.i2p.crypto.eddsa.spec
             </Export-Package>
             <Private-Package>
