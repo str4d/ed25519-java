@@ -20,7 +20,7 @@ Download the latest .jar from the releases tab and place it in your classpath.
 Gradle users:
 
 ```
-compile 'net.i2p.crypto:eddsa:0.3.0'
+compile 'net.i2p.crypto:eddsa:0.3.1'
 ```
 
 Java 7 and above are supported.
@@ -65,6 +65,11 @@ For ease of following, here are the main methods in ref10 and their equivalents 
 
 Important changes
 -----------------
+
+### 0.3.1 - Build improvements
+
+- Upgraded JUnit to remove CVE-2020-15250 vulnerability
+- Added OWASP plugin to check vulnerabilities
 
 ### 0.3.0
 
