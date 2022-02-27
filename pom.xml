@@ -149,6 +149,22 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>6.5.3</version>
+        <configuration>
+          <skipTestScope>false</skipTestScope>
+          <failBuildOnCVSS>0</failBuildOnCVSS>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
