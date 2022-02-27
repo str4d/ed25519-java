@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.i2p.crypto</groupId>
   <artifactId>eddsa</artifactId>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <name>EdDSA-Java</name>
   <packaging>bundle</packaging>
   <description>Implementation of EdDSA in Java</description>
@@ -177,7 +177,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.2</version>
       <type>maven-plugin</type>
       <scope>test</scope>
     </dependency>
